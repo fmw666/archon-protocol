@@ -61,3 +61,9 @@ try {
 - ❌ `alert(error.message)` — use toast with translated string
 - ❌ Returning `{ error: e }` with the full Error object — serialize to `{ error: e.message }`
 - ❌ Exposing internal error details (`stack`, SQL, `env` vars) to the client
+
+## Battle-tested Prohibitions
+
+Project-specific prohibitions from production incidents. Format: `❌ <pattern> — <fix> [INCIDENT]: <what broke>`
+
+_(empty — populated via Stage 3.6 → proposed-rules.md → user approval)_

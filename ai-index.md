@@ -32,6 +32,7 @@
 | `skills/archon-test-sync/SKILL.md` | Constraint | Tests must follow code changes |
 | `skills/archon-async-loading/SKILL.md` | Constraint | Skeleton, retry, viewport lazy load |
 | `skills/archon-error-handling/SKILL.md` | Constraint | Structured errors, no stack traces |
+| `skills/archon-handoff/SKILL.md` | Constraint | Interface contracts, cross-boundary handoff |
 
 ### Documentation (English — for AI execution and human reading)
 
@@ -47,6 +48,9 @@
 | `docs/reference/commands.md` | All commands with stages, flags, options |
 | `docs/reference/agents.md` | Agent format, all agent specs |
 | `docs/reference/constraints.md` | All constraint skills with prohibitions |
+| `docs/guide/design-philosophy.md` | Design philosophy, response to critiques |
+| `docs/decisions/ADR-001-response-to-external-critiques.md` | ADR: response to external AI critiques |
+| `docs/decisions/ADR-002-evomap-experience-absorption.md` | ADR: EvoMap experience absorption |
 
 ### Documentation (Chinese — for human reading)
 
@@ -68,6 +72,8 @@
 | `archon.config.yaml` | Project-specific config (tech stack, enabled skills, test command) |
 | `templates/install.sh` | Deployment script |
 | `templates/archon.config.yaml` | Config template |
+| `templates/constraints/archon-nextjs-ssr.md` | Framework constraint: Next.js SSR/hydration |
+| `templates/constraints/archon-react-hydration.md` | Framework constraint: React state/hydration |
 
 ### Tests
 

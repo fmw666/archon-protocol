@@ -78,6 +78,10 @@ export default defineConfig({
                   text: "ADR-001: Response to Critiques",
                   link: "/decisions/ADR-001-response-to-external-critiques",
                 },
+                {
+                  text: "ADR-002: EvoMap Experience Absorption",
+                  link: "/decisions/ADR-002-evomap-experience-absorption",
+                },
               ],
             },
           ],

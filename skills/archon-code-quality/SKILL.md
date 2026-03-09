@@ -22,6 +22,9 @@ description: >
 
 - All exported functions MUST have parameter and return type annotations
 - Shared entity types: define once in a types directory, import everywhere
+- Organize types by business domain: `types/common.ts`, `types/users.ts`, `types/billing.ts`
+- Cross-domain types go in `common.ts`; new domain = new file
+- Never copy `@typedef` or `interface` across files — import from the canonical source
 
 ## Pure Logic Extraction
 
@@ -63,3 +66,16 @@ function addItem(items: readonly Item[], newItem: Item): Item[] {
 - ❌ Direct state mutation (`.push()`, `.splice()` on state) — return new objects
 - ❌ Duplicate rendering of the same data — use `memo()` or lift to parent
 - ❌ Magic numbers/strings without `const` — extract to named constants
+- ❌ Copying `@typedef` or `interface` across files — import from canonical `types/` source
+- ❌ Inline type literals for shared entities — define in `types/` directory
+
+## Battle-tested Prohibitions
+
+Project-specific prohibitions derived from production incidents. Stage 3.6 proposes additions here via `proposed-rules.md`. Format:
+
+```
+  ❌ <concrete pattern> — <what to do instead>
+  [INCIDENT]: <what went wrong in production>
+```
+
+_(empty — will be populated as the project evolves through real usage)_

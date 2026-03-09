@@ -9,6 +9,7 @@ skills:
   - archon-test-sync
   - archon-async-loading
   - archon-error-handling
+  - archon-handoff
 ---
 
 You are executing the Archon Protocol delivery pipeline. Complete all stages unless the user explicitly opts out.

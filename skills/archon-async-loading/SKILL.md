@@ -79,3 +79,9 @@ function Dashboard() {
 - ❌ Single API failure crashes the entire page — wrap each section with its own `isError` / `refetch` handling
 - ❌ Showing `0` or `"No data"` while actually still loading — use skeleton instead
 - ❌ Firing all API calls on mount via `useEffect` regardless of scroll position — use `skip: !inView` for off-screen sections
+
+## Battle-tested Prohibitions
+
+Project-specific prohibitions from production incidents. Format: `❌ <pattern> — <fix> [INCIDENT]: <what broke>`
+
+_(empty — populated via Stage 3.6 → proposed-rules.md → user approval)_

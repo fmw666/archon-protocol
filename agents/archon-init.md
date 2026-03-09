@@ -108,6 +108,10 @@ Record all detected languages in config. The primary language drives constraint 
    - If `agents_supported`: copy agents to `agents_dir`
    - Always: copy skills to `skills_dir`
    - Only deploy constraint skills if tool can use them
+4. **Framework-specific constraints**: If a matching template exists in `templates/constraints/`, deploy it as an additional constraint skill:
+   - `next` → deploy `archon-nextjs-ssr` constraint skill
+   - `react` or `next` → deploy `archon-react-hydration` constraint skill
+   - Inform user which framework constraints were activated
 
 ## Step 5: Health Check (if already installed)
 
@@ -142,6 +146,7 @@ Same functionality as agents, for tools that don't support subagents. Plus const
 | `archon-test-sync` | Every code change |
 | `archon-async-loading` | Editing UI components |
 | `archon-error-handling` | Editing API routes or components |
+| `archon-handoff` | Cross-boundary changes (frontend↔backend, service↔service) |
 
 Agents preload relevant constraint skills via the `skills` field — constraints are automatically injected into agent context.
 

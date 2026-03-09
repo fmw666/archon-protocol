@@ -33,13 +33,17 @@ archon-protocol/
 │   ├── archon-code-quality/SKILL.md     # Constraint: file limits, type safety
 │   ├── archon-test-sync/SKILL.md        # Constraint: tests follow code
 │   ├── archon-async-loading/SKILL.md    # Constraint: skeleton, retry, lazy load
-│   └── archon-error-handling/SKILL.md   # Constraint: structured errors
+│   ├── archon-error-handling/SKILL.md   # Constraint: structured errors
+│   └── archon-handoff/SKILL.md          # Constraint: interface contracts & handoff
 │
 ├── docs/                                # Chinese docs for humans
 ├── tests/                               # Integrity tests
 └── templates/
     ├── install.sh                       # Deploys agents + skills
-    └── archon.config.yaml               # Project config template
+    ├── archon.config.yaml               # Project config template
+    └── constraints/                     # Framework-specific constraint templates
+        ├── archon-nextjs-ssr.md         # Next.js SSR/hydration safety
+        └── archon-react-hydration.md    # React state & hydration safety
 ```
 
 ### Agent-First, Skill-Fallback
@@ -83,6 +87,7 @@ Hard boundaries preloaded into agents via `skills` field, or auto-discovered by 
 | `archon-test-sync` | Code changed → tests must follow |
 | `archon-async-loading` | Skeleton screens, error retry, viewport lazy loading |
 | `archon-error-handling` | Structured error patterns |
+| `archon-handoff` | Interface contracts & cross-boundary handoff |
 
 ## Self-Evolution
 

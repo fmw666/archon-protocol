@@ -86,3 +86,34 @@ Constraint skills define hard boundaries. They are preloaded into agents or auto
 - ❌ `alert(error.message)` — use toast with translated string
 - ❌ Returning `{ error: e }` with the full Error object
 - ❌ Exposing internal error details (`stack`, SQL, `env` vars) to client
+
+## archon-handoff
+
+**Activated**: cross-boundary changes (frontend↔backend, service↔service, session handoff).
+
+### When Required
+
+- Changing an API that a separate frontend/backend consumes
+- Defining a new endpoint, webhook, or event schema
+- Handing work to another developer, AI session, or team
+- Database migration affecting multiple consumers
+
+### Document Format
+
+Create `docs/handoff/<feature-name>.md` with: status checklist, endpoint definitions (request + all response shapes), data contract table, confirmed decisions, open questions, revision history.
+
+### Prohibitions
+
+- ❌ Changing an API `response` shape without updating `docs/handoff/` first
+- ❌ Implementing against a chat description without a `docs/handoff/*.md`
+- ❌ Leaving `Open Questions` section unresolved before starting implementation
+- ❌ Omitting `Response (4xx/5xx)` error shapes from the contract
+
+## Framework-Specific Constraints (Optional)
+
+Deployed by `/archon-init` when a matching framework is detected. Templates live in `templates/constraints/`.
+
+| Template | Framework | Covers |
+|----------|-----------|--------|
+| `archon-nextjs-ssr` | Next.js | Server Components, hydration safety, auth state patterns |
+| `archon-react-hydration` | React, Next.js | State initialization, conditional rendering, mutation sequencing |

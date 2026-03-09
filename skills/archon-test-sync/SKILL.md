@@ -39,6 +39,35 @@ For every source file to be modified, search for matching tests:
 
 Run all affected test files. Task is NOT complete until all pass.
 
+### 5. Structural Scan Tests
+
+Beyond unit tests, projects SHOULD maintain structural scan tests that statically analyze the entire codebase for prohibited patterns. These run in CI and catch violations regardless of who wrote the code (AI or human).
+
+**When to create a structural scan test**: When a prohibition is too critical to rely on AI self-checking alone, or when a production incident revealed a pattern that must NEVER reappear.
+
+**Template**:
+
+```javascript
+import { readdirSync, readFileSync } from "fs";
+
+function scanFiles(dir, pattern) {
+  // recursively find source files, read content, match pattern
+}
+
+describe("Structural: <constraint name>", () => {
+  it("no files use <prohibited pattern>", () => {
+    const violations = scanFiles("src/", /<regex for pattern>/);
+    expect(violations).toEqual([]);
+  });
+});
+```
+
+**Real-world examples of structural scans**:
+- Scan for `user.role` without optional chaining (`user?.role`) — hydration safety
+- Scan for `typeof window !== "undefined"` inside `useMemo` — SSR correctness
+- Scan for hardcoded color values outside design tokens — theme consistency
+- Scan for `z-index` values above a threshold without a named constant — layer ordering
+
 ## Examples
 
 ### Correct: updating test after signature change
@@ -67,3 +96,9 @@ it("throws on empty ID", () => {
 - ❌ Deleted a `.test.` file to eliminate failures — fix the assertions instead
 - ❌ Assumed no tests exist — always search `__tests__/` first
 - ❌ Marked task complete while tests still show `FAIL`
+
+## Battle-tested Prohibitions
+
+Project-specific prohibitions from production incidents. Format: `❌ <pattern> — <fix> [INCIDENT]: <what broke>`
+
+_(empty — populated via Stage 3.6 → proposed-rules.md → user approval)_

@@ -10,6 +10,7 @@ skills:
   - archon-test-sync
   - archon-async-loading
   - archon-error-handling
+  - archon-handoff
 ---
 
 Analyze recent code changes (from `git diff`) across 6 dimensions. Do NOT modify code — only report.
