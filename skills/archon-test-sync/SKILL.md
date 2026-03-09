@@ -39,6 +39,27 @@ For every source file to be modified, search for matching tests:
 
 Run all affected test files. Task is NOT complete until all pass.
 
+## Examples
+
+### Correct: updating test after signature change
+
+```typescript
+// Source changed: getUser(id) → getUser(id, options?)
+// Before:
+expect(getUser).toHaveBeenCalledWith("user-1");
+// After:
+expect(getUser).toHaveBeenCalledWith("user-1", expect.any(Object));
+```
+
+### Correct: adding coverage for new behavior
+
+```typescript
+// Source added: getUser now throws on invalid ID
+it("throws on empty ID", () => {
+  expect(() => getUser("")).toThrow("ID must not be empty");
+});
+```
+
 ## Prohibitions
 
 - ❌ Changed function signature without searching for `.test.` files that import it

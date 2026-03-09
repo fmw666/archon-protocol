@@ -27,6 +27,31 @@ description: >
 
 If logic does NOT depend on framework context (hooks, state, props), extract it as a pure function in `utils/` with unit tests.
 
+## Examples
+
+### Correct: typed function with named constants
+
+```typescript
+const MAX_RETRY_COUNT = 3;
+const TIMEOUT_MS = 5000;
+
+export function fetchWithRetry(url: string, retries: number = MAX_RETRY_COUNT): Promise<Response> {
+  return fetch(url, { signal: AbortSignal.timeout(TIMEOUT_MS) })
+    .catch((err: unknown) => {
+      if (retries > 0) return fetchWithRetry(url, retries - 1);
+      throw err;
+    });
+}
+```
+
+### Correct: immutable state update
+
+```typescript
+function addItem(items: readonly Item[], newItem: Item): Item[] {
+  return [...items, newItem]; // not items.push(newItem)
+}
+```
+
 ## Prohibitions
 
 - ❌ `any` type — use the real type or `unknown`

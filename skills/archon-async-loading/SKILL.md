@@ -41,6 +41,39 @@ Off-screen sections SHOULD defer API requests until scrolled into view:
 - Once loaded, data stays cached — no re-request on scroll-out/scroll-in
 - Combine with query `skip` parameter: `skip: !inView`
 
+## Examples
+
+### Correct: independent section with 3-state display
+
+```tsx
+function RevenueCard() {
+  const { ref, inView } = useInView({ rootMargin: "200px" });
+  const { data, isLoading, isError, refetch } = useGetRevenue({ skip: !inView });
+
+  return (
+    <Card ref={ref}>
+      {isLoading ? <Skeleton width={120} height={32} /> :
+       isError   ? <ErrorRetry onRetry={refetch} /> :
+                   <span>{formatCurrency(data.total)}</span>}
+    </Card>
+  );
+}
+```
+
+### Correct: page with independent error boundaries
+
+```tsx
+function Dashboard() {
+  return (
+    <Page>
+      <RevenueCard />   {/* fails independently */}
+      <UsersCard />     {/* fails independently */}
+      <OrdersChart />   {/* fails independently */}
+    </Page>
+  );
+}
+```
+
 ## Prohibitions
 
 - ❌ Single API failure crashes the entire page — wrap each section with its own `isError` / `refetch` handling

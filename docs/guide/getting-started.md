@@ -63,11 +63,37 @@ You say one line → Agent does everything
   │
   ├─ Stage 0: Read refactor plan (if exists)
   ├─ Stage 1: Implement (under constraint skills)
+  ├─ Stage 1.5: Linter verification
   ├─ Stage 2: Performance audit
   ├─ Stage 3: 6-dimension self-audit
   ├─ Stage 4: Fix all issues
   ├─ Stage 5: Update refactor progress
   └─ Stage 6: Commit
+```
+
+## Choosing the Right Mode
+
+Not every task needs the full pipeline. Use opt-out flags to match the task:
+
+| Scenario | Command | What runs |
+|----------|---------|-----------|
+| Complex feature | `/archon-demand add user settings` | All stages (full pipeline) |
+| Quick hotfix | `/archon-demand quick fix typo in header` | Stages 0, 1, 1.5, 3.1–3.4, 4, 6 |
+| Exploration (no commit) | `/archon-demand no-commit try new layout` | All stages except commit |
+| Styling only | `/archon-demand quick skip-tests update button colors` | Stages 0, 1, 1.5, 3.1–3.3, 4, 6 |
+
+**Decision tree:**
+
+```
+Is this a complex feature or refactor?
+  → Yes: use full pipeline (no flags)
+  → No:
+      Is this a quick fix or small change?
+        → Yes: add `quick`
+      Do you want to review before committing?
+        → Yes: add `no-commit`
+      Is this purely visual (no logic change)?
+        → Yes: add `skip-tests`
 ```
 
 ## Tool Compatibility

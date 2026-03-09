@@ -87,6 +87,19 @@ Auto-detect the project's tech stack:
 | State management | `redux`, `zustand`, `pinia` in deps |
 | Test runner | `vitest`, `jest`, `pytest` in deps/config |
 
+### Multi-language detection
+
+If multiple primary languages are detected (e.g., TypeScript + Python), warn the user:
+
+```
+⚠️ Multi-language project detected: TypeScript + Python
+   Constraint skills are currently optimized for a single primary language.
+   Recommendation: set `project.language` to your primary language in archon.config.yaml.
+   Constraints will apply project-wide. Language-specific rules may need manual adjustment.
+```
+
+Record all detected languages in config. The primary language drives constraint selection; secondary languages are noted for awareness.
+
 ## Step 4: Generate Config & Deploy
 
 1. Create `archon.config.yaml` with detected environment + stack values

@@ -32,19 +32,22 @@ Full delivery pipeline for a one-line requirement.
 |-------|-------------|
 | 0 | Refactor alignment (read plan if exists) |
 | 1 | Implement under constraints |
+| 1.5 | Linter verification (run lint, read errors, fix) |
 | 2 | Performance audit |
-| 3 | 6-dimension self-audit |
+| 3 | 6-dimension self-audit (3.1 rules, 3.2 structure, 3.3 edge cases, 3.4 tests, 3.5 i18n, 3.6 evolution) |
 | 4 | Fix all issues |
 | 5 | Update refactor progress |
 | 6 | Commit |
 
 **Opt-out flags**:
 
-| Flag | Skips |
-|------|-------|
-| `quick` | Stages 2, 3.5, 3.6, 5 |
-| `no-commit` | Stage 6 |
-| `skip-tests` | Stage 3.4 |
+| Flag | Skips | Best for |
+|------|-------|----------|
+| `quick` | Stages 2, 3.5, 3.6, 5 | Hotfixes, small changes, styling |
+| `no-commit` | Stage 6 | Exploration, review before commit |
+| `skip-tests` | Stage 3.4 | Pure visual/styling changes |
+
+Flags can be combined: `quick no-commit skip-tests` for minimal pipeline with manual review.
 
 ### `/archon-audit`
 

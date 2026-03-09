@@ -20,6 +20,41 @@ description: >
 - Dev-facing errors: include namespace/context prefix for searchability
 - Network errors: distinguish timeout vs. server error vs. auth expired
 
+## Examples
+
+### Correct: server-side structured error
+
+```typescript
+export class HttpError extends Error {
+  constructor(public status: number, message: string) {
+    super(message);
+  }
+}
+
+app.get("/api/users/:id", async (req, res) => {
+  try {
+    const user = await db.findUser(req.params.id);
+    if (!user) throw new HttpError(404, "User not found");
+    res.json(user);
+  } catch (err) {
+    const status = err instanceof HttpError ? err.status : 500;
+    logger.error("[GET /api/users]", { id: req.params.id, err });
+    res.status(status).json({ error: err.message });
+  }
+});
+```
+
+### Correct: client-side user-facing error
+
+```typescript
+try {
+  await updateProfile(data);
+} catch (err: unknown) {
+  toast.error(t("profile.update_failed"));
+  logger.error("[Profile:update]", err);
+}
+```
+
 ## Prohibitions
 
 - ❌ Empty `catch {}` — at minimum log the error

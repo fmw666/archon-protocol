@@ -1,0 +1,12 @@
+feat: clear all debt radar items (DEBT-004 through DEBT-009)
+
+- DEBT-004: Add ## Examples section to all 4 constraint skills
+  (code-quality, test-sync, async-loading, error-handling)
+- DEBT-005: Document quick/no-commit/skip-tests flags with decision tree
+  in getting-started guide and commands reference
+- DEBT-006: Add multi-language project detection warning to init
+- DEBT-009: Rewrite Chinese architecture docs to match English dual-layer model
+  (overview.md full rewrite, feedback-loop.md + naming-protocol.md updated)
+
+Debt radar is now clear: 9/9 items completed.
+200/200 tests passing. VitePress build successful.
