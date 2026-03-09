@@ -34,6 +34,10 @@ export default defineConfig({
               text: "Guide",
               items: [
                 { text: "Getting Started", link: "/guide/getting-started" },
+                {
+                  text: "Design Philosophy",
+                  link: "/guide/design-philosophy",
+                },
                 { text: "Installation", link: "/guide/installation" },
                 { text: "FAQ", link: "/guide/faq" },
               ],
@@ -63,6 +67,17 @@ export default defineConfig({
                 { text: "Commands", link: "/reference/commands" },
                 { text: "Agents", link: "/reference/agents" },
                 { text: "Constraint Skills", link: "/reference/constraints" },
+              ],
+            },
+          ],
+          "/decisions/": [
+            {
+              text: "Architecture Decisions (ADRs)",
+              items: [
+                {
+                  text: "ADR-001: Response to Critiques",
+                  link: "/decisions/ADR-001-response-to-external-critiques",
+                },
               ],
             },
           ],

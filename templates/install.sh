@@ -1,71 +1,108 @@
 #!/usr/bin/env bash
-# Archon Protocol Installer — agent-first, skill-fallback.
-# Usage: bash archon-protocol/templates/install.sh [target_dir]
+# Archon Protocol Installer — environment-aware, agent-first, skill-fallback.
+# Usage:
+#   bash archon-protocol/templates/install.sh [target_dir] [tool]
+#
+# tool: cursor | claude-code | codex | copilot | windsurf | gemini-cli | all (default)
+# Examples:
+#   bash install.sh .                  # deploy to all platforms
+#   bash install.sh . cursor           # deploy only Cursor files
+#   bash install.sh . claude-code      # deploy only Claude Code files
 
 set -euo pipefail
 
 TARGET="${1:-.}"
+TOOL="${2:-all}"
 AP_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 echo "=== Archon Protocol Installer ==="
-echo "Source:  $AP_DIR"
-echo "Target:  $(cd "$TARGET" && pwd)"
+echo "Source:      $AP_DIR"
+echo "Target:      $(cd "$TARGET" && pwd)"
+echo "Environment: $TOOL"
 echo ""
 
 # ──────────────────────────────────────────────
-# 1. Deploy agents (Cursor + Claude Code)
+# Environment → path mapping
 # ──────────────────────────────────────────────
-AGENT_DIRS=(".cursor/agents" ".claude/agents")
-agent_count=0
-
-for agent_root in "${AGENT_DIRS[@]}"; do
+deploy_agents() {
+  local dir="$1"
+  local tool_label="$2"
+  local count=0
   for agent_file in "$AP_DIR/agents"/*.md; do
     [ -f "$agent_file" ] || continue
-    target_dir="$TARGET/$agent_root"
-    mkdir -p "$target_dir"
-    cp "$agent_file" "$target_dir/"
-    agent_count=$((agent_count + 1))
+    mkdir -p "$TARGET/$dir"
+    cp "$agent_file" "$TARGET/$dir/"
+    count=$((count + 1))
   done
-  tool=$(echo "$agent_root" | cut -d/ -f1 | tr -d '.')
-  echo "  [agents] → $agent_root/ ($tool)"
-done
+  echo "  [agents] → $dir/ ($tool_label) — $count files"
+}
 
-total_agents=$((agent_count / ${#AGENT_DIRS[@]}))
-
-# ──────────────────────────────────────────────
-# 2. Deploy skills (27+ tools)
-# ──────────────────────────────────────────────
-SKILLS_DIRS=(".cursor/skills" ".claude/skills" ".codex/skills")
-skill_count=0
-
-for skills_root in "${SKILLS_DIRS[@]}"; do
+deploy_skills() {
+  local dir="$1"
+  local tool_label="$2"
+  local count=0
   for skill_dir in "$AP_DIR/skills"/*/; do
     [ -d "$skill_dir" ] || continue
     skill_name=$(basename "$skill_dir")
-    target_skill="$TARGET/$skills_root/$skill_name"
-    mkdir -p "$target_skill"
-    cp "$skill_dir/SKILL.md" "$target_skill/SKILL.md"
-    skill_count=$((skill_count + 1))
+    mkdir -p "$TARGET/$dir/$skill_name"
+    cp "$skill_dir/SKILL.md" "$TARGET/$dir/$skill_name/SKILL.md"
+    count=$((count + 1))
   done
-  tool=$(echo "$skills_root" | cut -d/ -f1 | tr -d '.')
-  echo "  [skills] → $skills_root/ ($tool)"
-done
+  echo "  [skills] → $dir/ ($tool_label) — $count files"
+}
 
-total_skills=$((skill_count / ${#SKILLS_DIRS[@]}))
+case "$TOOL" in
+  cursor)
+    deploy_agents ".cursor/agents" "Cursor"
+    deploy_skills ".cursor/skills" "Cursor"
+    ;;
+  claude-code)
+    deploy_agents ".claude/agents" "Claude Code"
+    deploy_skills ".claude/skills" "Claude Code"
+    ;;
+  codex)
+    deploy_skills ".codex/skills" "Codex"
+    echo "  [agents] SKIPPED — Codex does not support agents"
+    ;;
+  copilot)
+    deploy_skills ".cursor/skills" "Copilot"
+    echo "  [agents] SKIPPED — Copilot does not support agents"
+    ;;
+  windsurf)
+    deploy_skills ".cursor/skills" "Windsurf"
+    echo "  [agents] SKIPPED — Windsurf does not support agents"
+    ;;
+  gemini-cli)
+    deploy_skills ".claude/skills" "Gemini CLI"
+    echo "  [agents] SKIPPED — Gemini CLI does not support agents"
+    ;;
+  all)
+    deploy_agents ".cursor/agents" "Cursor"
+    deploy_agents ".claude/agents" "Claude Code"
+    deploy_skills ".cursor/skills" "Cursor"
+    deploy_skills ".claude/skills" "Claude Code"
+    deploy_skills ".codex/skills" "Codex"
+    ;;
+  *)
+    echo "ERROR: Unknown tool '$TOOL'"
+    echo "Valid options: cursor | claude-code | codex | copilot | windsurf | gemini-cli | all"
+    exit 1
+    ;;
+esac
 
 # ──────────────────────────────────────────────
-# 3. Project config template
+# Project config template
 # ──────────────────────────────────────────────
 CONFIG="$TARGET/archon.config.yaml"
 if [ ! -f "$CONFIG" ]; then
   cp "$AP_DIR/templates/archon.config.yaml" "$CONFIG"
-  echo "  [config] → archon.config.yaml"
+  echo ""
+  echo "  [config] → archon.config.yaml (created from template)"
+else
+  echo ""
+  echo "  [config] → archon.config.yaml (already exists, skipped)"
 fi
 
 echo ""
-echo "Installed $total_agents agents + $total_skills skills:"
-echo "  ✅ Cursor      — .cursor/agents/ + .cursor/skills/"
-echo "  ✅ Claude Code  — .claude/agents/ + .claude/skills/"
-echo "  ✅ Codex/others — .codex/skills/ (+ any SKILL.md-compatible tool)"
-echo ""
-echo "Next: type /archon-init in your AI tool to bootstrap the ecosystem."
+echo "Done. Next: type /archon-init in your AI tool to complete setup."
+echo "The init process will detect your environment and finalize configuration."

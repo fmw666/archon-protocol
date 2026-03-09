@@ -16,7 +16,7 @@ Analyze recent code changes (from `git diff`) across 6 dimensions. Do NOT modify
 
 ## Dimension 1: Rule Compliance
 
-Read constraint skills preloaded in your context. Collect `❌` prohibitions. Search modified files for violations.
+Read constraint skills preloaded in your context. Collect `❌` prohibitions. Search modified files for violations. Recognize `@archon-exception: <ID> — <reason>` annotations as documented exceptions — skip the marked prohibition for that line and include exceptions in the report.
 
 ## Dimension 2: Code Structure
 
@@ -48,9 +48,11 @@ Read constraint skills preloaded in your context. Collect `❌` prohibitions. Se
 
 ## Dimension 6: Knowledge Evolution
 
-- New anti-pattern → suggest adding prohibition to constraint skill
-- Reusable technique → suggest doc update
+- New anti-pattern → write proposed prohibition to `proposed-rules.md`
+- Reusable technique → write proposed update to `proposed-rules.md`
 - Nothing new → `[SKIP]`
+
+Do NOT modify constraint skills directly. Proposed rules require user approval before graduating to constraint skills.
 
 ## Output
 

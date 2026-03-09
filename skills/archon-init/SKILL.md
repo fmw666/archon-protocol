@@ -1,9 +1,9 @@
 ---
 name: archon-init
 description: >
-  Bootstrap for Archon Protocol (AAEP). Detects project tech stack, generates config,
-  deploys agents and skills. Agents are primary (isolated context); skills are portable
-  fallback. Run this first in any new session or project. Invoke with: /archon-init
+  Bootstrap for Archon Protocol (AAEP). Detects execution environment and project
+  tech stack, generates config, deploys agents and skills to environment-specific
+  paths. Run this first in any new session or project. Invoke with: /archon-init
 ---
 
 # Archon Protocol — Init
@@ -15,9 +15,67 @@ You are initializing the Archon Protocol ecosystem powered by **AAEP** (AI Archi
 Check if `archon.config.yaml` exists in the project root.
 
 - **Not found** → fresh install (go to Step 2)
-- **Found** → health check (go to Step 4)
+- **Found** → health check (go to Step 5)
 
-## Step 2: Scan Project
+## Step 2: Detect Execution Environment
+
+Determine which AI tool is running this skill. This decides deploy paths, available capabilities, and workflow behavior.
+
+### Auto-detection signals
+
+| Signal | Indicates |
+|--------|-----------|
+| `.cursor/` directory exists at workspace root | Cursor |
+| Running inside Claude Code (check tool identity) | Claude Code |
+| `.codex/` directory exists or Codex CLI detected | Codex |
+| `.windsurfrules` file exists | Windsurf |
+| None of the above | Ask user |
+
+### If ambiguous or uncertain: ASK THE USER
+
+Present the options and let the user confirm:
+
+```
+Which AI tool are you using?
+  1. Cursor
+  2. Claude Code (claude-code)
+  3. Codex
+  4. Copilot
+  5. Windsurf
+  6. Gemini CLI
+  7. Other (specify)
+```
+
+### Environment Capability Matrix
+
+Once confirmed, record these values into `archon.config.yaml`:
+
+| Tool | agents_supported | agents_dir | skills_dir | rules_file | sub_agents | constraint_preload |
+|------|-----------------|------------|------------|------------|------------|-------------------|
+| Cursor | true | `.cursor/agents` | `.cursor/skills` | `.cursor/rules/*.md` | true | true |
+| Claude Code | true | `.claude/agents` | `.claude/skills` | `CLAUDE.md` | true | true |
+| Codex | false | — | `.codex/skills` | — | false | false |
+| Copilot | false | — | `.cursor/skills` | — | false | false |
+| Windsurf | false | — | `.cursor/skills` | `.windsurfrules` | false | false |
+| Gemini CLI | false | — | `.claude/skills` | — | false | false |
+| Other | false | — | `.cursor/skills` | — | false | false |
+
+### Capability implications
+
+When `agents_supported = false`:
+- Skip agent deployment entirely
+- All workflows execute via SKILL.md discovery
+- Constraint skills are read manually (no automatic preload)
+- Inform user: "Your tool uses skill-only mode. Invoke workflows by mentioning the skill name."
+
+When `sub_agents = false`:
+- `archon-demand` stages 3.1–3.6 run inline (not as isolated sub-agents)
+- Context window management becomes the user's responsibility
+
+When `constraint_preload = false`:
+- Constraints must be read explicitly at the start of each task
+
+## Step 3: Scan Project
 
 Auto-detect the project's tech stack:
 
@@ -29,16 +87,24 @@ Auto-detect the project's tech stack:
 | State management | `redux`, `zustand`, `pinia` in deps |
 | Test runner | `vitest`, `jest`, `pytest` in deps/config |
 
-## Step 3: Generate Config
+## Step 4: Generate Config & Deploy
 
-Create `archon.config.yaml` with detected values. Confirm ambiguous detections with user.
+1. Create `archon.config.yaml` with detected environment + stack values
+2. Confirm ambiguous detections with user
+3. Deploy files to environment-specific paths:
+   - If `agents_supported`: copy agents to `agents_dir`
+   - Always: copy skills to `skills_dir`
+   - Only deploy constraint skills if tool can use them
 
-## Step 4: Health Check (if already installed)
+## Step 5: Health Check (if already installed)
 
-1. Verify agent files exist in `.cursor/agents/` or `.claude/agents/`
-2. Verify skill files exist in `.cursor/skills/` or `.claude/skills/`
-3. Check config matches actual project
-4. Report any gaps
+Read `archon.config.yaml` to determine environment, then verify:
+
+1. **Environment match**: Does the current tool match `environment.tool`? If not, warn and offer to reconfigure.
+2. **Agent files** (only if `agents_supported`): Verify all agent files exist in `agents_dir`
+3. **Skill files**: Verify all skill files exist in `skills_dir`
+4. **Config freshness**: Check config matches actual project state
+5. Report any gaps
 
 ## Ecosystem: Agent-First, Skill-Fallback
 
@@ -64,7 +130,7 @@ Tool only supports skills? (Codex, Copilot, VS Code, Gemini CLI, etc.)
 | `archon-test-runner` | Called by demand | Test sync and execution |
 | `archon-verifier` | `/archon-verifier` | Independent validation |
 
-### Skills (fallback — 27+ tools)
+### Skills (fallback — all tools)
 
 Same workflow content as agents, in portable SKILL.md format:
 
@@ -93,9 +159,11 @@ Agents preload relevant constraints via `skills` field in frontmatter.
 ```
 Archon Protocol Init:
   Status: [FRESH INSTALL | HEALTH CHECK]
+  Environment: <tool> (agents: yes/no, sub-agents: yes/no, preload: yes/no)
+  Deploy: <agents_dir> + <skills_dir>
   Stack: <language> + <framework>
   Config: [CREATED | UP TO DATE | NEEDS UPDATE]
-  Agents: N deployed
+  Agents: N deployed (or SKIPPED — tool does not support agents)
   Skills: M deployed (N constraint + K workflow)
   Result: [READY ✅ | NEEDS ATTENTION ⚠️]
 ```

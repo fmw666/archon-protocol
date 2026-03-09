@@ -21,6 +21,10 @@ If `docs/refactor-plan.md` exists, read it. Identify which milestone relates to 
 
 Write code under all constraint skills preloaded in your context. Follow every `❌` prohibition. Use established project patterns.
 
+## Stage 1.5: Linter Verification
+
+Run the project's lint command (e.g., `pnpm lint`, `eslint .`). Read the output. Fix all errors that overlap with constraint skill prohibitions. This catches syntactic violations that slipped through generation.
+
 ## Stage 2: Performance Audit
 
 Check project perf docs for applicable items:
@@ -32,7 +36,7 @@ Check project perf docs for applicable items:
 ## Stage 3: Self-Audit (6 Dimensions)
 
 ### 3.1 Rule compliance
-Search modified files for `❌` violations from constraint skills.
+Search modified files for `❌` violations from constraint skills. Recognize `@archon-exception: <ID> — <reason>` annotations as documented exceptions — skip the marked prohibition for that line.
 
 ### 3.2 Code structure
 File sizes, single responsibility, no circular deps.
@@ -47,7 +51,7 @@ Find tests, update assertions, add coverage, run all.
 `t("key")`, all locales, no `.replace()`.
 
 ### 3.6 Knowledge evolution
-New anti-pattern → add to constraint skill; new technique → update docs.
+New anti-pattern or technique discovered? Write to `proposed-rules.md` (staging area). Do NOT modify constraint skills directly. Rules graduate to skills only after user approval or passing contradiction tests via `archon-audit`.
 
 ## Stage 4: Fix
 
@@ -65,9 +69,11 @@ Stage related files only. Conventional commit. Verify with `git status`.
 
 ```
 ✅ Implemented: <summary>
+✅ Linter: passed / fixed N items
 ✅ Performance: passed / fixed N items
 ✅ Self-audit: found N issues, all fixed
 ✅ Tests: X files, Y tests passing
+✅ Evolution: N rules proposed (or N/A)
 ✅ Refactor: milestone N at X% (or N/A)
 ✅ Committed: <hash> <message>
 ```

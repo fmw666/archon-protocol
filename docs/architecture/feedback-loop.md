@@ -40,19 +40,32 @@ After every audit, the agent asks:
 
 | Discovery | Action | Effect |
 |-----------|--------|--------|
-| New anti-pattern | Add `❌` to constraint skill | Next task blocked from this mistake |
-| New best practice | Update constraint or docs | Next task follows it automatically |
+| New anti-pattern | Write to `proposed-rules.md` | Staged for review |
+| New best practice | Write to `proposed-rules.md` | Staged for review |
 | Architecture insight | Update knowledge docs | Future context is richer |
+
+### Evolution Safety: The Staging Area
+
+Discovered rules are NOT written directly to constraint skills. They go to `proposed-rules.md` — a staging area where they await approval. This prevents:
+
+- **Noise accumulation**: AI generalizing edge cases into universal rules
+- **Self-contradiction**: New rules conflicting with existing ones
+- **Quality degradation**: Vague or untestable prohibitions entering the system
+
+Rules graduate to constraint skills only after:
+1. User review and explicit approval, OR
+2. Passing automated quality checks (`prohibition-quality.test.js`) and contradiction detection (`ecosystem-integrity.test.js`)
 
 ## The Positive Feedback Loop
 
 ```
 Task 1: AI might make mistake X
          ↓ Stage 3.6 discovers X
-         ↓ Writes: ❌ prohibit X
+         ↓ Writes proposal to proposed-rules.md
+         ↓ User approves → ❌ prohibit X added to constraint skill
 Task 2: AI blocked from X at Stage 1
          ↓ Stage 3.6 discovers Y
-         ↓ Writes: ❌ prohibit Y
+         ↓ Writes proposal → approved → ❌ prohibit Y
 Task N: Constraint system is comprehensive
          AI is heavily constrained at Stage 1
          Audit finds fewer issues

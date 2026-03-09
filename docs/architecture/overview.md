@@ -87,3 +87,24 @@ All agents and skills are prefixed with `archon-` to avoid collisions with exist
 | Copilot | — | ✅ | ✅ |
 | VS Code | — | ✅ | ✅ |
 | Gemini CLI | — | ✅ | ✅ |
+
+## Environment-Aware Deployment
+
+`/archon-init` detects the execution environment and deploys files to the correct paths. If detection is ambiguous, it asks the user to confirm.
+
+### Environment Capability Matrix
+
+| Capability | Cursor | Claude Code | Codex | Copilot | Windsurf | Gemini CLI |
+|------------|--------|-------------|-------|---------|----------|------------|
+| Agents | `.cursor/agents` | `.claude/agents` | — | — | — | — |
+| Skills | `.cursor/skills` | `.claude/skills` | `.codex/skills` | `.cursor/skills` | `.cursor/skills` | `.claude/skills` |
+| Rules file | `.cursor/rules/` | `CLAUDE.md` | — | — | `.windsurfrules` | — |
+| Sub-agents | ✅ | ✅ | — | — | — | — |
+| Constraint preload | ✅ (`skills:` field) | ✅ (`skills:` field) | — | — | — | — |
+
+### What changes per environment
+
+- **Agents supported** (Cursor, Claude Code): Full dual-layer architecture. Agents invoke sub-agents for isolated audit stages. Constraint skills preloaded via `skills:` frontmatter field.
+- **Skills only** (Codex, Copilot, Windsurf, Gemini CLI): Skill-only mode. Workflows discovered as SKILL.md files. Constraints read explicitly at task start. No isolated sub-agent context — all stages run inline.
+
+This is stored in `archon.config.yaml` under the `environment:` section and used by health checks and subsequent commands.

@@ -2,6 +2,19 @@
 # Fill this file with your project's specific tech choices.
 # Rules reference these values for context-sensitive behavior.
 
+# ─── Execution Environment ───────────────────────────────────────
+# Detected or confirmed during /archon-init.
+# Determines deploy paths, available capabilities, and invocation syntax.
+environment:
+  tool: "" # cursor | claude-code | codex | copilot | windsurf | gemini-cli | other
+  agents_supported: false # true for cursor, claude-code
+  agents_dir: "" # .cursor/agents | .claude/agents | (empty if no agent support)
+  skills_dir: "" # .cursor/skills | .claude/skills | .codex/skills
+  rules_file: "" # .cursor/rules/*.md | CLAUDE.md | .windsurfrules | (empty)
+  sub_agents: false # true if tool can invoke sub-agents with isolated context
+  constraint_preload: false # true if tool supports `skills:` field in agent frontmatter
+
+# ─── Project ─────────────────────────────────────────────────────
 project:
   name: ""
   language: "javascript" # javascript | typescript | python | go | rust
