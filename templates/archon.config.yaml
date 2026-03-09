@@ -1,0 +1,35 @@
+# Archon Protocol Project Configuration
+# Fill this file with your project's specific tech choices.
+# Rules reference these values for context-sensitive behavior.
+
+project:
+  name: ""
+  language: "javascript" # javascript | typescript | python | go | rust
+  framework: "" # next | react | vue | express | django | fastapi | none
+
+i18n:
+  enabled: false
+  library: "" # next-intl | react-intl | i18next | none
+  locales: [] # ["en", "zh", "ja"]
+
+state:
+  library: "" # redux | zustand | pinia | none
+  data_fetching: "" # rtk-query | tanstack-query | swr | none
+
+testing:
+  runner: "vitest" # vitest | jest | pytest | go-test
+  test_dir_pattern: "__tests__" # __tests__ | tests | spec
+  test_file_pattern: "*.test.{js,ts}" # *.test.js | *.spec.ts
+
+docs:
+  performance_lessons: "" # path to performance lessons doc (e.g. docs/performance-lessons.md)
+  architecture: "" # path to architecture doc
+
+conventions:
+  commit_format: "conventional" # conventional | angular | none
+  max_file_lines:
+    page: 350
+    component: 300
+    hook: 200
+    utility: 200
+    api_route: 150
