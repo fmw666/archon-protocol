@@ -1,7 +1,8 @@
 import { defineConfig } from "vitepress";
+import { codeBlockTitlePlugin } from "./theme/codeBlockTitle";
 
 export default defineConfig({
-  base: "/archon-protocol/",
+  base: "/",
   title: "Archon Protocol",
   description:
     "Agent-first governance system for AI-driven development, powered by AAEP.",
@@ -10,6 +11,12 @@ export default defineConfig({
   cleanUrls: true,
 
   head: [["link", { rel: "icon", type: "image/svg+xml", href: "/logo.svg" }]],
+
+  markdown: {
+    config: (md) => {
+      md.use(codeBlockTitlePlugin);
+    },
+  },
 
   locales: {
     root: {

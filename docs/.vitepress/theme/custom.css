@@ -1,0 +1,334 @@
+/**
+ * EvoMap Docs — Custom Layout & Typography
+ *
+ * Override VitePress default 688px content bottleneck for better
+ * table/code readability in documentation-heavy pages.
+ */
+
+/* ── Layout: Override the 688px bottleneck ── */
+
+:root {
+  --vp-layout-max-width: 1440px;
+}
+
+.VPDoc.has-aside .content-container {
+  max-width: 100% !important;
+}
+
+.VPDoc:not(.has-sidebar) .container {
+  max-width: 1152px !important;
+}
+
+.VPDoc:not(.has-sidebar) .content {
+  max-width: 960px !important;
+}
+
+/* ── Tables: Full-width, polished look ── */
+
+.vp-doc table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.vp-doc table th {
+  background-color: var(--vp-c-bg-soft);
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 16px;
+  border-bottom: 2px solid var(--vp-c-border);
+  white-space: nowrap;
+}
+
+.vp-doc table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  vertical-align: top;
+}
+
+.vp-doc table tr:hover td {
+  background-color: var(--vp-c-bg-soft);
+}
+
+.vp-doc table code {
+  font-size: 13px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: var(--vp-c-mute);
+}
+
+/* ── Blockquote: Accent bar + soft background ── */
+
+.vp-doc blockquote {
+  border-left: 4px solid var(--vp-c-brand-1);
+  background-color: var(--vp-c-bg-soft);
+  padding: 12px 20px;
+  margin: 16px 0;
+  border-radius: 0 8px 8px 0;
+  color: var(--vp-c-text-1);
+}
+
+.vp-doc blockquote p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+/* ── Code blocks: Subtle border ── */
+
+.vp-doc div[class*="language-"] {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+}
+
+/* ── Code block title (source file label) ── */
+
+.vp-doc .code-with-title {
+  margin: 16px 0;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.vp-doc .code-block-title {
+  padding: 6px 16px;
+  font-size: 12.5px;
+  font-weight: 500;
+  font-family: var(--vp-font-family-mono);
+  color: var(--vp-c-text-2);
+  background-color: var(--vp-code-block-bg);
+  border-bottom: 1px solid var(--vp-c-divider);
+  line-height: 1.5;
+}
+
+.vp-doc .code-with-title div[class*="language-"] {
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+/* ── HR: Cleaner divider ── */
+
+.vp-doc hr {
+  border: none;
+  border-top: 1px solid var(--vp-c-divider);
+  margin: 32px 0;
+}
+
+/* ── Headings: Tighter spacing ── */
+
+.vp-doc h2 {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.vp-doc h3 {
+  margin-top: 32px;
+}
+
+/* ── Details/FAQ: Collapsible with subtle background ── */
+
+.vp-doc details {
+  background-color: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  margin: 8px 0;
+  padding: 0;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.vp-doc details[open] {
+  border-color: var(--vp-c-brand-soft);
+}
+
+.vp-doc details summary {
+  padding: 18px 16px;
+  margin: 0;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vp-doc details summary::-webkit-details-marker {
+  display: none;
+}
+
+.vp-doc details summary::before {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 6px solid var(--vp-c-text-2);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.vp-doc details[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.vp-doc details summary:hover {
+  background-color: var(--vp-c-bg-elv);
+}
+
+.vp-doc details[open] summary {
+  border-bottom: 1px solid var(--vp-c-divider);
+  margin-bottom: 0;
+}
+
+.vp-doc details > p,
+.vp-doc details > ol,
+.vp-doc details > ul {
+  margin: 12px 16px;
+}
+
+.vp-doc details > p:last-child,
+.vp-doc details > ol:last-child,
+.vp-doc details > ul:last-child {
+  margin-bottom: 16px;
+}
+
+/* ══════════════════════════════════════════════
+   Hero Image: Glow + breathing animation
+   ══════════════════════════════════════════════ */
+
+@keyframes glow-breathe {
+  0%, 100% { filter: drop-shadow(0 0 20px var(--hero-glow-a)) drop-shadow(0 0 48px var(--hero-glow-b)); }
+  50%      { filter: drop-shadow(0 0 28px var(--hero-glow-a)) drop-shadow(0 0 64px var(--hero-glow-b)); }
+}
+
+:root:not(.dark) { --hero-glow-a: rgba(59, 130, 246, 0.22); --hero-glow-b: rgba(99, 102, 241, 0.10); }
+.dark            { --hero-glow-a: rgba(129, 140, 248, 0.30); --hero-glow-b: rgba(99, 102, 241, 0.15); }
+
+.VPHero .VPImage {
+  border-radius: 24px;
+  animation: glow-breathe 5s ease-in-out infinite;
+}
+
+/* ══════════════════════════════════════════════
+   Hero entrance animation
+   ══════════════════════════════════════════════ */
+
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hero-fade-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.VPHero .container .main {
+  animation: hero-fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.VPHero .container .image {
+  animation: hero-fade-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+/* ══════════════════════════════════════════════
+   VitePress Feature cards: hover + stagger
+   ══════════════════════════════════════════════ */
+
+.VPFeature {
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.VPFeature:hover {
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.08);
+  transform: translateY(-3px);
+}
+
+.VPFeatures .VPFeature {
+  animation: hero-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.VPFeatures .item:nth-child(1) .VPFeature { animation-delay: 0.10s; }
+.VPFeatures .item:nth-child(2) .VPFeature { animation-delay: 0.18s; }
+.VPFeatures .item:nth-child(3) .VPFeature { animation-delay: 0.26s; }
+.VPFeatures .item:nth-child(4) .VPFeature { animation-delay: 0.34s; }
+.VPFeatures .item:nth-child(5) .VPFeature { animation-delay: 0.42s; }
+.VPFeatures .item:nth-child(6) .VPFeature { animation-delay: 0.50s; }
+
+/* ══════════════════════════════════════════════
+   Hero action buttons: hover
+   ══════════════════════════════════════════════ */
+
+.VPHero .actions .VPButton {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s,
+              background-color 0.25s,
+              border-color 0.25s;
+}
+
+.VPHero .actions .VPButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.VPHero .actions .VPButton:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ══════════════════════════════════════════════
+   Page transition (VitePress content)
+   ══════════════════════════════════════════════ */
+
+.VPContent {
+  animation: page-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════════════
+   Sidebar / Nav links: hover transition
+   ══════════════════════════════════════════════ */
+
+.VPSidebar .VPSidebarItem .link {
+  transition: color 0.2s, padding-left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.VPSidebar .VPSidebarItem .link:hover {
+  padding-left: 4px;
+}
+
+.VPNavBarMenuLink,
+.VPNavBarMenuGroup .button {
+  transition: color 0.2s, opacity 0.2s;
+}
+
+/* ══════════════════════════════════════════════
+   Table row hover (enhanced)
+   ══════════════════════════════════════════════ */
+
+.vp-doc table tr {
+  transition: background-color 0.2s;
+}
+
+/* ══════════════════════════════════════════════
+   Reduce motion: respect user preference
+   ══════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
