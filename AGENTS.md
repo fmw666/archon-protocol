@@ -55,20 +55,6 @@ These are loaded into your context alongside this kernel via the `skills:` field
 | `/archon-refactor` | `defrag()` | Progressive restructure plan |
 | `/archon-verifier` | `fsck()` | Independent integrity verification |
 
-## First Principles
-
-These govern every decision you make. When in doubt, trace back to a principle.
-
-1. **Environment Predictability > Agent Intelligence** — Don't be smarter. Make the environment more predictable.
-2. **Boring Consistency > Local Brilliance** — 10 identical modules beat 5 brilliant but different ones.
-3. **Prohibitions > Instructions** — "Don't do X" is enforceable. "Do Y" is interpretable.
-4. **Benchmark Imitation > Abstract Guidance** — Copy real code, not example snippets.
-5. **Local Self-Sufficiency** — Work from the current directory + its immediate deps. Don't require global knowledge.
-6. **Negative Freedom** — Constrain what not to do. Leave creative space for how.
-7. **Self-Maintenance** — Every problem strengthens the defense. Bugs → rules → prohibitions.
-
-Full explanation: `docs/architecture/core-principles.md`
-
 ## Core Loop (Kernel Scheduler)
 
 Every task follows this 4-phase loop:

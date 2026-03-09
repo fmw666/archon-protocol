@@ -1,21 +1,37 @@
-feat: establish OS model — every file maps to a kernel/driver/syscall/filesystem role
+feat: codify first principles, benchmark system, refactor reports, and time triangle
 
-Archon Protocol is now explicitly framed as an operating system for AI agents:
+Absorb core philosophical concepts from EvoMap's production experience into
+Archon Protocol's architecture:
 
-- Kernel (always resident): AGENTS.md, archon.config.yaml, ai-index.md
-- Drivers (loaded via skills: field): constraint skills = hard boundary enforcement
-- System calls (user commands): init=boot, demand=exec, audit=stat, refactor=defrag, verifier=fsck
-- Daemons (internal): self-auditor=watchdog, test-runner=testd
-- Filesystem: docs/ with mount semantics (read-only, append-only, read-write)
-- Installer: templates/install.sh, POST: tests/
+1. Core Principles (7 first principles of AI-native development):
+   - Environment predictability > agent intelligence
+   - Boring consistency > local brilliance
+   - Prohibitions > instructions
+   - Benchmark imitation > abstract guidance
+   - Local self-sufficiency > global documentation
+   - Negative freedom > positive direction
+   - Self-maintenance > manual updates
+   New: docs/architecture/core-principles.md (EN+ZH)
+   Written into AGENTS.md kernel
 
-New files:
-- docs/architecture/os-model.md (EN)
-- docs/zh/architecture/os-model.md (ZH)
+2. Benchmark Module System:
+   - archon.config.yaml: new `benchmarks:` field (primary, secondary, architecture_doc)
+   - archon-init: benchmark detection step (scans for best module candidate)
+   - archon-demand Stage 1: read benchmark before writing new code
 
-Rewritten:
-- AGENTS.md — now uses OS kernel terminology
-- ai-index.md — now a "page table" with OS role annotations per file
-- docs/index.md + docs/zh/index.md — homepages use OS metaphor
+3. Refactor Reports (Time Triangle's "past" dimension):
+   - archon-refactor Phase 5: generate docs/refactor-reports/<milestone>.md
+   - Added to AGENTS.md filesystem map as /var/log/audit/ (append-only)
+   - Completes the time triangle: architecture (present) + reports (past) + ADR (why)
+
+4. OS Model enrichment:
+   - Constraint Pyramid: 4 layers (identity/negative/procedural/cognitive)
+   - Document Lifecycle: discover → rule → workflow → reference
+   - Extended mappings: IPC, permissions, package manager, health monitor
+
+5. Design Philosophy rewrite:
+   - Added "fundamental problem" section (AI memoryless reinvention)
+   - Added "core insight" (prescriptive vs descriptive documentation)
+   - Added Part VI: First Principles validated by production
 
 All 219 tests pass, VitePress builds clean.
