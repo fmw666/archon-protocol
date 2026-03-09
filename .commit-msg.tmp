@@ -1,0 +1,17 @@
+feat: absorb EvoMap production experience into constraint system
+
+5 improvements from real-world production project (EvoMap):
+
+1. Battle-tested Prohibitions: new section in all constraint skills for
+   production-incident-derived prohibitions with [INCIDENT] tags
+2. Structural Scan Tests: Step 5 in archon-test-sync for CI-level
+   static analysis that catches violations regardless of author
+3. archon-handoff: new constraint skill for interface contracts and
+   cross-boundary handoff documents (single-agent compatible)
+4. Framework constraints: templates/constraints/ with archon-nextjs-ssr
+   and archon-react-hydration for framework-specific traps
+5. Type system guidance: domain-based type organization pattern and
+   new prohibitions in archon-code-quality
+
+Also: ADR-002 documenting all absorption decisions.
+All 219 tests pass, VitePress builds clean.

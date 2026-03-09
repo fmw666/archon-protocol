@@ -3,7 +3,7 @@ layout: home
 hero:
   name: Archon Protocol
   text: AI Architect Evolution Protocol
-  tagline: "The governance system that turns AI agents into reliable architects — through constraints, self-audit, and directed evolution."
+  tagline: "The operating system for AI agents — kernel, drivers, syscalls, filesystem. One protocol governs all."
   actions:
     - theme: brand
       text: Get Started
@@ -15,24 +15,24 @@ hero:
       text: Architecture
       link: /architecture/overview
 features:
-  - icon: 🧬
-    title: "AAEP: Directed Evolution"
-    details: "Every task strengthens the constraint system. Anti-patterns become prohibitions. Best practices become defaults. Quality monotonically increases."
-  - icon: 🏛️
-    title: "Single-Agent Governance"
-    details: "One agent, full authority, complete accountability. No multi-agent coordination overhead. Constraint skills replace supervision."
-  - icon: 🚫
-    title: "Verifiable Prohibitions"
-    details: "Every rule uses ❌ markers with grep-able patterns and positive alternatives. Tested by CI — not vague best practices."
+  - icon: 🧠
+    title: "Kernel: Always Resident"
+    details: "AGENTS.md is the kernel image — always in context, never paged out. It defines identity, workflow, and constraint enforcement. Everything obeys it."
+  - icon: 🔌
+    title: "Drivers: Constraint Skills"
+    details: "Hard boundaries loaded into kernel space via `skills:` field. ❌ prohibitions are law, not suggestions. Grep-verifiable, CI-testable."
+  - icon: ⚡
+    title: "Syscalls: 4 Commands"
+    details: "boot() init → exec() demand → stat() audit → defrag() refactor. Each triggers a well-defined kernel operation."
   - icon: 🔧
-    title: "Environment-Aware"
-    details: "Auto-detects Cursor, Claude Code, Codex, Copilot, Windsurf, Gemini CLI. Deploys the right files to the right paths."
-  - icon: 🛡️
-    title: "Protocol + Tools"
-    details: "Constraints catch architecture. Linters catch syntax. Stage 1.5 runs your linter automatically. Neither layer alone is sufficient."
-  - icon: 🔄
-    title: "4 Commands, Full Lifecycle"
-    details: "/archon-init → /archon-demand → /archon-audit → /archon-refactor. One-line requirement, full delivery with 6-dimension audit."
+    title: "Hardware Detection"
+    details: "Auto-detects Cursor, Claude Code, Codex, Copilot, Windsurf, Gemini CLI. Deploys drivers to the right paths."
+  - icon: 🧬
+    title: "Directed Evolution"
+    details: "Every task strengthens the constraint system. Anti-patterns become prohibitions. Quality monotonically increases."
+  - icon: 📂
+    title: "Filesystem: Persistent Memory"
+    details: "Architecture = /usr/src/, guides = man pages, ADRs = /var/log/, proposed-rules = staging repo. Clear mount semantics."
 ---
 
 <div class="vp-doc" style="max-width: 800px; margin: 0 auto; padding: 2rem;">

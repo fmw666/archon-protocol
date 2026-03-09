@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Archon Protocol uses a dual-layer architecture: **agents** as the primary interface (isolated context), **skills** as the portable fallback (27+ tools).
+Archon Protocol is an **operating system for AI agents**. It uses a dual-layer architecture: **agents** as the primary interface (isolated context), **skills** as the portable fallback (27+ tools). Every file maps to an OS concept — see [The OS Model](./os-model.md) for the full mapping.
 
 ## Dual-Layer Model
 
@@ -76,6 +76,7 @@ All agents and skills are prefixed with `archon-` to avoid collisions with exist
 | `archon-test-sync` | Every code change |
 | `archon-async-loading` | Editing UI components |
 | `archon-error-handling` | Editing API routes |
+| `archon-handoff` | Cross-boundary changes |
 
 ## Cross-Tool Compatibility
 

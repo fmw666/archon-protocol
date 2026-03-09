@@ -3,7 +3,7 @@ layout: home
 hero:
   name: Archon Protocol
   text: AI 架构师进化协议
-  tagline: "将 AI 代理转变为可靠架构师的治理体系——通过约束、自审计与定向进化。"
+  tagline: "AI 代理的操作系统——内核、驱动、系统调用、文件系统。一套协议治理一切。"
   actions:
     - theme: brand
       text: 快速上手
@@ -15,24 +15,24 @@ hero:
       text: 架构总览
       link: /zh/architecture/overview
 features:
-  - icon: 🧬
-    title: "AAEP：定向进化"
-    details: "每次任务都强化约束系统。反模式变成禁止项，最佳实践变成默认行为。代码质量单调递增。"
-  - icon: 🏛️
-    title: "单代理治理"
-    details: "一个代理，完整权限，完全负责。无多代理协调开销。约束技能替代监督者。"
-  - icon: 🚫
-    title: "可验证的禁止项"
-    details: "每条规则使用 ❌ 标记 + 可 grep 的代码模式 + 正向替代方案。由 CI 测试强制执行，不是模糊的最佳实践。"
+  - icon: 🧠
+    title: "内核：始终驻留"
+    details: "AGENTS.md 是内核镜像——始终在上下文中，永不换出。定义身份、工作流与约束执行。一切服从内核。"
+  - icon: 🔌
+    title: "驱动：约束技能"
+    details: "硬边界通过 `skills:` 字段加载到内核空间。❌ 禁止项是法律，不是建议。可 grep 验证，CI 可测试。"
+  - icon: ⚡
+    title: "系统调用：4 个命令"
+    details: "boot() 初始化 → exec() 交付 → stat() 审计 → defrag() 重构。每个命令触发明确的内核级操作。"
   - icon: 🔧
-    title: "环境感知"
-    details: "自动检测 Cursor、Claude Code、Codex、Copilot、Windsurf、Gemini CLI。按环境部署正确的文件到正确的路径。"
-  - icon: 🛡️
-    title: "协议 + 工具双层防线"
-    details: "约束层拦截架构问题，Linter 拦截语法问题。Stage 1.5 自动运行项目 Linter。两层缺一不可。"
-  - icon: 🔄
-    title: "4 个命令，覆盖全生命周期"
-    details: "/archon-init → /archon-demand → /archon-audit → /archon-refactor。一句话需求，完整交付 + 六维审计。"
+    title: "硬件检测"
+    details: "自动检测 Cursor、Claude Code、Codex、Copilot、Windsurf、Gemini CLI。按环境部署正确的驱动。"
+  - icon: 🧬
+    title: "定向进化"
+    details: "每次任务都强化约束系统。反模式变成禁止项。代码质量单调递增。"
+  - icon: 📂
+    title: "文件系统：持久记忆"
+    details: "架构文档 = /usr/src/，指南 = man 手册，ADR = /var/log/，提议规则 = 暂存仓库。挂载语义清晰。"
 ---
 
 <div class="vp-doc" style="max-width: 800px; margin: 0 auto; padding: 2rem;">

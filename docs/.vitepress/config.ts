@@ -57,6 +57,10 @@ export default defineConfig({
                   text: "Naming & AAEP",
                   link: "/architecture/naming-protocol",
                 },
+                {
+                  text: "The OS Model",
+                  link: "/architecture/os-model",
+                },
               ],
             },
           ],
@@ -121,6 +125,10 @@ export default defineConfig({
                 {
                   text: "命名与协议",
                   link: "/zh/architecture/naming-protocol",
+                },
+                {
+                  text: "操作系统模型",
+                  link: "/zh/architecture/os-model",
                 },
               ],
             },
