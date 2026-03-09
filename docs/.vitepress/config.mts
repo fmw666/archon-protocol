@@ -1,6 +1,7 @@
 import { defineConfig } from "vitepress";
 
 export default defineConfig({
+  base: "/archon-protocol/",
   title: "Archon Protocol",
   description:
     "Agent-first governance system for AI-driven development, powered by AAEP.",
