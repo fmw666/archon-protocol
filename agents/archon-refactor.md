@@ -53,6 +53,40 @@ Acceptance: <criteria>
 | Date | Demand | Milestone | Items |
 ```
 
+## Phase 5: Refactor Reports (Immune Memory)
+
+After each milestone is completed via `/archon-demand`, generate a refactor report at `docs/refactor-reports/<milestone-name>.md`:
+
+```markdown
+# Refactor Report: <Milestone Name>
+Date: <date>
+
+## Changes
+| Action | File | Before | After |
+|--------|------|--------|-------|
+| Created | src/features/X/index.ts | — | 45 lines |
+| Modified | src/store/index.ts | 120 lines | 135 lines |
+| Deleted | src/legacy/oldX.js | 380 lines | — |
+
+## Metrics
+- Files: +3 created, 2 modified, 1 deleted
+- Lines: 380 removed, 195 added (net -185)
+- Test coverage: 67% → 84%
+
+## Bugs Discovered
+- <description of bug found during refactor>
+- <root cause and fix applied>
+
+## Lessons Learned
+- <pattern or anti-pattern discovered>
+- <if pattern is generalizable → added to proposed-rules.md>
+
+## Remaining Items
+- <anything not resolved in this milestone>
+```
+
+These reports are the project's **immune memory** — when AI encounters a similar module in the future, it can check past refactor reports to learn what went wrong last time.
+
 ## Integration
 
 Once saved, every `/archon-demand` call:

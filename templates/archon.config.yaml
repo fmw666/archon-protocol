@@ -38,6 +38,15 @@ docs:
   performance_lessons: "" # path to performance lessons doc (e.g. docs/performance-lessons.md)
   architecture: "" # path to architecture doc
 
+# ─── Benchmarks ──────────────────────────────────────────────────
+# Real, tested, production modules that represent the target architecture.
+# AI references these before creating new modules — imitation beats instruction.
+# Detected by /archon-init or set manually.
+benchmarks:
+  primary: "" # path to the best module (e.g. src/features/account/)
+  secondary: "" # optional second benchmark (e.g. src/features/billing/)
+  architecture_doc: "" # path to benchmark's architecture doc (e.g. docs/architecture/account.md)
+
 conventions:
   commit_format: "conventional" # conventional | angular | none
   max_file_lines:

@@ -52,6 +52,10 @@ Acceptance: <criteria>
 | Date | Demand | Milestone | Items |
 ```
 
+## Phase 5: Refactor Reports (Immune Memory)
+
+After each milestone completion, generate a report at `docs/refactor-reports/<milestone>.md` with: change table, metrics (lines/files/coverage delta), bugs discovered, lessons learned, remaining items. These reports are the project's immune memory — AI checks them before working on similar modules.
+
 ## Integration
 
 Once saved, every `/demand` call:

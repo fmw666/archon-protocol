@@ -1,17 +1,21 @@
-feat: absorb EvoMap production experience into constraint system
+feat: establish OS model — every file maps to a kernel/driver/syscall/filesystem role
 
-5 improvements from real-world production project (EvoMap):
+Archon Protocol is now explicitly framed as an operating system for AI agents:
 
-1. Battle-tested Prohibitions: new section in all constraint skills for
-   production-incident-derived prohibitions with [INCIDENT] tags
-2. Structural Scan Tests: Step 5 in archon-test-sync for CI-level
-   static analysis that catches violations regardless of author
-3. archon-handoff: new constraint skill for interface contracts and
-   cross-boundary handoff documents (single-agent compatible)
-4. Framework constraints: templates/constraints/ with archon-nextjs-ssr
-   and archon-react-hydration for framework-specific traps
-5. Type system guidance: domain-based type organization pattern and
-   new prohibitions in archon-code-quality
+- Kernel (always resident): AGENTS.md, archon.config.yaml, ai-index.md
+- Drivers (loaded via skills: field): constraint skills = hard boundary enforcement
+- System calls (user commands): init=boot, demand=exec, audit=stat, refactor=defrag, verifier=fsck
+- Daemons (internal): self-auditor=watchdog, test-runner=testd
+- Filesystem: docs/ with mount semantics (read-only, append-only, read-write)
+- Installer: templates/install.sh, POST: tests/
 
-Also: ADR-002 documenting all absorption decisions.
+New files:
+- docs/architecture/os-model.md (EN)
+- docs/zh/architecture/os-model.md (ZH)
+
+Rewritten:
+- AGENTS.md — now uses OS kernel terminology
+- ai-index.md — now a "page table" with OS role annotations per file
+- docs/index.md + docs/zh/index.md — homepages use OS metaphor
+
 All 219 tests pass, VitePress builds clean.

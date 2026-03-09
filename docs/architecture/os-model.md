@@ -218,6 +218,67 @@ When `/archon-init` runs, it follows a boot sequence analogous to a real OS:
 8. POST         → Run integrity tests (vitest)
 ```
 
+## Extended OS Mappings
+
+Beyond the core layers, the OS analogy extends to runtime concepts:
+
+| OS Concept | Archon Protocol | Purpose |
+|-----------|----------------|---------|
+| **Kernel** | `AGENTS.md` + `archon.config.yaml` | Always resident, non-negotiable law |
+| **Drivers** | Constraint skills | Hard boundary enforcement, loaded via `skills:` |
+| **Syscalls** | `/archon-init`, `/archon-demand`, etc. | User-invoked kernel operations |
+| **Daemons** | `archon-self-auditor`, `archon-test-runner` | Background services, isolated context |
+| **Filesystem** | `docs/` hierarchy | Persistent storage with mount semantics |
+| **IPC** | `archon-handoff` contracts | Inter-module communication via explicit interfaces |
+| **Permissions** | Import boundaries in constraint skills | Layer-enforced unidirectional dependencies |
+| **Package Manager** | `proposed-rules.md` → constraint skills | Rules staged, reviewed, then installed as drivers |
+| **Audit Trail** | `docs/refactor-reports/` | Immune memory — what changed and what broke |
+| **Health Monitor** | `archon-audit` + `archon-verifier` | Real-time system health detection |
+| **Boot Config** | `archon.config.yaml` → `benchmarks:` | Tells the system which modules are reference implementations |
+| **Init System** | `/archon-init` boot sequence | Hardware scan → driver load → FS mount → POST |
+| **Process Model** | Feature modules | Isolated execution units, explicit interfaces |
+| **Memory Management** | Context window budget (~2% kernel, ~5% drivers, ~93% user) | What stays resident vs. demand-paged |
+
+## The Constraint Pyramid
+
+Constraints cascade from four levels simultaneously. They are not redundant — they are complementary:
+
+```
+┌─────────────────────────────────────────────┐
+│  Layer 1: Kernel (always resident)          │  AGENTS.md, archon.config.yaml
+│  "Who you are and what law you follow"      │  Cannot be bypassed
+├─────────────────────────────────────────────┤
+│  Layer 2: Drivers (preloaded per command)   │  Constraint skills via `skills:` field
+│  "What you must not do"                     │  ❌ prohibitions, hard limits
+├─────────────────────────────────────────────┤
+│  Layer 3: Syscalls (standard workflows)     │  archon-demand 7-stage pipeline
+│  "How you must do it"                       │  Step-by-step, with audit + evolution
+├─────────────────────────────────────────────┤
+│  Layer 4: Filesystem (reference on demand)  │  Architecture docs, ADRs, refactor reports
+│  "Why we do it this way"                    │  Searchable knowledge base
+└─────────────────────────────────────────────┘
+```
+
+When these layers act together on a single task:
+
+- **Layer 1** ensures "the agent follows the core workflow" (identity constraint)
+- **Layer 2** ensures "the agent doesn't make banned mistakes" (negative constraint)
+- **Layer 3** ensures "the agent follows the standard process" (procedural constraint)
+- **Layer 4** ensures "the agent understands the context" (cognitive constraint)
+
+## The Document Lifecycle
+
+Documents flow through a lifecycle from discovery to permanence:
+
+```
+Discover problem → Temporary fix → Codify as rule → Expand to workflow → Document as reference
+
+                    proposed-rules.md    Constraint skill    Architecture doc
+                    "don't do this"      "do it this way"    "why we do it this way"
+```
+
+Each stage increases in permanence and decreases in volatility. The staging area (`proposed-rules.md`) churns frequently; architecture docs change rarely. This mirrors how OS components have different release cadences — kernel patches are rare and careful, user-space packages update freely.
+
 ## Why This Model Matters
 
 Without the OS metaphor, the protocol is "a bunch of markdown files." With it:
@@ -226,3 +287,5 @@ Without the OS metaphor, the protocol is "a bunch of markdown files." With it:
 2. **New contributors instantly understand hierarchy** — "is this a kernel change or a filesystem change?"
 3. **Context budget is explicit** — kernel = always loaded, drivers = preloaded per command, filesystem = on-demand
 4. **Evolution path is clear** — new constraints are drivers, not kernel patches; new docs are filesystem writes, not kernel recompiles
+5. **Constraint cascade is visible** — four layers act simultaneously, each covering a different dimension
+6. **Document lifecycle is defined** — every rule has a clear path from discovery to permanence

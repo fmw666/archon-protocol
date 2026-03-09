@@ -16,7 +16,9 @@ If `docs/refactor-plan.md` exists, read it. Identify which milestone relates to 
 
 ## Stage 1: Implement
 
-Write code under all active constraint skills. Follow every `❌` prohibition. Use established project patterns.
+**Before writing code**: If `archon.config.yaml` declares `benchmarks.primary`, read that module's structure (directory layout, naming, data flow, test patterns). New code should imitate the benchmark — not reinvent patterns.
+
+Write code under all active constraint skills. Follow every `❌` prohibition. Prefer boring consistency with existing modules over locally optimal but novel approaches.
 
 ## Stage 1.5: Linter Verification
 

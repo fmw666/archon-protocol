@@ -100,9 +100,27 @@ If multiple primary languages are detected (e.g., TypeScript + Python), warn the
 
 Record all detected languages in config. The primary language drives constraint selection; secondary languages are noted for awareness.
 
+### Benchmark detection
+
+Scan for candidate benchmark modules — directories with the highest combination of:
+- Consistent structure (components, hooks, utils, types, tests all present)
+- Test coverage (most test files relative to source files)
+- Type completeness (all exports annotated)
+
+Suggest the best candidate as `benchmarks.primary` in config. Ask the user to confirm or override:
+
+```
+📐 Benchmark candidate: src/features/account/
+   Structure: components/ hooks/ utils/ types/ __tests__/ (5/5)
+   Tests: 12 test files, 103 assertions
+   Confirm as primary benchmark? [Y/n]
+```
+
+If no clear candidate exists, leave `benchmarks.primary` empty and note: "No benchmark module detected. Set manually in archon.config.yaml when a module reaches reference quality."
+
 ## Step 4: Generate Config & Deploy
 
-1. Create `archon.config.yaml` with detected environment + stack values
+1. Create `archon.config.yaml` with detected environment + stack values (including benchmarks)
 2. Confirm ambiguous detections with user
 3. Deploy files to environment-specific paths:
    - If `agents_supported`: copy agents to `agents_dir`

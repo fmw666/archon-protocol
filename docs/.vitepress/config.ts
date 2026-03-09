@@ -47,7 +47,15 @@ export default defineConfig({
             {
               text: "Architecture",
               items: [
+                {
+                  text: "Core Principles",
+                  link: "/architecture/core-principles",
+                },
                 { text: "Overview", link: "/architecture/overview" },
+                {
+                  text: "The OS Model",
+                  link: "/architecture/os-model",
+                },
                 {
                   text: "Single-Agent Design",
                   link: "/architecture/single-agent",
@@ -56,10 +64,6 @@ export default defineConfig({
                 {
                   text: "Naming & AAEP",
                   link: "/architecture/naming-protocol",
-                },
-                {
-                  text: "The OS Model",
-                  link: "/architecture/os-model",
                 },
               ],
             },
@@ -116,6 +120,10 @@ export default defineConfig({
             {
               text: "架构",
               items: [
+                {
+                  text: "核心原则",
+                  link: "/zh/architecture/core-principles",
+                },
                 { text: "架构总览", link: "/zh/architecture/overview" },
                 { text: "单代理架构", link: "/zh/architecture/single-agent" },
                 {

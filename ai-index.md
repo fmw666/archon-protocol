@@ -41,6 +41,7 @@
 
 | File | Mount | Mode | Topic |
 |------|-------|------|-------|
+| `docs/architecture/core-principles.md` | `/usr/src/` | read-only | 7 first principles of AI-native development |
 | `docs/architecture/overview.md` | `/usr/src/` | read-only | Dual-layer model, cross-tool compat |
 | `docs/architecture/single-agent.md` | `/usr/src/` | read-only | Why single agent beats multi-agent |
 | `docs/architecture/feedback-loop.md` | `/usr/src/` | read-only | Self-reinforcing evolution mechanism |
@@ -55,6 +56,7 @@
 | `docs/reference/constraints.md` | `/usr/share/info/` | read-only | All constraint skills with prohibitions |
 | `docs/decisions/ADR-001-response-to-external-critiques.md` | `/var/log/` | append-only | ADR: external critique response |
 | `docs/decisions/ADR-002-evomap-experience-absorption.md` | `/var/log/` | append-only | ADR: EvoMap experience absorption |
+| `docs/refactor-reports/` | `/var/log/audit/` | append-only | Refactor reports: immune memory |
 
 ## Filesystem (Persistent Storage — Chinese)
 

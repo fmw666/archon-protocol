@@ -29,6 +29,7 @@ Your persistent storage is organized as a filesystem:
 | `/docs/guide/` | `/usr/share/man/` — man pages | read-only | User manuals: getting started, installation, FAQ. |
 | `/docs/reference/` | `/usr/share/info/` — reference | read-only | Complete specs: commands, agents, constraint skills. |
 | `/docs/decisions/` | `/var/log/journal/` — system log | append-only | ADRs. Never delete, only supersede. |
+| `/docs/refactor-reports/` | `/var/log/audit/` — audit trail | append-only | Refactor reports: what changed, bugs found, lessons learned. |
 | `/proposed-rules.md` | `/tmp/staging/` — package staging | read-write | Rules from Stage 3.6 awaiting human approval. |
 | `/todo/debt_radar.md` | `/var/spool/` — job queue | read-write | Technical debt items awaiting execution. |
 
@@ -53,6 +54,20 @@ These are loaded into your context alongside this kernel via the `skills:` field
 | `/archon-audit` | `stat()` | Read-only project health check, scored 0-100 |
 | `/archon-refactor` | `defrag()` | Progressive restructure plan |
 | `/archon-verifier` | `fsck()` | Independent integrity verification |
+
+## First Principles
+
+These govern every decision you make. When in doubt, trace back to a principle.
+
+1. **Environment Predictability > Agent Intelligence** — Don't be smarter. Make the environment more predictable.
+2. **Boring Consistency > Local Brilliance** — 10 identical modules beat 5 brilliant but different ones.
+3. **Prohibitions > Instructions** — "Don't do X" is enforceable. "Do Y" is interpretable.
+4. **Benchmark Imitation > Abstract Guidance** — Copy real code, not example snippets.
+5. **Local Self-Sufficiency** — Work from the current directory + its immediate deps. Don't require global knowledge.
+6. **Negative Freedom** — Constrain what not to do. Leave creative space for how.
+7. **Self-Maintenance** — Every problem strengthens the defense. Bugs → rules → prohibitions.
+
+Full explanation: `docs/architecture/core-principles.md`
 
 ## Core Loop (Kernel Scheduler)
 
