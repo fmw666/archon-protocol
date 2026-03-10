@@ -1,94 +1,48 @@
 # Agents Reference
 
-Agents are subagent definitions for Cursor and Claude Code. Each runs in an isolated context window.
+> In the new OS-model architecture, agents are organized by their OS role: **syscalls** (user-invoked) and **daemons** (internal). Source of truth lives in `docs/`.
 
-## Format
+## Subagent Format
+
+For environments that support subagents (Cursor, Claude Code), protocol components are deployed as agent files:
 
 ```yaml
 ---
 name: archon-example
 description: When to use this agent.
-model: inherit              # optional: fast, inherit, or specific model
 readonly: true              # optional: restricts write permissions
-skills:                     # optional (Claude Code): preload skills
+skills:                     # optional: preload constraint drivers
   - archon-code-quality
 ---
 
 System prompt / instructions in Markdown.
 ```
 
-## All Agents
+## Syscalls (User-Invoked)
 
-### archon-init
+| Name | Source | OS Equivalent | Preloads |
+|------|--------|--------------|----------|
+| archon-init | [`/syscalls/init`](/syscalls/init) | `boot()` | — |
+| archon-demand | [`/syscalls/demand`](/syscalls/demand) | `exec()` | all 5 drivers |
+| archon-audit | [`/syscalls/audit`](/syscalls/audit) | `stat()` | code-quality, test-sync |
+| archon-refactor | [`/syscalls/refactor`](/syscalls/refactor) | `defrag()` | — |
+| archon-verifier | [`/syscalls/verifier`](/syscalls/verifier) | `fsck()` | — |
 
-| Field | Value |
-|-------|-------|
-| File | `agents/archon-init.md` |
-| Trigger | `/archon-init` |
-| Purpose | Bootstrap ecosystem or health check |
+## Daemons (Internal Services)
 
-### archon-demand
+| Name | Source | OS Equivalent | Spawned By | Preloads |
+|------|--------|--------------|-----------|----------|
+| archon-self-auditor | [`/daemons/self-auditor`](/daemons/self-auditor) | `watchdogd` | demand Stage 3 | all 5 drivers |
+| archon-test-runner | [`/daemons/test-runner`](/daemons/test-runner) | `testd` | demand Stage 3.4 | test-sync |
 
-| Field | Value |
-|-------|-------|
-| File | `agents/archon-demand.md` |
-| Trigger | `/archon-demand <requirement>` |
-| Purpose | Full 7-stage delivery pipeline |
-| Preloads | archon-code-quality, archon-test-sync, archon-async-loading, archon-error-handling |
+## Subagent vs Skill Deployment
 
-### archon-audit
-
-| Field | Value |
-|-------|-------|
-| File | `agents/archon-audit.md` |
-| Trigger | `/archon-audit` |
-| Purpose | Project health check (0-100 score) |
-| Mode | Read-only |
-
-### archon-refactor
-
-| Field | Value |
-|-------|-------|
-| File | `agents/archon-refactor.md` |
-| Trigger | `/archon-refactor` |
-| Purpose | Progressive refactoring plan |
-
-### archon-self-auditor
-
-| Field | Value |
-|-------|-------|
-| File | `agents/archon-self-auditor.md` |
-| Called by | archon-demand Stage 3 |
-| Purpose | 6-dimension code audit |
-| Mode | Read-only |
-| Preloads | All 4 constraint skills |
-
-### archon-test-runner
-
-| Field | Value |
-|-------|-------|
-| File | `agents/archon-test-runner.md` |
-| Called by | archon-demand Stage 3.4 |
-| Purpose | Test sync and execution |
-| Preloads | archon-test-sync |
-
-### archon-verifier
-
-| Field | Value |
-|-------|-------|
-| File | `agents/archon-verifier.md` |
-| Trigger | `/archon-verifier` |
-| Purpose | Independent work validation |
-| Mode | Read-only |
-
-## Agent vs Skill
-
-| Capability | Agent | Skill |
-|-----------|-------|-------|
+| Capability | Subagent (Cursor/Claude Code) | Skill (Other tools) |
+|-----------|------|-------|
 | Isolated context | ✅ | ❌ |
-| Preload constraints | ✅ (Claude Code) | ❌ |
+| Preload constraints | ✅ | ❌ |
 | Read-only mode | ✅ | ❌ |
 | Model selection | ✅ | ❌ |
 | 27+ tool support | ❌ | ✅ |
 
-Use agents when available. Fall back to skills for tools that don't support subagents.
+During [`/archon-init`](/syscalls/init), the protocol auto-detects which deployment format to use. See the [Migration Guide](/guide/migration) for details.

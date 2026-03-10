@@ -14,22 +14,25 @@ Archon Protocol is an **operating system for AI agents**. Every file maps to an 
 │  │  AGENTS.md / CLAUDE.md        Prime directive, workflow   │    │
 │  │  archon.config.yaml           System configuration        │    │
 │  │  ai-index.md                  Page table (address map)    │    │
+│  │  docs/kernel/                 Kernel docs & templates     │    │
 │  └──────────────────────────────────────────────────────────┘    │
 │                          ↕ syscall interface                     │
 │  ┌──────────────────────────────────────────────────────────┐    │
 │  │  DRIVERS (loaded into kernel via `skills:` field)         │    │
+│  │  Source: docs/drivers/                                    │    │
 │  │                                                           │    │
-│  │  archon-code-quality          Type safety, file limits    │    │
-│  │  archon-test-sync             Test follows code           │    │
-│  │  archon-async-loading         Skeleton, retry, lazy load  │    │
-│  │  archon-error-handling        Structured errors           │    │
-│  │  archon-handoff               Interface contracts         │    │
+│  │  code-quality                 Type safety, file limits    │    │
+│  │  test-sync                    Test follows code           │    │
+│  │  async-loading                Skeleton, retry, lazy load  │    │
+│  │  error-handling               Structured errors           │    │
+│  │  handoff                      Interface contracts         │    │
 │  │  archon-nextjs-ssr  ⟵ conditional, detected by init     │    │
 │  │  archon-react-hydration  ⟵ conditional                   │    │
 │  └──────────────────────────────────────────────────────────┘    │
 │                          ↕ process management                    │
 │  ┌──────────────────────────────────────────────────────────┐    │
 │  │  SYSTEM CALLS (user-invoked commands)                     │    │
+│  │  Source: docs/syscalls/                                   │    │
 │  │                                                           │    │
 │  │  /archon-init      = boot()    Bootstrap + hardware scan  │    │
 │  │  /archon-demand    = exec()    Full delivery pipeline     │    │
@@ -40,6 +43,7 @@ Archon Protocol is an **operating system for AI agents**. Every file maps to an 
 │                          ↕ child process spawning                │
 │  ┌──────────────────────────────────────────────────────────┐    │
 │  │  DAEMONS (internal, never user-invoked)                   │    │
+│  │  Source: docs/daemons/                                    │    │
 │  │                                                           │    │
 │  │  archon-self-auditor   = watchdog   6-dim code audit      │    │
 │  │  archon-test-runner    = testd      Test sync + execution │    │
@@ -57,12 +61,12 @@ Archon Protocol is an **operating system for AI agents**. Every file maps to an 
 │  └──────────────────────────────────────────────────────────┘    │
 │                                                                  │
 │  ┌──────────────────────────────────────────────────────────┐    │
-│  │  INSTALLER & PACKAGE MANAGER                              │    │
+│  │  INIT PROMPT & PACKAGE MANAGER                            │    │
 │  │                                                           │    │
-│  │  templates/install.sh           = OS installer            │    │
-│  │  templates/archon.config.yaml   = Default /etc/           │    │
-│  │  templates/constraints/         = Driver packages         │    │
-│  │  tests/                         = POST (power-on self-test)│   │
+│  │  docs/public/init.md           = Boot prompt (curl entry) │    │
+│  │  templates/archon.config.yaml  = Default /etc/            │    │
+│  │  templates/constraints/        = Driver packages          │    │
+│  │  tests/                        = POST (power-on self-test)│    │
 │  └──────────────────────────────────────────────────────────┘    │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -78,6 +82,7 @@ The kernel is **always loaded into the AI's context window**. It never gets page
 | `AGENTS.md` | Kernel image | `alwaysApply: true` | Identity, prime directive, core workflow loop |
 | `archon.config.yaml` | `/etc/` | Read at every command | Project config: language, framework, environment |
 | `ai-index.md` | Page table | Read by AI to locate files | Maps every document to its purpose and path |
+| `docs/kernel/` | `/boot/` docs | Reference | Kernel overview and templates |
 
 **Why always resident**: Without the kernel, the agent has no identity, no workflow, no constraint awareness. Every other component depends on the kernel being present.
 

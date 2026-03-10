@@ -6,50 +6,64 @@
 
 | File | OS Role | Purpose |
 |------|---------|---------|
-| `AGENTS.md` | Kernel image | Identity, prime directive, core loop, driver/syscall reference |
+| `.cursor/rules/archon-kernel.md` | Kernel image (Cursor) | Identity, core loop, component registry |
+| `.cursor/rules/archon-doc-integrity.md` | Kernel module (Cursor) | Document consistency, ripple propagation |
 | `archon.config.yaml` | `/etc/` config | Project-specific parameters: language, framework, environment |
 | `ai-index.md` | Page table | This file — maps all documents to their roles |
+| `AGENTS.md` | Kernel fallback | For Claude Code / Codex / other tools |
 
-## Drivers (Loaded via `skills:` field)
+### Kernel Source Docs
+
+| File | Purpose |
+|------|---------|
+| `docs/kernel/index.md` | Kernel overview, module list, templates |
+| `docs/kernel/doc-integrity.md` | Document integrity protocol (source of truth for the rule) |
+
+## Drivers (Constraint Skills)
 
 | File | OS Role | Activated |
 |------|---------|-----------|
-| `skills/archon-code-quality/SKILL.md` | Storage driver | Every code change |
-| `skills/archon-test-sync/SKILL.md` | FS integrity driver | Every code change |
-| `skills/archon-async-loading/SKILL.md` | Display driver | UI component edits |
-| `skills/archon-error-handling/SKILL.md` | Network driver | API/component edits |
-| `skills/archon-handoff/SKILL.md` | IPC driver | Cross-boundary changes |
+| `docs/drivers/code-quality.md` | Storage driver | Every code change |
+| `docs/drivers/test-sync.md` | FS integrity driver | Every code change |
+| `docs/drivers/async-loading.md` | Display driver | UI component edits |
+| `docs/drivers/error-handling.md` | Network driver | API/component edits |
+| `docs/drivers/handoff.md` | IPC driver | Cross-boundary changes |
 
-## System Calls (User-Invoked Commands)
+## Syscalls (User-Invoked Commands)
 
-| Agent | Skill (fallback) | Syscall | Purpose |
-|-------|-------------------|---------|---------|
-| `agents/archon-init.md` | `skills/archon-init/SKILL.md` | `boot()` | Detect env, deploy drivers, mount FS |
-| `agents/archon-demand.md` | `skills/archon-demand/SKILL.md` | `exec()` | Full delivery pipeline |
-| `agents/archon-audit.md` | `skills/archon-audit/SKILL.md` | `stat()` | Read-only health check |
-| `agents/archon-refactor.md` | `skills/archon-refactor/SKILL.md` | `defrag()` | Progressive restructure |
-| `agents/archon-verifier.md` | `skills/archon-verifier/SKILL.md` | `fsck()` | Independent validation |
+| File | Syscall | Purpose |
+|------|---------|---------|
+| `docs/syscalls/init.md` | `boot()` | Detect env, deploy drivers, mount FS |
+| `docs/syscalls/demand.md` | `exec()` | Full delivery pipeline |
+| `docs/syscalls/audit.md` | `stat()` | Read-only health check |
+| `docs/syscalls/refactor.md` | `defrag()` | Progressive restructure |
+| `docs/syscalls/verifier.md` | `fsck()` | Independent validation |
 
 ## Daemons (Internal, Never User-Invoked)
 
-| Agent | Skill (fallback) | Daemon | Spawned By |
-|-------|-------------------|--------|-----------|
-| `agents/archon-self-auditor.md` | `skills/archon-self-auditor/SKILL.md` | `watchdogd` | demand Stage 3 |
-| `agents/archon-test-runner.md` | `skills/archon-test-runner/SKILL.md` | `testd` | demand Stage 3.4 |
+| File | Daemon | Spawned By |
+|------|--------|-----------|
+| `docs/daemons/self-auditor.md` | `watchdogd` | demand Stage 3 |
+| `docs/daemons/test-runner.md` | `testd` | demand Stage 3.4 |
 
 ## Filesystem (Persistent Storage — English)
 
 | File | Mount | Mode | Topic |
 |------|-------|------|-------|
-| `docs/architecture/core-principles.md` | `/usr/src/` | read-only | 7 first principles of AI-native development |
-| `docs/architecture/overview.md` | `/usr/src/` | read-only | Dual-layer model, cross-tool compat |
+| `docs/kernel/index.md` | `/boot/` | read-only | Kernel overview and templates |
+| `docs/drivers/index.md` | `/lib/modules/` | read-only | Drivers overview |
+| `docs/syscalls/index.md` | `/usr/bin/` | read-only | Syscalls overview |
+| `docs/daemons/index.md` | `/usr/sbin/` | read-only | Daemons overview |
+| `docs/architecture/core-principles.md` | `/usr/src/` | read-only | 7 first principles |
+| `docs/architecture/overview.md` | `/usr/src/` | read-only | Dual-layer model |
 | `docs/architecture/single-agent.md` | `/usr/src/` | read-only | Why single agent beats multi-agent |
-| `docs/architecture/feedback-loop.md` | `/usr/src/` | read-only | Self-reinforcing evolution mechanism |
+| `docs/architecture/feedback-loop.md` | `/usr/src/` | read-only | Self-reinforcing evolution |
 | `docs/architecture/naming-protocol.md` | `/usr/src/` | read-only | "Archon" etymology, AAEP spec |
-| `docs/architecture/os-model.md` | `/usr/src/` | read-only | OS model: every file's role and loading semantics |
+| `docs/architecture/os-model.md` | `/usr/src/` | read-only | OS model: every file's role |
 | `docs/guide/getting-started.md` | `/usr/share/man/` | read-only | Quick start, daily usage |
 | `docs/guide/installation.md` | `/usr/share/man/` | read-only | Install, config, verify |
-| `docs/guide/design-philosophy.md` | `/usr/share/man/` | read-only | Design philosophy, response to critiques |
+| `docs/guide/migration.md` | `/usr/share/man/` | read-only | Environment migration guide |
+| `docs/guide/design-philosophy.md` | `/usr/share/man/` | read-only | Design philosophy |
 | `docs/guide/faq.md` | `/usr/share/man/` | read-only | Common questions |
 | `docs/reference/commands.md` | `/usr/share/info/` | read-only | All commands with stages, flags |
 | `docs/reference/agents.md` | `/usr/share/info/` | read-only | Agent format, all agent specs |
@@ -78,21 +92,24 @@
 | `proposed-rules.md` | `/tmp/staging/` | read-write | Rules awaiting approval |
 | `todo/debt_radar.md` | `/var/spool/` | read-write | Tech debt backlog |
 
-## Installer & Package Manager
+## Init Prompt (Bootstrap)
+
+| File | Purpose |
+|------|---------|
+| `docs/public/init.md` | Raw init prompt served at `https://aaep.site/init.md` |
+
+## Installer & Templates
 
 | File | OS Role | Purpose |
 |------|---------|---------|
-| `templates/install.sh` | OS installer | Deploy agents + skills to correct paths |
 | `templates/archon.config.yaml` | Default `/etc/` | Config template |
-| `templates/constraints/archon-nextjs-ssr.md` | Driver package | Next.js SSR/hydration constraints |
-| `templates/constraints/archon-react-hydration.md` | Driver package | React state/hydration constraints |
+| `templates/constraints/archon-nextjs-ssr.md` | Driver package | Next.js SSR constraints |
+| `templates/constraints/archon-react-hydration.md` | Driver package | React hydration constraints |
 
 ## POST (Power-On Self-Test)
 
 | File | Verifies |
 |------|----------|
-| `tests/agent-format.test.js` | Agent YAML frontmatter, naming, content |
-| `tests/skill-format.test.js` | Skill YAML frontmatter, naming, size limits |
-| `tests/prohibition-quality.test.js` | Every ❌ is specific and grep-verifiable |
-| `tests/demand-completeness.test.js` | Demand pipeline has all stages |
+| `tests/doc-format.test.js` | Document structure, naming, content |
+| `tests/prohibition-quality.test.js` | Every ❌ is specific and verifiable |
 | `tests/ecosystem-integrity.test.js` | Cross-references, prefixes, contradictions |

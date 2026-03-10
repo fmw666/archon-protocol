@@ -3,136 +3,98 @@ import { readdirSync, readFileSync, existsSync } from "fs";
 import { join, resolve } from "path";
 
 const AP_ROOT = resolve(__dirname, "..");
-const SKILLS_DIR = join(AP_ROOT, "skills");
-const AGENTS_DIR = join(AP_ROOT, "agents");
+const DOCS_ROOT = join(AP_ROOT, "docs");
 
-function getSkillNames() {
-  if (!existsSync(SKILLS_DIR)) return [];
-  return readdirSync(SKILLS_DIR, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name);
-}
-
-function getAgentNames() {
-  if (!existsSync(AGENTS_DIR)) return [];
-  return readdirSync(AGENTS_DIR)
-    .filter((f) => f.endsWith(".md"))
+function getDocNames(subdir) {
+  const dir = join(DOCS_ROOT, subdir);
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter((f) => f.endsWith(".md") && f !== "index.md")
     .map((f) => f.replace(".md", ""));
 }
 
-function readSkill(name) {
-  const path = join(SKILLS_DIR, name, "SKILL.md");
-  return existsSync(path) ? readFileSync(path, "utf-8") : "";
-}
-
-function readAgent(name) {
-  const path = join(AGENTS_DIR, `${name}.md`);
+function readDoc(subdir, name) {
+  const path = join(DOCS_ROOT, subdir, `${name}.md`);
   return existsSync(path) ? readFileSync(path, "utf-8") : "";
 }
 
 describe("Ecosystem Integrity", () => {
-  const skillNames = getSkillNames();
-  const agentNames = getAgentNames();
+  const driverNames = getDocNames("drivers");
+  const syscallNames = getDocNames("syscalls");
+  const daemonNames = getDocNames("daemons");
+
   const readme = readFileSync(join(AP_ROOT, "README.md"), "utf-8");
-  const initSkill = readSkill("archon-init");
-  const initAgent = readAgent("archon-init");
+  const initDoc = readDoc("syscalls", "init");
 
-  it("all skill names start with 'archon-'", () => {
-    for (const name of skillNames) {
-      expect(name.startsWith("archon-"), `${name} missing archon- prefix`).toBe(true);
+  it("has at least 5 drivers", () => {
+    expect(driverNames.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("has at least 5 syscalls", () => {
+    expect(syscallNames.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("has at least 2 daemons", () => {
+    expect(daemonNames.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("init doc lists all core drivers", () => {
+    const coreDrivers = ["code-quality", "test-sync", "async-loading", "error-handling", "handoff"];
+    for (const name of coreDrivers) {
+      expect(initDoc, `init doc missing driver: ${name}`).toContain(name);
     }
   });
 
-  it("all agent names start with 'archon-'", () => {
-    for (const name of agentNames) {
-      expect(name.startsWith("archon-"), `${name} missing archon- prefix`).toBe(true);
+  it("init doc lists all syscalls", () => {
+    const coreSyscalls = ["demand", "audit", "refactor", "verifier"];
+    for (const name of coreSyscalls) {
+      expect(initDoc, `init doc missing syscall: ${name}`).toContain(name);
     }
   });
 
-  it("should find at least 11 skills", () => {
-    expect(skillNames.length).toBeGreaterThanOrEqual(11);
-  });
-
-  it("should find at least 7 agents", () => {
-    expect(agentNames.length).toBeGreaterThanOrEqual(7);
-  });
-
-  it("every command/internal agent has a matching skill", () => {
-    for (const agent of agentNames) {
-      expect(skillNames, `agent ${agent} has no matching skill`).toContain(agent);
+  it("init doc lists all daemons", () => {
+    const coreDaemons = ["self-auditor", "test-runner"];
+    for (const name of coreDaemons) {
+      expect(initDoc, `init doc missing daemon: ${name}`).toContain(name);
     }
   });
 
-  it("constraint skills exist (no agent equivalent)", () => {
-    const constraints = ["archon-code-quality", "archon-test-sync", "archon-async-loading", "archon-error-handling"];
-    for (const name of constraints) {
-      expect(skillNames, `missing constraint: ${name}`).toContain(name);
-      expect(agentNames, `constraint ${name} should NOT have an agent`).not.toContain(name);
+  it("README references core drivers", () => {
+    const coreDrivers = ["archon-code-quality", "archon-test-sync", "archon-async-loading", "archon-error-handling", "archon-handoff"];
+    for (const name of coreDrivers) {
+      expect(readme, `README missing driver: ${name}`).toContain(name);
     }
   });
 
-  it("init skill lists all agents", () => {
-    for (const name of agentNames) {
-      expect(initSkill, `init skill missing agent: ${name}`).toContain(name);
+  it("README references core syscalls", () => {
+    const coreSyscalls = ["/archon-init", "/archon-demand", "/archon-audit", "/archon-refactor", "/archon-verifier"];
+    for (const name of coreSyscalls) {
+      expect(readme, `README missing syscall: ${name}`).toContain(name);
     }
   });
 
-  it("init agent lists all constraint skills", () => {
-    const constraints = ["archon-code-quality", "archon-test-sync", "archon-async-loading", "archon-error-handling"];
-    for (const name of constraints) {
-      expect(initAgent, `init agent missing constraint: ${name}`).toContain(name);
-    }
+  it("demand doc preloads constraint drivers", () => {
+    const demand = readDoc("syscalls", "demand");
+    expect(demand).toContain("code-quality");
+    expect(demand).toContain("test-sync");
   });
 
-  it("README references every skill", () => {
-    for (const name of skillNames) {
-      expect(readme, `README missing skill: ${name}`).toContain(name);
-    }
+  it("self-auditor doc preloads ALL constraint drivers", () => {
+    const auditor = readDoc("daemons", "self-auditor");
+    expect(auditor).toContain("code-quality");
+    expect(auditor).toContain("test-sync");
+    expect(auditor).toContain("async-loading");
+    expect(auditor).toContain("error-handling");
+    expect(auditor).toContain("handoff");
   });
 
-  it("README references every agent", () => {
-    for (const name of agentNames) {
-      expect(readme, `README missing agent: ${name}`).toContain(name);
-    }
-  });
-
-  it("demand agent preloads constraint skills via 'skills' field", () => {
-    const demand = readAgent("archon-demand");
-    expect(demand).toContain("archon-code-quality");
-    expect(demand).toContain("archon-test-sync");
-  });
-
-  it("self-auditor agent preloads ALL constraint skills", () => {
-    const auditor = readAgent("archon-self-auditor");
-    expect(auditor).toContain("archon-code-quality");
-    expect(auditor).toContain("archon-test-sync");
-    expect(auditor).toContain("archon-async-loading");
-    expect(auditor).toContain("archon-error-handling");
-  });
-
-  it("audit agent is read-only", () => {
-    const audit = readAgent("archon-audit");
-    expect(audit).toMatch(/readonly:\s*true/);
-  });
-
-  it("verifier agent is read-only", () => {
-    const verifier = readAgent("archon-verifier");
-    expect(verifier).toMatch(/readonly:\s*true/);
-  });
-
-  it("all skills are in English (no CJK)", () => {
-    for (const name of skillNames) {
-      const content = readSkill(name);
-      const cjk = content.match(/[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/g);
-      expect(cjk, `${name} contains CJK`).toBeNull();
-    }
-  });
-
-  it("all agents are in English (no CJK)", () => {
-    for (const name of agentNames) {
-      const content = readAgent(name);
-      const cjk = content.match(/[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/g);
-      expect(cjk, `${name} contains CJK`).toBeNull();
+  it("all docs are in English (no CJK)", () => {
+    for (const layer of ["drivers", "syscalls", "daemons"]) {
+      for (const name of getDocNames(layer)) {
+        const content = readDoc(layer, name);
+        const cjk = content.match(/[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/g);
+        expect(cjk, `${layer}/${name} contains CJK`).toBeNull();
+      }
     }
   });
 
@@ -140,26 +102,26 @@ describe("Ecosystem Integrity", () => {
     const prohibited = [];
     const promoted = [];
 
-    for (const name of skillNames) {
-      const content = readSkill(name);
+    for (const name of driverNames) {
+      const content = readDoc("drivers", name);
       for (const line of content.split(/\r?\n/)) {
         const codes = (line.match(/`([^`]+)`/g) || []).map((c) => c.replace(/`/g, ""));
         if (line.trimStart().startsWith("- ❌")) {
-          for (const code of codes) prohibited.push({ skill: name, code });
+          for (const code of codes) prohibited.push({ driver: name, code });
         }
         if (line.includes("✅")) {
-          for (const code of codes) promoted.push({ skill: name, code });
+          for (const code of codes) promoted.push({ driver: name, code });
         }
       }
     }
 
     for (const p of prohibited) {
       const contradiction = promoted.find(
-        (pr) => pr.code === p.code && pr.skill !== p.skill,
+        (pr) => pr.code === p.code && pr.driver !== p.driver,
       );
       expect(
         contradiction,
-        `"${p.code}" is ❌ in ${p.skill} but ✅ in ${contradiction?.skill}`,
+        `"${p.code}" is ❌ in ${p.driver} but ✅ in ${contradiction?.driver}`,
       ).toBeUndefined();
     }
   });

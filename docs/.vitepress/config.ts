@@ -5,7 +5,7 @@ export default defineConfig({
   base: "/",
   title: "Archon Protocol",
   description:
-    "Agent-first governance system for AI-driven development, powered by AAEP.",
+    "AI Agent Operating System — kernel, drivers, syscalls, daemons. Powered by AAEP.",
 
   lastUpdated: true,
   cleanUrls: true,
@@ -25,6 +25,15 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: "Guide", link: "/guide/getting-started" },
+          {
+            text: "OS Layers",
+            items: [
+              { text: "Kernel", link: "/kernel/" },
+              { text: "Drivers", link: "/drivers/" },
+              { text: "Syscalls", link: "/syscalls/" },
+              { text: "Daemons", link: "/daemons/" },
+            ],
+          },
           { text: "Architecture", link: "/architecture/overview" },
           { text: "Reference", link: "/reference/commands" },
         ],
@@ -39,7 +48,59 @@ export default defineConfig({
                   link: "/guide/design-philosophy",
                 },
                 { text: "Installation", link: "/guide/installation" },
+                {
+                  text: "Migration Guide",
+                  link: "/guide/migration",
+                },
                 { text: "FAQ", link: "/guide/faq" },
+              ],
+            },
+          ],
+          "/kernel/": [
+            {
+              text: "Kernel",
+              items: [
+                { text: "Overview", link: "/kernel/" },
+                {
+                  text: "Doc Integrity",
+                  link: "/kernel/doc-integrity",
+                },
+              ],
+            },
+          ],
+          "/drivers/": [
+            {
+              text: "Drivers (Constraints)",
+              items: [
+                { text: "Overview", link: "/drivers/" },
+                { text: "Code Quality", link: "/drivers/code-quality" },
+                { text: "Test Sync", link: "/drivers/test-sync" },
+                { text: "Async Loading", link: "/drivers/async-loading" },
+                { text: "Error Handling", link: "/drivers/error-handling" },
+                { text: "Handoff", link: "/drivers/handoff" },
+              ],
+            },
+          ],
+          "/syscalls/": [
+            {
+              text: "Syscalls (Commands)",
+              items: [
+                { text: "Overview", link: "/syscalls/" },
+                { text: "/archon-init", link: "/syscalls/init" },
+                { text: "/archon-demand", link: "/syscalls/demand" },
+                { text: "/archon-audit", link: "/syscalls/audit" },
+                { text: "/archon-refactor", link: "/syscalls/refactor" },
+                { text: "/archon-verifier", link: "/syscalls/verifier" },
+              ],
+            },
+          ],
+          "/daemons/": [
+            {
+              text: "Daemons (Internal)",
+              items: [
+                { text: "Overview", link: "/daemons/" },
+                { text: "Self-Auditor", link: "/daemons/self-auditor" },
+                { text: "Test Runner", link: "/daemons/test-runner" },
               ],
             },
           ],
@@ -102,6 +163,15 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: "指南", link: "/zh/guide/getting-started" },
+          {
+            text: "OS 层级",
+            items: [
+              { text: "内核", link: "/kernel/" },
+              { text: "驱动", link: "/drivers/" },
+              { text: "系统调用", link: "/syscalls/" },
+              { text: "守护进程", link: "/daemons/" },
+            ],
+          },
           { text: "架构", link: "/zh/architecture/overview" },
           { text: "参考", link: "/zh/reference/commands" },
         ],

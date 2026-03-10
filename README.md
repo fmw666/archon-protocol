@@ -1,113 +1,119 @@
 # Archon Protocol
 
-> The single-ruler governance system for AI-driven development, powered by **AAEP** (AI Architect Evolution Protocol).
+> The AI Agent Operating System, powered by **AAEP** (AI Architect Evolution Protocol).
 
-Agent-first, skill-fallback. Zero conflicts.
+Kernel → Drivers → Syscalls → Daemons. One architecture, every AI tool.
 
 ## Problem
 
-AI has no persistent memory. Without constraints, the same concept gets 5 different implementations across 60,000 lines of code. Archon Protocol solves this with a dual-layer ecosystem: **agents** for tools that support them (isolated context), **skills** as portable fallback (27+ tools).
+AI has no persistent memory. Without constraints, the same concept gets 5 different implementations across 60,000 lines of code. Archon Protocol solves this with an **operating system model** — a layered architecture where every component has precise loading semantics, and constraints are enforced as law.
 
 ## Architecture
 
+The protocol is organized as an OS with 4 layers, all stored as documentation:
+
 ```
 archon-protocol/
-├── agents/                              # Subagents (Cursor + Claude Code)
-│   ├── archon-init.md                   # Bootstrap ecosystem
-│   ├── archon-demand.md                 # Full delivery pipeline
-│   ├── archon-audit.md                  # Project health check (read-only)
-│   ├── archon-refactor.md               # Progressive refactoring plan
-│   ├── archon-self-auditor.md           # 6-dim code audit (read-only)
-│   ├── archon-test-runner.md            # Test sync and execution
-│   └── archon-verifier.md              # Independent validation
-│
-├── skills/                              # SKILL.md (27+ tools)
-│   ├── archon-init/SKILL.md             # Same as agents, portable format
-│   ├── archon-demand/SKILL.md
-│   ├── archon-audit/SKILL.md
-│   ├── archon-refactor/SKILL.md
-│   ├── archon-self-auditor/SKILL.md
-│   ├── archon-test-runner/SKILL.md
-│   ├── archon-verifier/SKILL.md
+├── docs/
+│   ├── kernel/                    # Layer 1: Always resident in AI context
+│   │   └── index.md              # Kernel overview + AGENTS.md template
 │   │
-│   ├── archon-code-quality/SKILL.md     # Constraint: file limits, type safety
-│   ├── archon-test-sync/SKILL.md        # Constraint: tests follow code
-│   ├── archon-async-loading/SKILL.md    # Constraint: skeleton, retry, lazy load
-│   ├── archon-error-handling/SKILL.md   # Constraint: structured errors
-│   └── archon-handoff/SKILL.md          # Constraint: interface contracts & handoff
+│   ├── drivers/                   # Layer 2: Constraint skills (hard boundaries)
+│   │   ├── code-quality.md       # File limits, type safety, prohibitions
+│   │   ├── test-sync.md          # Tests follow code changes
+│   │   ├── async-loading.md      # Skeleton, retry, lazy load
+│   │   ├── error-handling.md     # Structured errors
+│   │   └── handoff.md            # Interface contracts
+│   │
+│   ├── syscalls/                  # Layer 3: User-invoked commands
+│   │   ├── init.md               # boot() — Bootstrap + environment detection
+│   │   ├── demand.md             # exec() — Full delivery pipeline
+│   │   ├── audit.md              # stat() — Health check (0-100)
+│   │   ├── refactor.md           # defrag() — Progressive restructure
+│   │   └── verifier.md           # fsck() — Independent validation
+│   │
+│   ├── daemons/                   # Layer 4: Internal services
+│   │   ├── self-auditor.md       # watchdogd — 6-dim code audit
+│   │   └── test-runner.md        # testd — Test sync + execution
+│   │
+│   ├── architecture/              # How the system works
+│   ├── guide/                     # Getting started, migration, FAQ
+│   │   └── migration.md          # Environment-specific deployment guide
+│   ├── reference/                 # Complete specs
+│   └── decisions/                 # ADRs (append-only)
 │
-├── docs/                                # Chinese docs for humans
-├── tests/                               # Integrity tests
-└── templates/
-    ├── install.sh                       # Deploys agents + skills
-    ├── archon.config.yaml               # Project config template
-    └── constraints/                     # Framework-specific constraint templates
-        ├── archon-nextjs-ssr.md         # Next.js SSR/hydration safety
-        └── archon-react-hydration.md    # React state & hydration safety
+├── docs/public/
+│   └── init.md                    # Raw init prompt (curl -s https://aaep.site/init.md)
+│
+├── templates/
+│   ├── archon.config.yaml        # Project config template
+│   └── constraints/               # Framework-specific driver templates
+│
+├── tests/                         # POST (Power-On Self-Test)
+├── AGENTS.md                      # Kernel image (for direct use)
+└── ai-index.md                    # Page table (AI document locator)
 ```
 
-### Agent-First, Skill-Fallback
+## Quick Start
 
-| Layer | Format | Tools | Purpose |
-|-------|--------|-------|---------|
-| **Agents** (primary) | `.md` with YAML frontmatter | Cursor, Claude Code | Isolated context, can preload constraint skills |
-| **Skills** (fallback) | `SKILL.md` | 27+ tools | Same content, portable format |
-| **Constraint Skills** | `SKILL.md` | 27+ tools | Hard boundaries, preloaded into agents |
+### Option 1: Tell your AI
 
-Agents are preferred because they provide **isolated context windows** — audit, test, and verification tasks don't pollute the main conversation. For tools without agent support, the same workflows are available as skills.
+```
+Read this and follow the instructions: curl -s https://aaep.site/init.md
+```
 
-### All names prefixed `archon-`
+The AI reads the init prompt, detects your environment (Cursor, Claude Code, Codex, etc.), and deploys the protocol to the correct locations.
 
-No collisions with existing project agents/skills. Your project's `demand` skill and Archon's `archon-demand` coexist cleanly.
+### Option 2: Clone + init
+
+```bash
+git clone https://github.com/fmw666/archon-protocol.git
+# Then in your AI tool:
+/archon-init
+```
+
+## OS Layer Model
+
+| Layer | Content | Loading | Analogy |
+|-------|---------|---------|---------|
+| **Kernel** | Identity, core loop, memory map | Always resident (~2% context) | `/boot/vmlinuz` |
+| **Drivers** | ❌ prohibitions, hard limits | Preloaded per command (~5% context) | `modprobe` |
+| **Syscalls** | User commands (init, demand, audit...) | On user invocation | `exec()` |
+| **Daemons** | Internal services (auditor, test runner) | Spawned by syscalls | `systemd` services |
 
 ## Commands
 
-| Command | Agent | Skill (fallback) |
-|---------|-------|-------------------|
-| `/archon-init` | `archon-init.md` | `archon-init/SKILL.md` |
-| `/archon-demand <req>` | `archon-demand.md` | `archon-demand/SKILL.md` |
-| `/archon-audit` | `archon-audit.md` | `archon-audit/SKILL.md` |
-| `/archon-refactor` | `archon-refactor.md` | `archon-refactor/SKILL.md` |
-| `/archon-verifier` | `archon-verifier.md` | `archon-verifier/SKILL.md` |
+| Command | Layer | Purpose |
+|---------|-------|---------|
+| `/archon-init` | Syscall | Bootstrap ecosystem or health check |
+| `/archon-demand <req>` | Syscall | Full delivery pipeline |
+| `/archon-audit` | Syscall | Project health check (read-only, 0-100) |
+| `/archon-refactor` | Syscall | Progressive refactoring plan |
+| `/archon-verifier` | Syscall | Independent validation |
 
-Internal (called by demand, not user-invoked):
+## Drivers (Constraints)
 
-| Workflow | Agent | Skill |
-|----------|-------|-------|
-| Self-audit | `archon-self-auditor.md` | `archon-self-auditor/SKILL.md` |
-| Test runner | `archon-test-runner.md` | `archon-test-runner/SKILL.md` |
-
-## Constraint Skills
-
-Hard boundaries preloaded into agents via `skills` field, or auto-discovered by skill-only tools:
-
-| Skill | Enforces |
-|-------|----------|
+| Driver | Enforces |
+|--------|----------|
 | `archon-code-quality` | File size limits, type safety, universal prohibitions |
 | `archon-test-sync` | Code changed → tests must follow |
 | `archon-async-loading` | Skeleton screens, error retry, viewport lazy loading |
 | `archon-error-handling` | Structured error patterns |
 | `archon-handoff` | Interface contracts & cross-boundary handoff |
 
+## Environment Support
+
+| Feature | Cursor | Claude Code | Codex | Copilot | Windsurf | Gemini CLI |
+|---------|--------|-------------|-------|---------|----------|------------|
+| Subagents | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Skill preloading | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Always-loaded kernel | ✅ | ✅ | Partial | Partial | ✅ | Partial |
+
+See the full [Migration Guide](docs/guide/migration.md) for environment-specific deployment details.
+
 ## Self-Evolution
 
-The `archon-demand` agent's Stage 3.6 asks: "did this task produce a new pattern worth codifying?"
-
-| Discovery | Action |
-|-----------|--------|
-| New anti-pattern | Add `❌` prohibition to constraint skill |
-| Reusable technique | Update constraint skill or docs |
-| Architecture decision | Update knowledge doc |
-
-## Installation
-
-```bash
-bash archon-protocol/templates/install.sh
-# Deploys agents to .cursor/agents/, .claude/agents/
-# Deploys skills to .cursor/skills/, .claude/skills/, .codex/skills/
-
-npx vitest run --config archon-protocol/vitest.config.js  # verify integrity
-```
+Every `/archon-demand` call includes a knowledge evolution step (Stage 3.6): new anti-patterns become prohibitions, reusable techniques become constraints. Rules are staged in `proposed-rules.md` and graduate to drivers after human approval.
 
 ## Documentation
 
@@ -117,26 +123,27 @@ Full documentation with bilingual support (English + 中文), powered by VitePre
 cd archon-protocol && npm install && npm run docs:dev
 ```
 
-| Section | English | 中文 |
-|---------|---------|------|
-| Getting Started | [guide/getting-started](docs/guide/getting-started.md) | [快速上手](docs/zh/guide/getting-started.md) |
-| Architecture | [architecture/overview](docs/architecture/overview.md) | [架构总览](docs/zh/architecture/overview.md) |
-| Single-Agent Design | [architecture/single-agent](docs/architecture/single-agent.md) | [单代理架构](docs/zh/architecture/single-agent.md) |
-| Feedback Loop | [architecture/feedback-loop](docs/architecture/feedback-loop.md) | [自动化反馈循环](docs/zh/architecture/feedback-loop.md) |
-| Commands Reference | [reference/commands](docs/reference/commands.md) | [命令与工作流](docs/zh/reference/commands.md) |
-| Naming & AAEP | [architecture/naming-protocol](docs/architecture/naming-protocol.md) | [命名与协议](docs/zh/architecture/naming-protocol.md) |
+| Section | Link |
+|---------|------|
+| Getting Started | [guide/getting-started](docs/guide/getting-started.md) |
+| Migration Guide | [guide/migration](docs/guide/migration.md) |
+| OS Model | [architecture/os-model](docs/architecture/os-model.md) |
+| Kernel | [kernel/](docs/kernel/index.md) |
+| Drivers | [drivers/](docs/drivers/index.md) |
+| Syscalls | [syscalls/](docs/syscalls/index.md) |
+| Daemons | [daemons/](docs/daemons/index.md) |
 
 AI agents: read [`ai-index.md`](ai-index.md) for a machine-readable sitemap of all protocol files.
 
 ## Design Principles
 
-1. **Agent-first, skill-fallback** — best experience on capable tools, portable everywhere
-2. **`archon-` prefix** — zero namespace collisions
-3. **Prohibitions > instructions** — `❌` is verifiable; "do it well" is not
-4. **Constraint preloading** — agents inject constraint skills via `skills` field
+1. **OS model** — every file has precise loading semantics (kernel, driver, syscall, daemon)
+2. **Single source of truth** — docs ARE the protocol, deployed to environments during init
+3. **`archon-` prefix** — zero namespace collisions with user's own code
+4. **Prohibitions > instructions** — `❌` is verifiable; "do it well" is not
 5. **Self-evolution** — every task can strengthen the constraint system
-6. **Dual audience** — same doc executed by AI and read by humans
+6. **Every environment** — Cursor, Claude Code, Codex, Copilot, Windsurf, Gemini CLI
 
 ---
 
-*Archon Protocol v1.2 — Agent-first architecture with VitePress documentation, powered by AAEP.*
+*Archon Protocol v2.0 — OS-model architecture with unified documentation. Powered by AAEP.*

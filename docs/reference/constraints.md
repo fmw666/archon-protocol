@@ -1,117 +1,78 @@
 # Constraint Skills Reference
 
-Constraint skills define hard boundaries. They are preloaded into agents or auto-discovered by skill-only tools.
+> In the OS model, constraint skills are **drivers** — loaded into kernel space via the `skills:` field. Source of truth lives in `docs/drivers/`.
 
-## archon-code-quality
+## All Drivers
 
-**Activated**: every code change.
+| Driver | Source | Activated |
+|--------|--------|-----------|
+| archon-code-quality | [`/drivers/code-quality`](/drivers/code-quality) | Every code change |
+| archon-test-sync | [`/drivers/test-sync`](/drivers/test-sync) | Every code change |
+| archon-async-loading | [`/drivers/async-loading`](/drivers/async-loading) | UI component edits |
+| archon-error-handling | [`/drivers/error-handling`](/drivers/error-handling) | API/component edits |
+| archon-handoff | [`/drivers/handoff`](/drivers/handoff) | Cross-boundary changes |
 
-### File Size Limits
+## Quick Summary
 
-| File type | Max lines | When exceeded |
-|-----------|----------|---------------|
-| Page component | 350 | Split into sub-components + hooks |
-| Component | 300 | Extract logic to hooks/utils |
-| Hook | 200 | Split into focused hooks |
-| Utility | 200 | Split by responsibility |
-| API route | 150 | Extract to service layer |
+### archon-code-quality
 
-### Prohibitions
+File size limits, type safety, pure logic extraction, universal prohibitions.
 
-- ❌ `any` type — use the real type or `unknown`
-- ❌ Bare `Object` type — define the shape with properties
-- ❌ Empty `catch {}` blocks — at minimum log or rethrow
-- ❌ `console.log(error)` as the only error handling
-- ❌ Hardcoded user-facing strings when i18n is enabled — use `t("key")`
-- ❌ Unused `import` statements
-- ❌ Direct state mutation (`.push()`, `.splice()` on state)
-- ❌ Duplicate rendering of the same data
-- ❌ Magic numbers/strings without `const`
+Key prohibitions:
+- ❌ `any` type — use real type or `unknown`
+- ❌ Empty `catch {}` — at minimum log or rethrow
+- ❌ Direct state mutation — return new objects
+- ❌ Magic numbers/strings — extract to named constants
 
-## archon-test-sync
+[Full reference →](/drivers/code-quality)
 
-**Activated**: every code change.
+### archon-test-sync
 
-### Workflow
+Tests must follow code changes. Structural scan tests for CI.
 
-1. **Discover** — search `__tests__/<module>.test.*` for every modified file
-2. **Assess** — determine which assertions break
-3. **Update** — fix assertions, update mocks, add coverage
-4. **Verify** — run tests, all must pass
-
-### Prohibitions
-
-- ❌ Changed function signature without searching for `.test.` files
+Key prohibitions:
+- ❌ Changed signature without searching for `.test.` files
 - ❌ Added `.skip` to a failing test
-- ❌ Deleted a `.test.` file to hide failures
-- ❌ Assumed no tests exist
 - ❌ Marked task complete while tests show `FAIL`
 
-## archon-async-loading
+[Full reference →](/drivers/test-sync)
 
-**Activated**: editing UI components.
+### archon-async-loading
 
-### Requirements
+Skeleton screens, 3-state display, error retry, viewport lazy loading.
 
-- Every async section: skeleton placeholder while loading
-- Three-state display: loading → error → resolved
-- Independent error + retry per section
-- Off-screen sections: defer with IntersectionObserver
+Key prohibitions:
+- ❌ Single API failure crashes entire page
+- ❌ Showing `0` while actually loading
+- ❌ Firing all API calls on mount
 
-### Prohibitions
+[Full reference →](/drivers/async-loading)
 
-- ❌ Single API failure crashes the entire page
-- ❌ Showing `0` or `"No data"` while actually loading
-- ❌ Firing all API calls on mount regardless of scroll position
+### archon-error-handling
 
-## archon-error-handling
+Structured errors server-side, translated errors client-side.
 
-**Activated**: editing API routes or UI components.
+Key prohibitions:
+- ❌ Empty `catch {}`
+- ❌ `alert(error.message)` — use toast
+- ❌ Exposing internal details to client
 
-### Server
+[Full reference →](/drivers/error-handling)
 
-- Structured error class with numeric status codes
-- Always validate input before processing
-- Always log errors with context
-- Never return raw stack traces to client
+### archon-handoff
 
-### Client
+Interface contracts for cross-boundary work.
 
-- User-facing errors: translated via `t()`, never raw messages
-- Dev-facing errors: namespace/context prefix for searchability
+Key prohibitions:
+- ❌ Changing API shape without updating handoff doc first
+- ❌ Implementing without a handoff document
+- ❌ Leaving open questions unresolved
 
-### Prohibitions
+[Full reference →](/drivers/handoff)
 
-- ❌ Empty `catch {}` — at minimum log the error
-- ❌ `alert(error.message)` — use toast with translated string
-- ❌ Returning `{ error: e }` with the full Error object
-- ❌ Exposing internal error details (`stack`, SQL, `env` vars) to client
+## Framework-Specific Drivers (Optional)
 
-## archon-handoff
-
-**Activated**: cross-boundary changes (frontend↔backend, service↔service, session handoff).
-
-### When Required
-
-- Changing an API that a separate frontend/backend consumes
-- Defining a new endpoint, webhook, or event schema
-- Handing work to another developer, AI session, or team
-- Database migration affecting multiple consumers
-
-### Document Format
-
-Create `docs/handoff/<feature-name>.md` with: status checklist, endpoint definitions (request + all response shapes), data contract table, confirmed decisions, open questions, revision history.
-
-### Prohibitions
-
-- ❌ Changing an API `response` shape without updating `docs/handoff/` first
-- ❌ Implementing against a chat description without a `docs/handoff/*.md`
-- ❌ Leaving `Open Questions` section unresolved before starting implementation
-- ❌ Omitting `Response (4xx/5xx)` error shapes from the contract
-
-## Framework-Specific Constraints (Optional)
-
-Deployed by `/archon-init` when a matching framework is detected. Templates live in `templates/constraints/`.
+Deployed by `/archon-init` when a matching framework is detected. Templates in `templates/constraints/`.
 
 | Template | Framework | Covers |
 |----------|-----------|--------|

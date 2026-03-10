@@ -1,6 +1,6 @@
 # Commands Reference
 
-## Primary Commands
+## Primary Commands (Syscalls)
 
 ### `/archon-init`
 
@@ -8,13 +8,15 @@ Bootstrap the Archon Protocol ecosystem or run a health check.
 
 | Field | Value |
 |-------|-------|
-| Agent | `archon-init.md` |
-| Skill | `archon-init/SKILL.md` |
+| Source | [`docs/syscalls/init.md`](/syscalls/init) |
+| OS Equivalent | `boot()` |
 | Mode | Read-write |
 
-**Fresh install**: scans project, detects tech stack, generates `archon.config.yaml`, verifies deployment.
+**Fresh install**: scans project, detects tech stack, generates `archon.config.yaml`, deploys protocol files.
 
 **Health check**: verifies all files exist, config matches project, reports gaps.
+
+**Remote bootstrap**: `curl -s https://aaep.site/init.md`
 
 ### `/archon-demand <requirement>`
 
@@ -22,9 +24,9 @@ Full delivery pipeline for a one-line requirement.
 
 | Field | Value |
 |-------|-------|
-| Agent | `archon-demand.md` |
-| Skill | `archon-demand/SKILL.md` |
-| Preloads | archon-code-quality, archon-test-sync, archon-async-loading, archon-error-handling |
+| Source | [`docs/syscalls/demand.md`](/syscalls/demand) |
+| OS Equivalent | `exec()` |
+| Preloads | archon-code-quality, archon-test-sync, archon-async-loading, archon-error-handling, archon-handoff |
 
 **Stages**:
 
@@ -47,16 +49,14 @@ Full delivery pipeline for a one-line requirement.
 | `no-commit` | Stage 6 | Exploration, review before commit |
 | `skip-tests` | Stage 3.4 | Pure visual/styling changes |
 
-Flags can be combined: `quick no-commit skip-tests` for minimal pipeline with manual review.
-
 ### `/archon-audit`
 
 Full project health check. Read-only — does not modify code.
 
 | Field | Value |
 |-------|-------|
-| Agent | `archon-audit.md` |
-| Skill | `archon-audit/SKILL.md` |
+| Source | [`docs/syscalls/audit.md`](/syscalls/audit) |
+| OS Equivalent | `stat()` |
 | Mode | Read-only |
 | Preloads | archon-code-quality, archon-test-sync |
 
@@ -68,8 +68,8 @@ Generate a progressive refactoring plan with milestones.
 
 | Field | Value |
 |-------|-------|
-| Agent | `archon-refactor.md` |
-| Skill | `archon-refactor/SKILL.md` |
+| Source | [`docs/syscalls/refactor.md`](/syscalls/refactor) |
+| OS Equivalent | `defrag()` |
 
 Saves plan to `docs/refactor-plan.md`. Future `/archon-demand` calls automatically align with the plan.
 
@@ -79,17 +79,17 @@ Independent validation of claimed work.
 
 | Field | Value |
 |-------|-------|
-| Agent | `archon-verifier.md` |
-| Skill | `archon-verifier/SKILL.md` |
+| Source | [`docs/syscalls/verifier.md`](/syscalls/verifier) |
+| OS Equivalent | `fsck()` |
 | Mode | Read-only |
 
 Skeptically verifies: code exists, tests pass, no TODOs left, no regressions.
 
-## Internal Workflows
+## Internal Workflows (Daemons)
 
-These are called by `/archon-demand`, not directly by users:
+These are spawned by `/archon-demand`, not directly invoked by users:
 
-| Workflow | Agent | Skill | Called by |
-|----------|-------|-------|----------|
-| Self-audit | `archon-self-auditor.md` | `archon-self-auditor/SKILL.md` | demand Stage 3 |
-| Test runner | `archon-test-runner.md` | `archon-test-runner/SKILL.md` | demand Stage 3.4 |
+| Daemon | Source | Spawned by |
+|--------|--------|-----------|
+| Self-audit | [`docs/daemons/self-auditor.md`](/daemons/self-auditor) | demand Stage 3 |
+| Test runner | [`docs/daemons/test-runner.md`](/daemons/test-runner) | demand Stage 3.4 |
