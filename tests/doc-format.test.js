@@ -26,8 +26,8 @@ describe("Document Format (docs/ hierarchy)", () => {
     expect(drivers.length).toBeGreaterThanOrEqual(5);
   });
 
-  it("should find at least 5 syscalls", () => {
-    expect(syscalls.length).toBeGreaterThanOrEqual(5);
+  it("should find at least 6 syscalls", () => {
+    expect(syscalls.length).toBeGreaterThanOrEqual(6);
   });
 
   it("should find at least 2 daemons", () => {

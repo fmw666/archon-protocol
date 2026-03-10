@@ -23,6 +23,7 @@ For the full kernel specification, read `.cursor/rules/archon-kernel.md` or `doc
 
 ## Runtime
 
+- `pnpm lint` — full protocol lint (links + integrity + tests)
 - `pnpm test` — run tests
 - `pnpm docs:build` — build documentation
 - `pnpm docs:dev` — dev server

@@ -7,6 +7,9 @@
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
+    "lint": "node scripts/lint-links.mjs && node scripts/lint-integrity.mjs && vitest run --config vitest.config.js",
+    "lint:links": "node scripts/lint-links.mjs",
+    "lint:integrity": "node scripts/lint-integrity.mjs",
     "test": "vitest run --config vitest.config.js"
   },
   "devDependencies": {

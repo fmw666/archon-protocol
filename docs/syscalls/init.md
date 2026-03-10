@@ -129,6 +129,7 @@ Read `archon.config.yaml` to determine environment, then verify:
 | [`audit`](/syscalls/audit) | `/archon-audit` | Project health check (read-only) |
 | [`refactor`](/syscalls/refactor) | `/archon-refactor` | Progressive refactoring plan |
 | [`verifier`](/syscalls/verifier) | `/archon-verifier` | Independent validation |
+| [`lint`](/syscalls/lint) | `/archon-lint` | Protocol integrity checks |
 
 ### Daemons (internal)
 

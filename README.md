@@ -90,6 +90,7 @@ git clone https://github.com/fmw666/archon-protocol.git
 | `/archon-audit` | Syscall | Project health check (read-only, 0-100) |
 | `/archon-refactor` | Syscall | Progressive refactoring plan |
 | `/archon-verifier` | Syscall | Independent validation |
+| `/archon-lint` | Syscall | Protocol integrity checks (links + invariants + tests) |
 
 ## Drivers (Constraints)
 
@@ -121,6 +122,8 @@ Full documentation with bilingual support (English + 中文), powered by VitePre
 
 ```bash
 cd archon-protocol && npm install && npm run docs:dev
+# Validate protocol integrity:
+npm run lint
 ```
 
 | Section | Link |

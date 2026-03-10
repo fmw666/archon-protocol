@@ -171,6 +171,7 @@ Syscalls to deploy:
 2. `archon-audit` — project health check (preloads: code-quality, test-sync) [readonly]
 3. `archon-refactor` — progressive restructuring plan
 4. `archon-verifier` — independent validation [readonly]
+5. `archon-lint` — protocol integrity checks (links, invariants, tests) [readonly]
 
 **For Cursor** — create as `.cursor/agents/archon-<name>.md` with frontmatter:
 ```yaml
@@ -210,7 +211,7 @@ Read `archon.config.yaml`, then verify:
 1. **Environment match**: Does current tool match `environment.tool`? If not, warn and offer to reconfigure.
 2. **Kernel**: Does the kernel file exist at `kernel_deploy` path?
 3. **Drivers**: Do all 5 driver files exist at `drivers_deploy` paths?
-4. **Syscalls**: Do all 4 syscall files exist at `syscalls_deploy` paths?
+4. **Syscalls**: Do all 5 syscall files exist at `syscalls_deploy` paths?
 5. **Daemons**: Do all 2 daemon files exist?
 6. **Config freshness**: Does config match actual project state?
 7. Report any gaps.
@@ -223,7 +224,7 @@ Archon Protocol Init:
   Environment: <tool> (sub-agents: yes/no)
   Kernel: deployed to <path>
   Drivers: 5 deployed to <path>
-  Syscalls: 4 deployed to <path>
+  Syscalls: 5 deployed to <path>
   Daemons: 2 deployed to <path>
   Stack: <language> + <framework>
   Config: [CREATED | UP TO DATE]

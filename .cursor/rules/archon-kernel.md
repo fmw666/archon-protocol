@@ -59,6 +59,7 @@ You **must** enforce every `❌` prohibition. Drivers are law.
 | `/archon-audit` | `docs/syscalls/audit.md` | Health check (0-100) |
 | `/archon-refactor` | `docs/syscalls/refactor.md` | Progressive restructure |
 | `/archon-verifier` | `docs/syscalls/verifier.md` | Independent validation |
+| `/archon-lint` | `docs/syscalls/lint.md` | Protocol integrity checks |
 
 ## Daemons
 
@@ -78,6 +79,7 @@ Every task follows this 4-phase loop:
 
 ## Runtime
 
+- `pnpm lint` — full protocol lint (links + integrity + tests)
 - `pnpm test` — validate integrity
 - `pnpm docs:build` — build documentation
 - `pnpm docs:dev` — dev server

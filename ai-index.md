@@ -38,6 +38,7 @@
 | `docs/syscalls/audit.md` | `stat()` | Read-only health check |
 | `docs/syscalls/refactor.md` | `defrag()` | Progressive restructure |
 | `docs/syscalls/verifier.md` | `fsck()` | Independent validation |
+| `docs/syscalls/lint.md` | `check()` | Protocol integrity, link audit, consistency |
 
 ## Daemons (Internal, Never User-Invoked)
 
@@ -105,6 +106,13 @@
 | `templates/archon.config.yaml` | Default `/etc/` | Config template |
 | `templates/constraints/archon-nextjs-ssr.md` | Driver package | Next.js SSR constraints |
 | `templates/constraints/archon-react-hydration.md` | Driver package | React hydration constraints |
+
+## Lint Scripts
+
+| File | Purpose |
+|------|---------|
+| `scripts/lint-links.mjs` | Internal link auditor for docs/ markdown files |
+| `scripts/lint-integrity.mjs` | CI-1~CI-9 consistency invariant checker |
 
 ## POST (Power-On Self-Test)
 

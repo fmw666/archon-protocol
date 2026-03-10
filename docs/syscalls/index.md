@@ -13,6 +13,7 @@ Syscalls are the primary interface between the user and the Archon Protocol. Eac
 | [`/archon-audit`](/syscalls/audit) | `stat()` | Read-only | Project health check, scored 0-100 |
 | [`/archon-refactor`](/syscalls/refactor) | `defrag()` | Read-write | Progressive restructuring plan |
 | [`/archon-verifier`](/syscalls/verifier) | `fsck()` | Read-only | Independent integrity verification |
+| [`/archon-lint`](/syscalls/lint) | `check()` | Read-only | Protocol integrity, link audit, consistency invariants |
 
 ## Invocation
 

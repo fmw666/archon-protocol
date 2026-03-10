@@ -85,6 +85,26 @@ Independent validation of claimed work.
 
 Skeptically verifies: code exists, tests pass, no TODOs left, no regressions.
 
+### `/archon-lint`
+
+Validate protocol integrity, link health, and consistency invariants.
+
+| Field | Value |
+|-------|-------|
+| Source | [`docs/syscalls/lint.md`](/syscalls/lint) |
+| OS Equivalent | `check()` |
+| Mode | Read-only |
+
+**Phases**:
+
+| Phase | What happens |
+|-------|-------------|
+| 1 | Link audit — walk docs/*.md, resolve internal links |
+| 2 | Integrity — verify CI-1 through CI-9 consistency invariants |
+| 3 | Tests — run Vitest suite (doc format, prohibitions, ecosystem) |
+
+**Run**: `pnpm lint` or individual phases via `pnpm lint:links`, `pnpm lint:integrity`, `pnpm test`.
+
 ## Internal Workflows (Daemons)
 
 These are spawned by `/archon-demand`, not directly invoked by users:

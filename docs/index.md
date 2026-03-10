@@ -45,6 +45,15 @@ AI coding tools provide **capability** — code generation, file operations, ter
 
 AAEP is the methodology layer.
 
+### One Command to Start
+
+```bash
+# Tell your AI tool:
+curl -s https://aaep.site/init.md
+```
+
+The AI reads the init prompt, detects your environment, and deploys the protocol. That's it.
+
 ### The Four Layers
 
 | Layer | What | How |
@@ -72,18 +81,18 @@ Task N → Constraint system is comprehensive
 
 **More tasks → better constraints → higher quality.** This is directed evolution — always toward fewer bugs, better performance, more consistent architecture.
 
-### Why Not Just Use ESLint?
+### Why Not Just Use Linters?
 
-| Dimension | ESLint | AAEP |
-|-----------|--------|------|
-| No `any` type | ✅ | ✅ |
-| File size limits | ⚠️ | ✅ |
-| Async: skeleton + error + retry per section | ❌ | ✅ |
-| Tests updated for changed signatures | ❌ | ✅ |
-| Module boundary violations | ❌ | ✅ |
-| Off-screen deferred with IntersectionObserver | ❌ | ✅ |
+| Dimension | Linters (ESLint, Ruff, etc.) | AAEP |
+|-----------|------------------------------|------|
+| Type safety / syntax rules | ✅ | ✅ |
+| File size / structure limits | ⚠️ | ✅ |
+| Tests updated when signatures change | ❌ | ✅ |
+| Error handling: structured patterns per layer | ❌ | ✅ |
+| Cross-boundary contract enforcement | ❌ | ✅ |
+| Self-evolution: learns from every task | ❌ | ✅ |
 
-ESLint catches syntax. AAEP catches architecture. **Both layers active — Stage 1.5 runs your linter automatically.**
+Linters catch syntax. AAEP catches architecture. **Both layers active — Stage 1.5 runs your project's linter automatically.**
 
 ### Cross-Tool Compatibility
 

@@ -91,6 +91,7 @@ export default defineConfig({
                 { text: "/archon-audit", link: "/syscalls/audit" },
                 { text: "/archon-refactor", link: "/syscalls/refactor" },
                 { text: "/archon-verifier", link: "/syscalls/verifier" },
+                { text: "/archon-lint", link: "/syscalls/lint" },
               ],
             },
           ],

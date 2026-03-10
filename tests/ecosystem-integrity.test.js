@@ -30,8 +30,8 @@ describe("Ecosystem Integrity", () => {
     expect(driverNames.length).toBeGreaterThanOrEqual(5);
   });
 
-  it("has at least 5 syscalls", () => {
-    expect(syscallNames.length).toBeGreaterThanOrEqual(5);
+  it("has at least 6 syscalls", () => {
+    expect(syscallNames.length).toBeGreaterThanOrEqual(6);
   });
 
   it("has at least 2 daemons", () => {
@@ -46,7 +46,7 @@ describe("Ecosystem Integrity", () => {
   });
 
   it("init doc lists all syscalls", () => {
-    const coreSyscalls = ["demand", "audit", "refactor", "verifier"];
+    const coreSyscalls = ["demand", "audit", "refactor", "verifier", "lint"];
     for (const name of coreSyscalls) {
       expect(initDoc, `init doc missing syscall: ${name}`).toContain(name);
     }
@@ -67,7 +67,7 @@ describe("Ecosystem Integrity", () => {
   });
 
   it("README references core syscalls", () => {
-    const coreSyscalls = ["/archon-init", "/archon-demand", "/archon-audit", "/archon-refactor", "/archon-verifier"];
+    const coreSyscalls = ["/archon-init", "/archon-demand", "/archon-audit", "/archon-refactor", "/archon-verifier", "/archon-lint"];
     for (const name of coreSyscalls) {
       expect(readme, `README missing syscall: ${name}`).toContain(name);
     }
