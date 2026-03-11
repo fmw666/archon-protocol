@@ -1,5 +1,6 @@
 import { defineConfig } from "vitepress";
 import { withMermaid } from "vitepress-plugin-mermaid";
+import llmstxt from "vitepress-plugin-llms";
 import { codeBlockTitlePlugin } from "./theme/codeBlockTitle";
 
 export default withMermaid(defineConfig({
@@ -243,6 +244,10 @@ export default withMermaid(defineConfig({
       message: "Powered by AAEP (AI Architect Evolution Protocol)",
       copyright: "Archon Protocol",
     },
+  },
+
+  vite: {
+    plugins: [llmstxt()],
   },
 
   mermaid: {},
