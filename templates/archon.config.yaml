@@ -38,6 +38,20 @@ docs:
   performance_lessons: "" # path to performance lessons doc (e.g. docs/performance-lessons.md)
   architecture: "" # path to architecture doc
 
+# ─── Enforcement (ADR-003) ────────────────────────────────────────
+# Process-layer enforcement: lint, test, and CI integration.
+# Documents achieve SHOULD; processes achieve MUST.
+# Populated by /archon-init Step 3.5.
+enforcement:
+  linter: "" # eslint | biome | ruff | golangci-lint | clippy
+  lint_config: "" # .eslintrc.cjs | eslint.config.mjs | biome.json
+  lint_command: "" # pnpm lint | npx eslint . | biome check
+  test_command: "" # pnpm test | npx vitest | pytest
+  structural_test_dir: "" # tests/structural/ | tests/ (where structural scan tests live)
+  ci_file: "" # .github/workflows/ci.yml | .gitlab-ci.yml
+  ci_runs_lint: false # true if CI pipeline includes lint step
+  ci_runs_test: false # true if CI pipeline includes test step
+
 # ─── Benchmarks ──────────────────────────────────────────────────
 # Real, tested, production modules that represent the target architecture.
 # AI references these before creating new modules — imitation beats instruction.

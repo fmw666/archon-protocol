@@ -33,7 +33,7 @@
 
 | File | Syscall | Purpose |
 |------|---------|---------|
-| `docs/syscalls/init.md` | `boot()` | Detect env, deploy drivers, mount FS |
+| `docs/syscalls/init.md` | `boot()` | Detect env, deploy drivers, integrate lint/test ecosystem, mount FS |
 | `docs/syscalls/demand.md` | `exec()` | Full delivery pipeline |
 | `docs/syscalls/audit.md` | `stat()` | Read-only health check |
 | `docs/syscalls/refactor.md` | `defrag()` | Progressive restructure |
@@ -55,7 +55,7 @@
 | `docs/drivers/index.md` | `/lib/modules/` | read-only | Drivers overview |
 | `docs/syscalls/index.md` | `/usr/bin/` | read-only | Syscalls overview |
 | `docs/daemons/index.md` | `/usr/sbin/` | read-only | Daemons overview |
-| `docs/architecture/core-principles.md` | `/usr/src/` | read-only | 7 first principles |
+| `docs/architecture/core-principles.md` | `/usr/src/` | read-only | 8 first principles (includes P8: Process Enforcement > Document Enforcement) |
 | `docs/architecture/overview.md` | `/usr/src/` | read-only | Dual-layer model |
 | `docs/architecture/single-agent.md` | `/usr/src/` | read-only | Why single agent beats multi-agent |
 | `docs/architecture/feedback-loop.md` | `/usr/src/` | read-only | Self-reinforcing evolution |
@@ -71,6 +71,7 @@
 | `docs/reference/constraints.md` | `/usr/share/info/` | read-only | All constraint skills with prohibitions |
 | `docs/decisions/ADR-001-response-to-external-critiques.md` | `/var/log/` | append-only | ADR: external critique response |
 | `docs/decisions/ADR-002-evomap-experience-absorption.md` | `/var/log/` | append-only | ADR: EvoMap experience absorption |
+| `docs/decisions/ADR-003-executable-enforcement.md` | `/var/log/` | append-only | ADR: Documents SHOULD, Processes MUST |
 | `docs/refactor-reports/` | `/var/log/audit/` | append-only | Refactor reports: immune memory |
 
 ## Filesystem (Persistent Storage — Chinese)
@@ -112,7 +113,8 @@
 | File | Purpose |
 |------|---------|
 | `scripts/lint-links.mjs` | Internal link auditor for docs/ markdown files |
-| `scripts/lint-integrity.mjs` | CI-1~CI-9 consistency invariant checker |
+| `scripts/lint-integrity.mjs` | CI-1~CI-10 consistency invariant checker |
+| `scripts/lint-coupling.mjs` | Git-based document coupling analyzer (CI-10) |
 
 ## POST (Power-On Self-Test)
 

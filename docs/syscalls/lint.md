@@ -17,7 +17,7 @@ Run automated checks on the Archon Protocol ecosystem. Read-only — does not mo
 | Phase | Script | What it checks |
 |-------|--------|---------------|
 | 1. Link Audit | `scripts/lint-links.mjs` | Internal markdown links resolve to valid routes or files |
-| 2. Integrity | `scripts/lint-integrity.mjs` | Consistency invariants CI-1 through CI-9 |
+| 2. Integrity | `scripts/lint-integrity.mjs` | Consistency invariants CI-1 through CI-10 |
 | 3. Tests | `vitest run` | Document format, prohibition quality, ecosystem integrity, demand completeness |
 
 All three must pass. Failure in any phase returns a non-zero exit code.
@@ -57,6 +57,7 @@ Verifies the invariants defined in the [Document Integrity Protocol](/kernel/doc
 | CI-6 | Every `.cursor/rules/archon-*` traces to a `docs/` source | Parse Source header in deployed files |
 | CI-7 | `docs/public/init.md` lists all components | String search for each component name |
 | CI-9 | `ai-index.md` lists all components | String search for each file path |
+| CI-10 | Git coupling pairs match propagation graph | `scripts/lint-coupling.mjs` existence check |
 
 ### Reports
 
@@ -125,7 +126,7 @@ Or run individual phases:
 ```
 Archon Lint:
   Phase 1 (links):     142 checked, 0 broken ✅
-  Phase 2 (integrity): 9 invariants, 0 violations ✅
+  Phase 2 (integrity): 10 invariants, 0 violations ✅
   Phase 3 (tests):     4 suites, 28 tests passed ✅
   Result: CLEAN ✅
 ```

@@ -135,7 +135,7 @@ User: /archon-demand "add dark mode"
   │
   ├── Stage 0: Read refactor plan         (check process environment)
   ├── Stage 1: Implement                  (exec: write code)
-  ├── Stage 1.5: Linter verification      (syscall: lint)
+  ├── Stage 1.5: Lint & Test verification  (MUST: process enforcement)
   ├── Stage 2: (reserved)
   ├── Stage 3: Self-audit                 (fork: spawn watchdog daemon)
   │   ├── 3.1 Rule scan                   (driver: code-quality)
@@ -143,7 +143,7 @@ User: /archon-demand "add dark mode"
   │   ├── 3.3 Edge cases                  (driver: error-handling)
   │   ├── 3.4 Test sync                   (fork: spawn test daemon)
   │   ├── 3.5 i18n check                  (driver: code-quality)
-  │   └── 3.6 Knowledge evolution         (write: proposed-rules.md)
+  │   └── 3.6 Knowledge evolution         (write: proposed-rules.md + constraint hardening)
   ├── Stage 4: Fix issues found           (self-heal)
   ├── Stage 5: Final verify               (fork: spawn fsck)
   └── Stage 6: Commit                     (sync: persist to disk)
@@ -217,6 +217,7 @@ When `/archon-init` runs, it follows a boot sequence analogous to a real OS:
 2. Bootloader   → Read archon.config.yaml (or create if first boot)
 3. Kernel load  → AGENTS.md already resident (alwaysApply: true)
 4. Hardware scan→ Detect project: language, framework, i18n, state, tests
+4.5 Enforcement → Detect lint/test/CI ecosystem, map constraint coverage (ADR-003)
 5. Driver load  → Deploy constraint skills to skills_dir
 6. Mount FS     → Verify docs/ structure exists and is consistent
 7. Init system  → Start first process (await user's /archon-demand)
@@ -239,6 +240,7 @@ Beyond the core layers, the OS analogy extends to runtime concepts:
 | **Package Manager** | `proposed-rules.md` → constraint skills | Rules staged, reviewed, then installed as drivers |
 | **Audit Trail** | `docs/refactor-reports/` | Immune memory — what changed and what broke |
 | **Health Monitor** | `archon-audit` + `archon-verifier` | Real-time system health detection |
+| **Enforcement** | Lint rules + Structural tests + CI pipeline | Process-level MUST constraints ([ADR-003](/decisions/ADR-003-executable-enforcement)) |
 | **Boot Config** | `archon.config.yaml` → `benchmarks:` | Tells the system which modules are reference implementations |
 | **Init System** | `/archon-init` boot sequence | Hardware scan → driver load → FS mount → POST |
 | **Process Model** | Feature modules | Isolated execution units, explicit interfaces |
@@ -246,30 +248,36 @@ Beyond the core layers, the OS analogy extends to runtime concepts:
 
 ## The Constraint Pyramid
 
-Constraints cascade from four levels simultaneously. They are not redundant — they are complementary:
+Constraints cascade from five levels simultaneously. They are not redundant — they are complementary. **Documents achieve SHOULD; processes achieve MUST** ([ADR-003](/decisions/ADR-003-executable-enforcement)):
 
 ```
 ┌─────────────────────────────────────────────┐
 │  Layer 1: Kernel (always resident)          │  AGENTS.md, archon.config.yaml
-│  "Who you are and what law you follow"      │  Cannot be bypassed
+│  "Who you are"                              │  MUST (alwaysApply, never compressed)
 ├─────────────────────────────────────────────┤
-│  Layer 2: Drivers (preloaded per command)   │  Constraint skills via `skills:` field
-│  "What you must not do"                     │  ❌ prohibitions, hard limits
+│  Layer 2: Drivers (document constraints)    │  Constraint skills via `skills:` field
+│  "What you should not do"                   │  SHOULD (generative guidance)
 ├─────────────────────────────────────────────┤
-│  Layer 3: Syscalls (standard workflows)     │  archon-demand 7-stage pipeline
-│  "How you must do it"                       │  Step-by-step, with audit + evolution
+│  Layer 3: Syscalls (standard workflows)     │  archon-demand pipeline
+│  "How you should do it"                     │  SHOULD (procedural guidance)
 ├─────────────────────────────────────────────┤
 │  Layer 4: Filesystem (reference on demand)  │  Architecture docs, ADRs, refactor reports
-│  "Why we do it this way"                    │  Searchable knowledge base
+│  "Why we do it this way"                    │  Knowledge base
+├─────────────────────────────────────────────┤
+│  Layer 5: Process Enforcement               │  Lint rules + Structural tests + CI
+│  "What you MUST comply with"                │  MUST (unbypassable, process-level)
 └─────────────────────────────────────────────┘
 ```
 
 When these layers act together on a single task:
 
-- **Layer 1** ensures "the agent follows the core workflow" (identity constraint)
-- **Layer 2** ensures "the agent doesn't make banned mistakes" (negative constraint)
-- **Layer 3** ensures "the agent follows the standard process" (procedural constraint)
+- **Layer 1** ensures "the agent follows the core workflow" (identity constraint — MUST)
+- **Layer 2** ensures "the agent avoids banned mistakes at generation time" (negative constraint — SHOULD)
+- **Layer 3** ensures "the agent follows the standard process" (procedural constraint — SHOULD)
 - **Layer 4** ensures "the agent understands the context" (cognitive constraint)
+- **Layer 5** ensures "violations are caught with 100% reliability" (enforcement — MUST)
+
+Layers 1–4 reduce the *probability* of violations. Layer 5 *catches what remains* mechanically. The system's integrity does not depend on AI compliance alone — process enforcement is the backstop.
 
 ## The Document Lifecycle
 

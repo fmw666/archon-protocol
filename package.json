@@ -10,6 +10,7 @@
     "lint": "node scripts/lint-links.mjs && node scripts/lint-integrity.mjs && vitest run --config vitest.config.js",
     "lint:links": "node scripts/lint-links.mjs",
     "lint:integrity": "node scripts/lint-integrity.mjs",
+    "lint:coupling": "node scripts/lint-coupling.mjs",
     "test": "vitest run --config vitest.config.js"
   },
   "devDependencies": {

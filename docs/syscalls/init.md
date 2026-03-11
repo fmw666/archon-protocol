@@ -95,6 +95,69 @@ If multiple primary languages are detected, warn the user:
 
 Scan for candidate benchmark modules — directories with consistent structure, test coverage, and type completeness. Suggest as `benchmarks.primary`. Ask user to confirm.
 
+## Step 3.5: Lint & Test Ecosystem Integration
+
+> **Documents achieve SHOULD. Processes achieve MUST.** This step connects the two layers. See [ADR-003](/decisions/ADR-003-executable-enforcement).
+
+### Lint detection
+
+| What | How to detect |
+|------|--------------|
+| Linter | `.eslintrc.*`, `eslint.config.*`, `biome.json`, `.prettierrc.*` |
+| Lint config path | Record the config file location |
+| Lint command | `package.json` → `scripts.lint` (e.g. `eslint .`, `biome check`) |
+| Active rules | Read the config, list enabled rule names |
+
+### Test ecosystem detection
+
+| What | How to detect |
+|------|--------------|
+| Framework | `vitest.config.*`, `jest.config.*`, `pytest.ini`, `pyproject.toml [tool.pytest]` |
+| Test directory | `__tests__/`, `tests/`, `test/`, or files matching `*.test.*`, `*.spec.*` |
+| Naming pattern | `*.test.ts`, `*.spec.ts`, `test_*.py` — infer from existing tests |
+| Structural tests | Scan for tests that use `readdirSync`/`readFileSync` patterns to scan source |
+| Coverage config | `c8`, `istanbul`, `coverage` in config |
+
+### CI pipeline detection
+
+| What | How to detect |
+|------|--------------|
+| GitHub Actions | `.github/workflows/*.yml` |
+| GitLab CI | `.gitlab-ci.yml` |
+| Other | `Jenkinsfile`, `.circleci/config.yml`, `azure-pipelines.yml` |
+| Lint in CI | Does any CI job run the lint command? |
+| Test in CI | Does any CI job run the test command? |
+
+### Constraint coverage mapping
+
+For each driver ❌ prohibition, evaluate:
+
+| Category | Example | Process-expressible? |
+|----------|---------|---------------------|
+| Pattern-based | `❌ any type` | ✅ Lint rule: `@typescript-eslint/no-explicit-any` |
+| Pattern-based | `❌ Empty catch {}` | ✅ Lint rule: `no-empty` |
+| Grep-verifiable | `❌ Magic numbers without const` | ✅ Structural scan test |
+| Architectural | `❌ Cross-feature imports` | ✅ Structural scan test (import path analysis) |
+| Cognitive | `❌ Every async section needs skeleton + error + retry` | ❌ Document-layer only |
+
+Output a coverage report:
+
+```
+Constraint Coverage:
+  Total ❌ prohibitions: 23
+  Covered by lint rule:        8  (MUST — process-enforced)
+  Covered by structural test:  5  (MUST — process-enforced)
+  Document-layer only:        10  (SHOULD — generative guidance)
+  Coverage: 56% MUST / 44% SHOULD
+
+  Recommended actions:
+  - Enable `@typescript-eslint/no-explicit-any` (covers ❌ `any` type)
+  - Create structural test for file size limits (covers ❌ >300 lines)
+  - ...
+```
+
+If no CI pipeline is detected, recommend a minimal CI config that runs lint + test.
+
 ## Step 4: Generate Config & Deploy
 
 1. Create `archon.config.yaml` with detected environment + stack values

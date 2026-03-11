@@ -12,9 +12,9 @@ Bootstrap the Archon Protocol ecosystem or run a health check.
 | OS Equivalent | `boot()` |
 | Mode | Read-write |
 
-**Fresh install**: scans project, detects tech stack, generates `archon.config.yaml`, deploys protocol files.
+**Fresh install**: scans project, detects tech stack, integrates with lint/test ecosystem ([ADR-003](/decisions/ADR-003-executable-enforcement)), generates `archon.config.yaml`, deploys protocol files.
 
-**Health check**: verifies all files exist, config matches project, reports gaps.
+**Health check**: verifies all files exist, config matches project, lint/test coverage mapping, reports gaps.
 
 **Remote bootstrap**: `curl -s https://aaep.site/init.md`
 
@@ -34,9 +34,9 @@ Full delivery pipeline for a one-line requirement.
 |-------|-------------|
 | 0 | Refactor alignment (read plan if exists) |
 | 1 | Implement under constraints |
-| 1.5 | Linter verification (run lint, read errors, fix) |
+| 1.5 | Lint & Test verification — run lint + test, read output, fix. Processes are MUST ([ADR-003](/decisions/ADR-003-executable-enforcement)) |
 | 2 | Performance audit |
-| 3 | 6-dimension self-audit (3.1 rules, 3.2 structure, 3.3 edge cases, 3.4 tests, 3.5 i18n, 3.6 evolution) |
+| 3 | 7-dimension self-audit (3.1 rules, 3.2 structure, 3.3 edge cases, 3.4 tests, 3.5 i18n, 3.6 evolution, 3.7 adversarial challenge) |
 | 4 | Fix all issues |
 | 5 | Update refactor progress |
 | 6 | Commit |
@@ -83,7 +83,7 @@ Independent validation of claimed work.
 | OS Equivalent | `fsck()` |
 | Mode | Read-only |
 
-Skeptically verifies: code exists, tests pass, no TODOs left, no regressions.
+Skeptically verifies: code exists, tests pass, no TODOs left, no regressions. Includes an adversarial challenge step that forces counter-hypotheses before declaring verified.
 
 ### `/archon-lint`
 
@@ -111,5 +111,5 @@ These are spawned by `/archon-demand`, not directly invoked by users:
 
 | Daemon | Source | Spawned by |
 |--------|--------|-----------|
-| Self-audit | [`docs/daemons/self-auditor.md`](/daemons/self-auditor) | demand Stage 3 |
+| Self-audit | [`docs/daemons/self-auditor.md`](/daemons/self-auditor) | demand Stage 3 (7 dimensions including adversarial self-challenge) |
 | Test runner | [`docs/daemons/test-runner.md`](/daemons/test-runner) | demand Stage 3.4 |

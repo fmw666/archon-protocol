@@ -203,12 +203,25 @@
    ══════════════════════════════════════════════ */
 
 @keyframes glow-breathe {
-  0%, 100% { filter: drop-shadow(0 0 20px var(--hero-glow-a)) drop-shadow(0 0 48px var(--hero-glow-b)); }
-  50%      { filter: drop-shadow(0 0 28px var(--hero-glow-a)) drop-shadow(0 0 64px var(--hero-glow-b)); }
+  0%,
+  100% {
+    filter: drop-shadow(0 0 20px var(--hero-glow-a))
+      drop-shadow(0 0 48px var(--hero-glow-b));
+  }
+  50% {
+    filter: drop-shadow(0 0 28px var(--hero-glow-a))
+      drop-shadow(0 0 64px var(--hero-glow-b));
+  }
 }
 
-:root:not(.dark) { --hero-glow-a: rgba(59, 130, 246, 0.22); --hero-glow-b: rgba(99, 102, 241, 0.10); }
-.dark            { --hero-glow-a: rgba(129, 140, 248, 0.30); --hero-glow-b: rgba(99, 102, 241, 0.15); }
+:root:not(.dark) {
+  --hero-glow-a: rgba(59, 130, 246, 0.22);
+  --hero-glow-b: rgba(99, 102, 241, 0.1);
+}
+.dark {
+  --hero-glow-a: rgba(129, 140, 248, 0.3);
+  --hero-glow-b: rgba(99, 102, 241, 0.15);
+}
 
 .VPHero .VPImage {
   border-radius: 24px;
@@ -220,13 +233,25 @@
    ══════════════════════════════════════════════ */
 
 @keyframes hero-fade-up {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes hero-fade-in {
-  from { opacity: 0; transform: scale(0.92); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .VPHero .container .main {
@@ -242,7 +267,10 @@
    ══════════════════════════════════════════════ */
 
 .VPFeature {
-  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s,
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .VPFeature:hover {
@@ -255,22 +283,35 @@
   animation: hero-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.VPFeatures .item:nth-child(1) .VPFeature { animation-delay: 0.10s; }
-.VPFeatures .item:nth-child(2) .VPFeature { animation-delay: 0.18s; }
-.VPFeatures .item:nth-child(3) .VPFeature { animation-delay: 0.26s; }
-.VPFeatures .item:nth-child(4) .VPFeature { animation-delay: 0.34s; }
-.VPFeatures .item:nth-child(5) .VPFeature { animation-delay: 0.42s; }
-.VPFeatures .item:nth-child(6) .VPFeature { animation-delay: 0.50s; }
+.VPFeatures .item:nth-child(1) .VPFeature {
+  animation-delay: 0.1s;
+}
+.VPFeatures .item:nth-child(2) .VPFeature {
+  animation-delay: 0.18s;
+}
+.VPFeatures .item:nth-child(3) .VPFeature {
+  animation-delay: 0.26s;
+}
+.VPFeatures .item:nth-child(4) .VPFeature {
+  animation-delay: 0.34s;
+}
+.VPFeatures .item:nth-child(5) .VPFeature {
+  animation-delay: 0.42s;
+}
+.VPFeatures .item:nth-child(6) .VPFeature {
+  animation-delay: 0.5s;
+}
 
 /* ══════════════════════════════════════════════
    Hero action buttons: hover
    ══════════════════════════════════════════════ */
 
 .VPHero .actions .VPButton {
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.25s,
-              background-color 0.25s,
-              border-color 0.25s;
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s,
+    background-color 0.25s,
+    border-color 0.25s;
 }
 
 .VPHero .actions .VPButton:hover {
@@ -292,8 +333,14 @@
 }
 
 @keyframes page-enter {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ══════════════════════════════════════════════
@@ -301,7 +348,9 @@
    ══════════════════════════════════════════════ */
 
 .VPSidebar .VPSidebarItem .link {
-  transition: color 0.2s, padding-left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    color 0.2s,
+    padding-left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .VPSidebar .VPSidebarItem .link:hover {
@@ -310,7 +359,9 @@
 
 .VPNavBarMenuLink,
 .VPNavBarMenuGroup .button {
-  transition: color 0.2s, opacity 0.2s;
+  transition:
+    color 0.2s,
+    opacity 0.2s;
 }
 
 /* ══════════════════════════════════════════════
@@ -326,7 +377,9 @@
    ══════════════════════════════════════════════ */
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

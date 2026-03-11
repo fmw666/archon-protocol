@@ -199,7 +199,7 @@ description: "<syscall description>"
 Read each daemon from `https://aaep.site/daemons/<name>` and deploy alongside syscalls.
 
 Daemons to deploy:
-1. `archon-self-auditor` — 6-dim code audit (preloads all drivers) [readonly]
+1. `archon-self-auditor` — 7-dim code audit (preloads all drivers) [readonly]
 2. `archon-test-runner` — test sync and execution (preloads: test-sync)
 
 Deploy format is the same as syscalls — subagent for Cursor/Claude Code, skill for others.

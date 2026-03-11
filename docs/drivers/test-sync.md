@@ -40,11 +40,13 @@ For every source file to be modified, search for matching tests:
 
 Run all affected test files. Task is NOT complete until all pass.
 
-### 5. Structural Scan Tests
+### 5. Structural Scan Tests (MUST)
 
-Beyond unit tests, projects SHOULD maintain structural scan tests that statically analyze the entire codebase for prohibited patterns. These run in CI and catch violations regardless of who wrote the code.
+Beyond unit tests, projects MUST maintain structural scan tests that statically analyze the entire codebase for prohibited patterns. These run in CI and catch violations regardless of who wrote the code. **Documents achieve SHOULD; structural tests achieve MUST** — see [ADR-003](/decisions/ADR-003-executable-enforcement).
 
-**When to create**: When a prohibition is too critical to rely on AI self-checking alone, or when a production incident revealed a pattern that must NEVER reappear.
+**When to create**: For every grep-verifiable ❌ prohibition in a driver. If the prohibited pattern can be found by scanning source files, a structural test MUST exist to enforce it. This is the mechanism by which document-layer constraints graduate to process-layer enforcement.
+
+**When NOT required**: When the constraint requires cognitive understanding (e.g. "every async section needs skeleton + error + retry"). These remain document-layer only (SHOULD).
 
 **Template**:
 

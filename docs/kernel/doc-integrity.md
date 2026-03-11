@@ -76,6 +76,21 @@ These are always-true conditions. Violations indicate drift.
 | CI-6 | Every deployed file in `.cursor/rules/archon-*` or `.cursor/agents/archon-*` traces to a `docs/` source | `/archon-init` health check |
 | CI-7 | `docs/public/init.md` lists all drivers, syscalls, and daemons | `/archon-audit` |
 | CI-8 | `pnpm test` passes | Every workflow, CI |
+| CI-10 | Git coupling pairs (files that frequently co-change) are all accounted for in the propagation graph | `pnpm lint:coupling` |
+
+## Coupling Analysis
+
+Files that frequently change together in git history reveal **implicit dependencies** that the propagation graph should cover. The `scripts/lint-coupling.mjs` script mines git history to discover these pairs and validates them against the documented propagation rules.
+
+- **Documented pair**: both files appear in the same propagation chain → `✅`
+- **Undocumented pair**: files co-change ≥ 3 times in 90 days but have no propagation link → `⚠️` investigate
+- **Same directory**: co-changes within the same directory are expected → auto-pass
+
+Run manually: `node scripts/lint-coupling.mjs [days] [min-co-changes]`
+
+When undocumented coupling is found:
+1. If the coupling is real → add the pair to the propagation table above
+2. If the coupling is accidental (e.g., unrelated files touched in a batch commit) → no action needed, but document the exception
 
 ## Workflow Integration
 

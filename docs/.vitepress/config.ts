@@ -152,6 +152,10 @@ export default defineConfig({
                   text: "ADR-002: EvoMap Experience Absorption",
                   link: "/decisions/ADR-002-evomap-experience-absorption",
                 },
+                {
+                  text: "ADR-003: Executable Enforcement",
+                  link: "/decisions/ADR-003-executable-enforcement",
+                },
               ],
             },
           ],

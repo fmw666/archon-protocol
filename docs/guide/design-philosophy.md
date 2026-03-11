@@ -92,7 +92,7 @@ We agree — for the layer tools can cover. Here's what they can't:
 
 **The top 3 rows are syntax. The bottom 5 are architecture.** ESLint operates on AST patterns within a single file. Archon operates on architectural intent across the entire project.
 
-We've now added Linter verification as Stage 1.5 in the pipeline — the agent runs `lint`, reads errors, and fixes them. **Tools and protocols are complementary layers, not substitutes.**
+We've now added Linter & Test verification as Stage 1.5 in the pipeline — the agent runs `lint` and `test`, reads output, and fixes failures. **Documents achieve SHOULD (generative guidance); processes achieve MUST (unbypassable enforcement). They are complementary layers — not substitutes, but not equals either.** Lint and test results are the final authority. See [ADR-003](/decisions/ADR-003-executable-enforcement).
 
 ---
 
@@ -311,23 +311,31 @@ But the hardest bugs aren't syntax violations. They're architectural:
 
 **No linter rule can catch "this page should have independent error boundaries per section."** That requires understanding the intent of the code, not just its syntax. That's what protocol-level constraints provide.
 
-The correct architecture is layered:
+The correct architecture is layered ([ADR-003](/decisions/ADR-003-executable-enforcement)):
 
 ```
-Layer 3: Protocol constraints (architectural intent)
+Layer 4: Protocol constraints — SHOULD (architectural intent)
          "Every async section needs skeleton + error + retry"
-         Enforced by: agent context injection
+         Enforced by: agent context injection (generative guidance)
+         Nature: advisory, can be compressed in long conversations
 
-Layer 2: Linter verification (syntax patterns)
+Layer 3: Structural scan tests — MUST (pattern enforcement)
+         "No file exceeds 300 lines", "No cross-feature imports"
+         Enforced by: vitest/jest structural tests running in CI
+         Nature: process-level, unbypassable
+
+Layer 2: Linter verification — MUST (syntax patterns)
          "No `any` type, no unused imports"
-         Enforced by: ESLint, TypeScript
+         Enforced by: ESLint, Biome, TypeScript
+         Nature: process-level, unbypassable
 
-Layer 1: Compiler checks (type correctness)
+Layer 1: Compiler checks — MUST (type correctness)
          "This function expects a string, not a number"
          Enforced by: tsc, rustc, go build
+         Nature: process-level, unbypassable
 ```
 
-**Archon Protocol is Layer 3.** It doesn't replace Layers 1-2. It covers what they can't.
+**Archon Protocol is the complete stack — Layers 1 through 4.** Not just the document layer. The OS encompasses documents, lint, tests, and CI as integrated components. Layer 4 guides AI at generation time (SHOULD). Layers 1–3 enforce compliance mechanically (MUST).
 
 ### Why Self-Evolution Matters
 
@@ -458,5 +466,7 @@ The core philosophy:
 Just as an operating system doesn't make hardware more powerful, but makes its power reliably, consistently, efficiently utilized — Archon Protocol doesn't make AI more capable, but makes its capability reliably, consistently, efficiently directed at the right problems.
 
 That is why we call it an "operating system," not a "best practice." Best practices are advice. Operating systems are infrastructure. You can ignore advice. You cannot bypass infrastructure.
+
+An operating system is not just documentation files — it is the union of documents, lint rules, structural tests, and CI pipelines. Documents guide AI at generation time (SHOULD). Processes enforce compliance mechanically (MUST). Init bridges the two by integrating with the project's existing enforcement ecosystem from day one. **This is what makes AAEP a true OS, not a documentation system with tests bolted on.**
 
 **Use it. Break it. Tell us what's wrong. We'll either fix it or explain why it's right.**

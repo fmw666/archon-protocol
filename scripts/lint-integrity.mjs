@@ -205,6 +205,16 @@ if (aiIndex) {
 }
 
 // ---------------------------------------------------------------------------
+// CI-10: lint-coupling.mjs exists (coupling analysis is available)
+// ---------------------------------------------------------------------------
+const couplingScript = path.join(ROOT, "scripts", "lint-coupling.mjs");
+if (fs.existsSync(couplingScript)) {
+  pass("CI-10", "lint-coupling.mjs exists (run `pnpm lint:coupling` for full analysis)");
+} else {
+  fail("CI-10", "scripts/lint-coupling.mjs not found — coupling analysis unavailable");
+}
+
+// ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------
 console.log("");

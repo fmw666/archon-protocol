@@ -54,14 +54,15 @@ curl -s https://aaep.site/init.md
 
 The AI reads the init prompt, detects your environment, and deploys the protocol. That's it.
 
-### The Four Layers
+### The Five Layers
 
-| Layer | What | How |
-|-------|------|-----|
-| **Constraint** | Hard boundaries that shape code generation | `❌` prohibitions in constraint skills, injected into agent context |
-| **Workflow** | Standard delivery sequences | `/archon-demand` 7-stage pipeline with opt-out flags |
-| **Evolution** | System that gets smarter with every task | Stage 3.6 discovers patterns → staging area → approved → new constraint |
-| **Knowledge** | Project memory that persists across sessions | `archon.config.yaml`, constraint skills, architecture docs |
+| Layer | What | How | Enforcement |
+|-------|------|-----|-------------|
+| **Constraint** | Boundaries that shape code generation | `❌` prohibitions in constraint skills, injected into agent context | SHOULD (generative guidance) |
+| **Workflow** | Standard delivery sequences | `/archon-demand` pipeline with opt-out flags | SHOULD (procedural guidance) |
+| **Evolution** | System that gets smarter with every task | Stage 3.6 discovers patterns → staging → approved → constraint or test | SHOULD → MUST |
+| **Knowledge** | Project memory that persists across sessions | `archon.config.yaml`, architecture docs, ADRs | Knowledge base |
+| **Enforcement** | Process-level compliance gates | Lint rules + structural tests + CI pipeline | MUST (unbypassable) |
 
 ### The Feedback Loop
 
@@ -92,7 +93,7 @@ Task N → Constraint system is comprehensive
 | Cross-boundary contract enforcement | ❌ | ✅ |
 | Self-evolution: learns from every task | ❌ | ✅ |
 
-Linters catch syntax. AAEP catches architecture. **Both layers active — Stage 1.5 runs your project's linter automatically.**
+Linters catch syntax. AAEP catches architecture. **Documents achieve SHOULD (generative guidance). Lint and tests achieve MUST (process enforcement). AAEP is the complete OS — not just documents, but documents + lint + tests + CI as an integrated system.** See [ADR-003](/decisions/ADR-003-executable-enforcement).
 
 ### Cross-Tool Compatibility
 

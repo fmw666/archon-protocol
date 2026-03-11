@@ -93,6 +93,23 @@ This means:
 - Refactor reports capture what was learned (immune memory)
 - The constraint set approaches the project's "perfect defense" over time
 
+## Principle 8: Process Enforcement > Document Enforcement
+
+> **Documents can achieve SHOULD. Only process execution can achieve MUST.**
+
+A constraint written in a driver markdown file guides AI's behavior at generation time — but it can be compressed away in a long conversation, misinterpreted, or simply ignored. A constraint expressed as a lint rule or structural test runs in its own OS process, produces a binary pass/fail verdict, and blocks CI merge. It cannot be negotiated with, compressed, or forgotten.
+
+The document layer (drivers, skills, ADRs) is the **knowledge system** — it captures intent, evolves through feedback, and covers architectural constraints no tool can express. The process layer (lint, tests, CI) is the **legal system** — it enforces compliance mechanically with 100% reliability for every expressible constraint.
+
+This means:
+- Every grep-verifiable ❌ prohibition should have a corresponding structural scan test or lint rule
+- Stage 3.6 (Knowledge Evolution) must evaluate: "can this new constraint become a lint rule or test?"
+- `/archon-init` must deeply integrate with the project's existing lint and test ecosystem
+- The constraint maturity lifecycle: discovery → document → process → CI gate
+- Archon Protocol is a complete OS (documents + lint + tests + CI), not a documentation system with some tests bolted on
+
+See [ADR-003](/decisions/ADR-003-executable-enforcement) for the full rationale.
+
 ## The Time Triangle
 
 Documentation serves three temporal perspectives. All three are necessary:

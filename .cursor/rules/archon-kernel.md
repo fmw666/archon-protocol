@@ -65,7 +65,7 @@ You **must** enforce every `❌` prohibition. Drivers are law.
 
 | Daemon | Source | Spawned By |
 |--------|--------|-----------|
-| `archon-self-auditor` | `docs/daemons/self-auditor.md` | demand Stage 3 |
+| `archon-self-auditor` | `docs/daemons/self-auditor.md` | demand Stage 3 (7 dimensions) |
 | `archon-test-runner` | `docs/daemons/test-runner.md` | demand Stage 3.4 |
 
 ## Core Loop

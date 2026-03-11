@@ -36,9 +36,9 @@ describe("Demand Pipeline Completeness", () => {
       expect(demandDoc).toMatch(/refactor.plan/i);
     });
 
-    it("Stage 3 references 7 sub-stages (3.1-3.7)", () => {
+    it("Stage 3 references 8 sub-stages (3.1-3.8)", () => {
       const dimensions = demandDoc.match(/### 3\.\d/g) || [];
-      expect(dimensions.length).toBe(7);
+      expect(dimensions.length).toBe(8);
     });
 
     it("has a completion report template", () => {
@@ -55,9 +55,9 @@ describe("Demand Pipeline Completeness", () => {
   });
 
   describe("self-auditor doc", () => {
-    it("covers 6 dimensions", () => {
+    it("covers 7 dimensions", () => {
       const dims = selfAuditorDoc.match(/## Dimension \d/g) || [];
-      expect(dims.length).toBe(6);
+      expect(dims.length).toBe(7);
     });
   });
 

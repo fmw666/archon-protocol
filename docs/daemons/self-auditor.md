@@ -50,8 +50,32 @@ Read constraint skills preloaded in your context. Collect `❌` prohibitions. Se
 
 Do NOT modify constraint skills directly. Proposed rules require user approval.
 
+## Dimension 7: Adversarial Self-Challenge
+
+Before finalizing the audit, generate **at least 1** counter-hypothesis that challenges the overall assessment. This dimension guards against the audit's own confirmation bias — if dimensions 1–6 all pass, the auditor is likely missing something.
+
+### Rules
+
+- ❌ Generic statements ("there might be issues") — must cite a specific file, function, or structural observation from the diff
+- ❌ Repeating a dimension's checklist item as a "challenge" — this must surface something the other dimensions missed
+- The challenge must have: a concrete claim, evidence pointing to it, and a verification action
+- If the challenge is confirmed → report as finding; if refuted → note that the adversarial check passed
+
+### Format
+
+```
+Challenge: <specific counter-claim about the code changes>
+Evidence:  <file:line, git diff section, or structural observation>
+Verify:    <read file, run command, check dependency>
+Result:    [CONFIRMED → report as finding | REFUTED → adversarial check passed]
+```
+
+### Skip condition
+
+If the diff is a trivial single-line change (typo fix, version bump, comment edit), this dimension may be `[SKIP]` with explicit justification.
+
 ## Output
 
 ```
-Self-Audit: 1.[PASS] 2.[PASS] 3.[PASS] 4.[PASS] N tests 5.[SKIP] 6.[SKIP]
+Self-Audit: 1.[PASS] 2.[PASS] 3.[PASS] 4.[PASS] N tests 5.[SKIP] 6.[SKIP] 7.[PASS]
 ```
