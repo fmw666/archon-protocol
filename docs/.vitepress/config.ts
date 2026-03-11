@@ -1,7 +1,8 @@
 import { defineConfig } from "vitepress";
+import { withMermaid } from "vitepress-plugin-mermaid";
 import { codeBlockTitlePlugin } from "./theme/codeBlockTitle";
 
-export default defineConfig({
+export default withMermaid(defineConfig({
   base: "/",
   title: "Archon Protocol",
   description:
@@ -243,4 +244,6 @@ export default defineConfig({
       copyright: "Archon Protocol",
     },
   },
-});
+
+  mermaid: {},
+}));
