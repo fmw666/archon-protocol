@@ -4,6 +4,9 @@ export default defineConfig({
   title: 'Archon Protocol',
   description: 'AI 工程治理协议 — 把 AI 编程助手变成自主的工程负责人',
   lang: 'zh-CN',
+  // 使用自定义域名（aaep.site）时 base 为 '/'
+  // 仅用 GitHub Pages 默认域名时改为 '/archon-protocol/'
+  base: '/',
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
   ],
