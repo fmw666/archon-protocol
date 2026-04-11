@@ -1,0 +1,17 @@
+{
+  "name": "archon-protocol",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev docs",
+    "build": "node scripts/build-zip.mjs && vitepress build docs",
+    "preview": "vitepress preview docs",
+    "build:zip": "node scripts/build-zip.mjs"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.3",
+    "vue": "^3.5.13",
+    "archiver": "^7.0.1"
+  }
+}
