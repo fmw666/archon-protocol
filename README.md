@@ -147,6 +147,10 @@ AI agents: read [`ai-index.md`](ai-index.md) for a machine-readable sitemap of a
 5. **Self-evolution** — every task can strengthen the constraint system
 6. **Every environment** — Cursor, Claude Code, Codex, Copilot, Windsurf, Gemini CLI
 
+## License
+
+MIT
+
 ---
 
 *Archon Protocol v2.0 — OS-model architecture with unified documentation. Powered by AAEP.*
