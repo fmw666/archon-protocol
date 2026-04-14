@@ -3,6 +3,9 @@
 > You are reading the Archon Protocol bootstrap prompt.
 > Follow every step below to initialize the protocol in the user's project.
 > Source: https://aaep.site | Repo: https://github.com/fmw666/archon-protocol
+>
+> **AI Navigation**: For a full sitemap with raw Markdown links, fetch `https://aaep.site/ai.md`
+> **Full Docs**: For all documentation in one file, fetch `https://aaep.site/llms-full.txt`
 
 ## Step 1: Detect Project State
 
@@ -235,3 +238,4 @@ Archon Protocol Init:
 
 *Archon Protocol — powered by AAEP (AI Architect Evolution Protocol)*
 *Documentation: https://aaep.site | Source: https://github.com/fmw666/archon-protocol*
+*AI Navigation: https://aaep.site/ai.md | Full Docs: https://aaep.site/llms-full.txt*

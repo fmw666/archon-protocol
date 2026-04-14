@@ -252,7 +252,23 @@ export default withMermaid(defineConfig({
   },
 
   vite: {
-    plugins: [llmstxt()],
+    plugins: [
+      llmstxt({
+        domain: "https://aaep.site",
+        customLLMsTxtTemplate: `# {title}
+
+> {description}
+
+> AI navigation: https://aaep.site/ai.md
+> Init prompt: https://aaep.site/init.md
+
+{details}
+
+## Table of Contents
+
+{toc}`,
+      }),
+    ],
   },
 
   mermaid: {},
