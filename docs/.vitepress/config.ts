@@ -46,6 +46,10 @@ export default withMermaid(defineConfig({
               items: [
                 { text: "Getting Started", link: "/guide/getting-started" },
                 {
+                  text: "User Journeys",
+                  link: "/guide/user-journeys",
+                },
+                {
                   text: "Design Philosophy",
                   link: "/guide/design-philosophy",
                 },
@@ -188,6 +192,7 @@ export default withMermaid(defineConfig({
               text: "指南",
               items: [
                 { text: "快速上手", link: "/zh/guide/getting-started" },
+                { text: "用户旅途", link: "/zh/guide/user-journeys" },
                 { text: "设计哲学", link: "/zh/guide/design-philosophy" },
                 { text: "常见问题", link: "/zh/guide/faq" },
               ],
