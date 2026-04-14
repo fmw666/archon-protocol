@@ -175,6 +175,32 @@ These aren't suggestions. They're part of the AI's active instruction set during
 
 ---
 
+## Journey 8: Code Without a Manual
+
+You ask AI to build a permission system. It delivers: role definitions, middleware guards, route protection, a `usePermission` hook. It works. You merge it.
+
+Two weeks later, a new team member asks: "How does the permission system work? Which roles exist? How do I add a new one?" You look for documentation. **There is none.** The AI wrote 600 lines of code and zero lines of explanation.
+
+You go back to AI: "Document the permission system." It writes a README. But by now the code has changed — the README is already partially wrong. You ask AI to update it. It overwrites with a fresh description that misses the edge cases the previous version covered.
+
+This repeats for every feature. The codebase grows, but its documentation is either missing, stale, or contradictory. **You built a product nobody can understand without reading every line of source code.**
+
+### What Archon Does
+
+Archon treats documentation as a **deliverable, not an afterthought**. The demand pipeline enforces this at multiple stages:
+
+1. **Manifest update (Stage 5)** — Every completed feature is recorded in the project manifest: what it does, where it lives, what patterns it uses. This is the project's living table of contents.
+
+2. **Knowledge evolution (Stage 3.6)** — When the agent discovers new patterns or makes architectural decisions, they're captured in `proposed-rules.md` and architecture docs — not left as tribal knowledge in someone's chat history.
+
+3. **Drift detection** — The [drift mechanism](/architecture/drift) tracks whether documentation reflects reality. When code changes outpace doc updates, the drift counter increments. At threshold, the system forces a reconciliation: "the manifest says auth uses JWT, but the code switched to session tokens — update the manifest."
+
+4. **Refactor reports** — Every significant change produces a structured record: what changed, why, what was considered and rejected. This is the project's institutional memory — the "why" behind every "what."
+
+The result: your project always has a current, accurate map of itself. New team members (human or AI) can read the manifest and understand the system without archaeology.
+
+---
+
 ## The Pattern
 
 Every journey shares the same root cause:
@@ -194,6 +220,7 @@ That's what Archon Protocol is: **an operating system that turns locally-optimal
 | Error handling is per-page lottery | Feedback loop enforces consistency |
 | Config scatters across the project | Structural audit centralizes config |
 | Happy-path-only development | Drivers enforce real-world resilience |
+| Code ships without documentation | Manifest + drift detection keep docs current |
 
 ---
 
