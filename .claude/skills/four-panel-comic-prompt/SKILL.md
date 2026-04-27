@@ -1,12 +1,12 @@
----
+﻿---
 name: four-panel-comic-prompt
 description: >
-  Turn a rough engineering concept, architecture note, script, document, or
-  Chinese/English outline into a polished copy-ready image-generation prompt
-  for a 4-panel comic. Use when the user asks for 四格漫画, comic explainer,
-  漫画图解, AI Owner comic, engineering concept visual prompt, or wants a prompt
-  they can copy into an image generator instead of generating the image directly.
-version: 1.0.0
+  Create polished image-generation prompts for vertical 4-panel educational
+  comics from engineering concepts, architecture notes, scripts, documents, or
+  rough panel ideas. Use when the user asks for a four-panel comic, comic
+  explainer, AI Owner comic, engineering concept visual, architecture comic, or
+  Chinese requests such as 四格漫画, 漫画图解, 图解漫画, or 技术漫画.
+version: 1.1.0
 license: MIT
 ---
 
@@ -14,130 +14,84 @@ license: MIT
 
 ## Goal
 
-Analyze a rough engineering script, architecture note, or document and produce a
-polished image-generation prompt for a **vertical 4-panel educational comic**.
+Turn a rough engineering concept, architecture note, document, or panel script
+into a copy-ready image-generation prompt for a **vertical 4-panel educational
+comic**.
+
 The comic uses the same EvoMap visual identity as
-`../single-comic-prompt/reference.png`: whiteboard-first hand-drawn cartoon,
-black ink outlines, simple characters, concrete visual metaphors, and very
-little in-image text. Preserve the 4-panel vertical teaching format while
-matching the single-cover skill's style and design guardrails.
+`../single-comic-prompt/reference.png`: clean whiteboard-first hand-drawn
+cartoon, black ink outlines, a simple AI Owner mascot, concrete visual
+metaphors, very little in-image text, a pure white / neutral near-white
+background, and tiny warm accents only.
 
-By default, this skill produces prompts only. Generate an image with Gemini only
-after the user explicitly asks for image generation or approves the prompt.
+This skill produces a prompt by default. Generate an image only after the user
+explicitly asks for image generation or approves the prompt.
 
-## Visual Style Reference
+## Inputs
 
-Use `../single-comic-prompt/reference.png` and the `single-comic-prompt` skill's
-Visual Style Reference as the canonical style source for linework, composition
-density, character simplicity, and editorial mood only. Do not copy the
-reference image's cream/yellow background cast.
+| Input | How to handle it |
+| --- | --- |
+| Rough panel script | Normalize it into the 4-beat structure. |
+| Local document path | Read the document and choose the strongest single concept. |
+| Pasted notes | Extract one explainable engineering concept. |
+| Topic only | Ask one concise clarifying question if the concept is too vague. |
 
-| Element | Description |
-|---------|-------------|
-| Overall feel | Hand-drawn sketch on a clean pure white / neutral near-white background, like a whiteboard cartoon |
-| Character | Simple "AI Owner" cartoon mascot with round head, minimal face, and expressive pose |
-| Line language | Black ink / marker outlines, slightly imperfect hand-drawn strokes |
-| Color palette | Whiteboard-first: mostly pure white / neutral near-white space with black ink outlines. Use golden yellow, amber, and orange only as tiny accent marks, never as an overall wash, glow, background patch, or page tint. Occasional green check marks or red warning highlights are fine. |
-| Typography | Short hand-lettered captions, marker style. Use very little in-image text. |
-| Layout | Vertical 4-panel educational comic, top to bottom, clear downward arrows, clean breathing room |
-| Objects | Cartoon props matching the cover style: gates, road signs, barriers, arrows, gears, check marks, warning marks, code cards, simple UI wireframes |
-| Mood | Lighthearted, editorial, explanatory — like a visual analogy that makes a technical idea click |
-| Avoid | Real photos, realistic faces, 3D rendering, gradients, dark backgrounds, clutter |
-
-### Whiteboard Color Guardrails
-
-The comic should read as a clean whiteboard sketch first:
-
-- Keep the background pure white or neutral near-white, with no cream, beige, sepia, or yellow-tinted full-page fill.
-- Keep panel interiors unfilled; use only neutral off-white / pale gray for small shadows or object fills.
-- Reserve warm colors for tiny highlights: icons, arrows, warning marks, stickers, signs, or one focal object per panel.
-- Do not use warm halos, sunbursts, large yellow patches, or amber shading behind panels.
-- If the prompt mentions warm tones, immediately constrain them as "small accents only."
+If the input contains multiple concepts, choose the strongest one for a single
+comic and mention that choice before the prompt.
 
 ## Workflow
 
-### Step 1 — Collect the input
+### 1. Extract the teaching concept
 
-Ask the user for one of:
+Identify Concept, Wrong approach, Correct layer switch, Action, and System
+result. Present this analysis briefly before the final prompt.
 
-- A rough panel script.
-- A local document path.
-- Pasted notes or architecture content.
-- A topic plus the concept they want explained.
-
-### Step 2 — Extract the core concept
-
-Read the user's rough script, document, or notes. Identify:
-
-- The single engineering concept to explain.
-- The common wrong approach.
-- The correct approach, especially the layer or lens the user wants to switch to.
-- The action the AI Owner takes.
-- The system result after the action.
-
-If the input contains multiple concepts, choose the strongest one and mention the
-choice briefly before the prompt. If the concept is missing, ask one concise
-clarifying question.
-
-Present this analysis to the user in a concise summary block before the final
-prompt:
-
-- Concept
-- Wrong approach
-- Correct layer switch
-- Action
-- System result
-
-### Step 3 — Convert the concept into four beats
-
-Use this narrative structure:
+### 2. Convert the concept into four beats
 
 | Panel | Purpose | Content rule |
-|-------|---------|--------------|
+| --- | --- | --- |
 | 1 | Wrong approach | Show the tempting mistake or local optimization. |
 | 2 | Correct approach | Show the layer switch, better lens, or architecture boundary. |
-| 3 | Action | Show the AI Owner applying the rule, tool, or workflow. |
-| 4 | System result | Show the simpler, safer, or more coherent system outcome. |
+| 3 | Action | Show AI Owner applying the rule, tool, or workflow. |
+| 4 | System result | Show the simpler, safer, or more coherent outcome. |
 
-Keep each panel to one idea. If the source has too much detail, compress it into
-visual symbols and short captions.
+Keep each panel to one idea. Compress details into visible symbols: checklist,
+boundary line, switch, magnifying glass, memory box, validation stamp, gate,
+road, delivery lane, warning mark, or green check.
 
-### Step 4 — Output a copy-ready prompt
+### 3. Write the comic prompt
 
-Return the final prompt in a fenced `text` block so the user can copy it
-directly. Use English for image-generation instructions, but keep any requested
-Chinese titles or captions in Chinese.
-
-Use this template:
+Use English for image-generation instructions. Preserve any user-requested
+Chinese titles or captions exactly.
 
 ```text
-Create a 4-panel comic explaining one engineering concept.
+Create a vertical 4-panel educational comic explaining one engineering concept.
+
+Important text rule:
+The instructions below are for the image model only. Do not draw panel numbers, section labels, narrative sentences, explanatory paragraphs, or the words "caption", "panel", "narrative", or "instructions" in the image. Each panel may contain only one short hand-lettered caption listed below.
 
 Theme:
-{concept}
+{one-sentence concept}
 
-Flow:
-top to bottom, 4 stacked panels
-clear downward flow arrows between panels
+Four-panel story:
+Panel 1 visual: {wrong approach as a concrete scene}
+Panel 1 caption: "{SHORT CAPTION}"
 
-Narrative:
-1. {wrong approach}
-2. {correct approach / switch layer}
-3. {action}
-4. {system result}
+Panel 2 visual: {correct layer switch as a concrete scene}
+Panel 2 caption: "{SHORT CAPTION}"
 
-Panel details:
-Panel 1: {simple visual scene + short caption}
-Panel 2: {simple visual scene + short caption}
-Panel 3: {simple visual scene + short caption}
-Panel 4: {simple visual scene + short caption}
+Panel 3 visual: {AI Owner action as a concrete scene}
+Panel 3 caption: "{SHORT CAPTION}"
+
+Panel 4 visual: {system result as a concrete scene}
+Panel 4 caption: "{SHORT CAPTION}"
 
 Style:
 hand-drawn cartoon illustration in a clean whiteboard sketch style
 use ../single-comic-prompt/reference.png for linework, character simplicity, layout density, and editorial composition only; ignore its cream/yellow background color
 pure white / neutral near-white background with black ink marker outlines
 panel interiors are unfilled and white; no beige wash, no cream tint, no warm background patches
-large areas left unfilled; use neutral pale gray only for tiny shadows or object fills
+large areas left unfilled; use neutral pale gray only for tiny shadows or faded inactive objects
 golden yellow, amber, and orange used only as tiny accent marks, not as page tint, halo, glow, or background shading
 occasional green check marks and red warning highlights
 flat editorial cartoon feel, no photographic elements, no 3D rendering
@@ -145,16 +99,15 @@ flat editorial cartoon feel, no photographic elements, no 3D rendering
 Character:
 consistent "AI Owner" cartoon mascot
 simple round head, minimal face, black hair, expressive pose
-wearing a simple shirt labeled "AI OWNER"
-appears in every panel with context-specific tool
+wearing a simple white shirt labeled "AI OWNER" in black ink
+appears in every panel with a context-specific tool
 personality: calm, focused, slightly deadpan
-pose language: points, checks, stamps, opens gates
 
 Layout:
-structured panels, strong hierarchy
-vertical 4-panel layout
-clear downward flow arrows
-educational comic style
+vertical 4-panel layout, top to bottom
+clean black panel borders
+clear downward flow arrows between panels
+generous white space
 
 Color system:
 whiteboard-first palette
@@ -164,91 +117,99 @@ warm yellow / amber / orange accents only in tiny highlights
 green check marks for success
 red marks for warnings
 
-Rules:
-each panel simple and readable
-max 1 idea per panel
-preserve the single-cover skill's whiteboard-first visual identity
-no photorealism
-no 3D rendering
-no gradients
-no dark backgrounds behind the illustration itself
-no cream, beige, sepia, warm halo, sunburst, or amber background wash
-no complex graph clutter
-high readability
-consistent character design across panels
-use at most 1 short caption per panel
-avoid long speech bubbles
+Do not include:
+photorealism
+3D rendering
+gradients
+dark backgrounds
+cream, beige, sepia, warm halo, sunburst, or amber background wash
+large yellow shapes
+complex graph clutter
+long speech bubbles
+paragraph text
+panel numbers
+instructional headings
+extra captions beyond the four specified captions
 ```
 
-Add a brief note after the code block:
+### 4. Present for review
 
-> 以上 Prompt 可直接粘贴到 Gemini 3 Pro 中使用。
-> 如需调整人物、构图或视觉隐喻，告诉我即可重新生成。
+Return a concise analysis block, then the final prompt in a fenced `text` block,
+then a short note in the user's language explaining that the prompt is ready for
+Gemini 3 Pro and can be revised by changing the character, composition, or
+metaphor.
 
-### Step 5 — Use Gemini to generate the image
+Do not generate the image in this step unless the user explicitly asks.
 
-After human review or explicit user approval, generate the final image with the
-bundled script.
+### 5. Generate the image when asked
 
-#### Option A: Script generation
+Use `scripts/generate-comic.py` after the user approves the prompt or asks for
+image generation.
 
-The skill includes `scripts/generate-comic.py`, a zero-dependency Python script
-that calls the Gemini image API.
+Configuration:
 
-Configuration: set `GEMINI_API_KEY` using either:
+- Set `GEMINI_API_KEY` as an environment variable, or
+- Create `.env` in this skill directory using `.env.example`.
 
-- Environment variable: `GEMINI_API_KEY="your-key"`
-- `.env` file in this skill directory, following `.env.example`
-
-Basic usage:
+Recommended commands:
 
 ```bash
-python scripts/generate-comic.py --prompt-file prompt.txt
-python scripts/generate-comic.py --prompt-file prompt.txt --reference ../single-comic-prompt/reference.png
-python scripts/generate-comic.py --prompt-file prompt.txt --reference ../single-comic-prompt/reference.png --output comic.png --size 2K --aspect 9:16
-python scripts/generate-comic.py --prompt "Create a 4-panel comic..."
+python scripts/generate-comic.py --prompt-file output/YYYYMMDD-HHMMSS-slug-prompt.txt --reference ../single-comic-prompt/reference.png
+python scripts/generate-comic.py --prompt-file output/YYYYMMDD-HHMMSS-slug-prompt.txt --reference ../single-comic-prompt/reference.png --output slug-comic.png --size 2K --aspect 9:16
+python scripts/generate-comic.py --prompt "Create a vertical 4-panel educational comic..."
 ```
 
-Default generation settings:
+Generation defaults:
 
 | Setting | Default |
-|---------|---------|
+| --- | --- |
 | Model | `gemini-3-pro-image-preview` |
 | Aspect ratio | `9:16` |
 | Size | `2K` |
+| Output directory | `output/` |
 
-#### Option B: Manual AI Studio
+Output rules:
 
-1. Open [Google AI Studio](https://aistudio.google.com/).
-2. Select Gemini image generation model.
-3. Enable image output.
-4. Paste the reviewed prompt.
-5. Iterate with short correction instructions if needed.
+- Store all generated images and prompt archives in `output/`.
+- Use sortable filenames: `YYYYMMDD-HHMMSS-<slug>-prompt.txt` when saving a prompt manually.
+- The script archives the prompt next to the image, for example `YYYYMMDD-HHMMSS-comic.png` and `YYYYMMDD-HHMMSS-comic-prompt.txt`.
+- Bare `--output filename.png` values are saved under `output/`.
+- Never write temporary prompts or generated images into the skill root.
 
-## Quality bar
+Fallback: if the API call fails, report the error and keep the prompt file in
+`output/` so the user can paste it into Google AI Studio manually.
 
-- The prompt should be specific enough that another model can generate the image
-  without reading the original source.
-- Prefer visible symbols over abstract nouns: checklist, boundary line, switch,
-  lens, memory box, validation stamp, loop arrow, delivery lane.
-- Keep text inside the image short. Long explanations belong outside the image,
-  not in speech bubbles.
-- Preserve the `single-comic-prompt` reference visual style exactly unless the
-  user overrides it: clean whiteboard sketch, pure white / neutral near-white
-  background, black marker outlines, simple characters, editorial explanatory
-  mood, and warm yellow/amber/orange only as tiny accents. Use the reference for
-  linework and composition, not for its cream/yellow background cast.
+## Visual Style Rules
+
+Use `../single-comic-prompt/reference.png` as the canonical visual reference for
+linework, composition density, character simplicity, and editorial mood only. Do
+not copy the reference image's cream/yellow background cast.
+
+- Use pure white or neutral near-white background.
+- Keep panel interiors white and unfilled.
+- Use neutral pale gray only for faded inactive paths, small shadows, or minor object fills.
+- Reserve golden yellow, amber, and orange for tiny accent marks only.
+- Avoid cream, beige, sepia, yellow page tint, warm halos, sunbursts, amber background washes, and large yellow shapes.
+
+## Prompt Quality Bar
+
+- Explain one engineering concept per comic.
+- Preserve the four-beat order: wrong approach, correct approach, action, system result.
+- Keep each panel visually simple and readable.
+- Reuse the same AI Owner mascot in every panel.
+- Use at most one short caption per panel.
+- Prefer visible symbols over abstract nouns.
+- Keep long explanations outside the image.
+- If a generated image contains too much text, rewrite the prompt with an explicit "Important text rule" and shorter captions.
+- If a generated image looks yellow, tighten the prompt around pure white / neutral near-white background and explicitly ban warm washes.
 
 ## Rules
 
-1. Produce a prompt, not an image, unless the user explicitly asks to generate an image.
-2. Explain one engineering concept per comic.
-3. Keep the four narrative beats in order: wrong approach, correct approach,
-   action, system result.
-4. Reuse the same simple "AI Owner" mascot in every panel.
-5. Match the `single-comic-prompt` visual identity: whiteboard-first, black
-   linework, pure white / neutral near-white background, sparse warm accents,
-   clean breathing room, and concrete cartoon props.
-6. Avoid photorealism, realistic faces, 3D rendering, gradients, dark
-   backgrounds, cream/beige/sepia casts, full-page yellow tint, warm halos,
-   sunbursts, complex graphs, and clutter.
+1. Produce a prompt first unless the user explicitly asks to generate an image.
+2. Keep the skill body and generated image instructions in English by default.
+3. Preserve user-requested Chinese captions only when they are intentional image text.
+4. Match the `single-comic-prompt` whiteboard-first visual identity.
+5. Use the reference image for style only, not for background color.
+6. Keep warm colors tiny and localized.
+7. Store prompt files and generated images under `output/`.
+8. Do not commit `.env`, `output/`, `__pycache__/`, or generated cache files.

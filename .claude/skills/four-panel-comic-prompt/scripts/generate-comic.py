@@ -23,6 +23,8 @@ API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 DEFAULT_MODEL = "gemini-3-pro-image-preview"
 DEFAULT_ASPECT = "9:16"
 DEFAULT_SIZE = "2K"
+SKILL_DIR = Path(__file__).resolve().parent.parent
+DEFAULT_OUTPUT_DIR = SKILL_DIR / "output"
 
 
 def load_api_key():
@@ -30,7 +32,7 @@ def load_api_key():
     if key:
         return key
 
-    env_file = Path(__file__).resolve().parent.parent / ".env"
+    env_file = SKILL_DIR / ".env"
     if env_file.exists():
         for line in env_file.read_text().splitlines():
             line = line.strip()
@@ -39,6 +41,21 @@ def load_api_key():
 
     print("ERROR: GEMINI_API_KEY not found. Set it as env var or in .env", file=sys.stderr)
     sys.exit(1)
+
+
+def resolve_output_path(output_arg):
+    if not output_arg:
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        return DEFAULT_OUTPUT_DIR / f"{timestamp}-comic.png"
+
+    output_path = Path(output_arg)
+    if not output_path.is_absolute() and output_path.parent == Path("."):
+        return DEFAULT_OUTPUT_DIR / output_path
+    return output_path
+
+
+def resolve_prompt_archive_path(output_path):
+    return output_path.with_name(f"{output_path.stem}-prompt.txt")
 
 
 def load_image_as_base64(path):
@@ -107,7 +124,7 @@ def main():
     group.add_argument("--prompt", help="Image generation prompt text")
     group.add_argument("--prompt-file", help="Path to a text file containing the prompt")
     parser.add_argument("--reference", help="Path to a reference style image (optional)")
-    parser.add_argument("--output", help="Output image path (default: comic-<timestamp>.png)")
+    parser.add_argument("--output", help="Output image path (default: output/<YYYYMMDD-HHMMSS>-comic.png; bare filenames are saved under output/)")
     parser.add_argument("--model", default=DEFAULT_MODEL, help=f"Model name (default: {DEFAULT_MODEL})")
     parser.add_argument("--aspect", default=DEFAULT_ASPECT, help=f"Aspect ratio (default: {DEFAULT_ASPECT})")
     parser.add_argument("--size", default=DEFAULT_SIZE, choices=["512", "1K", "2K", "4K"], help=f"Image size (default: {DEFAULT_SIZE})")
@@ -118,7 +135,8 @@ def main():
         print("ERROR: Prompt is empty.", file=sys.stderr)
         sys.exit(1)
 
-    output_path = args.output or f"comic-{datetime.now().strftime('%Y%m%d-%H%M%S')}.png"
+    output_path = resolve_output_path(args.output)
+    prompt_archive_path = resolve_prompt_archive_path(output_path)
 
     print(f"Model:  {args.model}")
     print(f"Size:   {args.size}")
@@ -126,6 +144,7 @@ def main():
     if args.reference:
         print(f"Ref:    {args.reference}")
     print(f"Output: {output_path}")
+    print(f"Prompt archive: {prompt_archive_path}")
     print(f"Prompt: {prompt[:120]}{'...' if len(prompt) > 120 else ''}")
     print()
     print("Generating image...")
@@ -137,8 +156,11 @@ def main():
         aspect_ratio=args.aspect,
         image_size=args.size,
     )
-    Path(output_path).write_bytes(image_bytes)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    prompt_archive_path.write_text(prompt + "\n", encoding="utf-8")
+    output_path.write_bytes(image_bytes)
     print(f"Done! Saved to {output_path} ({len(image_bytes)} bytes)")
+    print(f"Prompt saved to {prompt_archive_path}")
 
 
 if __name__ == "__main__":
