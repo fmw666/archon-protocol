@@ -118,6 +118,88 @@
   margin: 32px 0;
 }
 
+/* ── Comic pages: visual cards for architecture explainers ── */
+
+.vp-doc .comic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.vp-doc .comic-card {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, var(--vp-c-bg-soft), transparent 65%),
+    var(--vp-c-bg);
+  padding: 20px;
+  color: var(--vp-c-text-1);
+  text-decoration: none;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.04);
+}
+
+.vp-doc a.comic-card {
+  transition:
+    border-color 0.25s,
+    box-shadow 0.25s,
+    transform 0.25s;
+}
+
+.vp-doc a.comic-card:hover {
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.12);
+  transform: translateY(-2px);
+}
+
+.vp-doc .comic-card::after {
+  content: "";
+  position: absolute;
+  right: -24px;
+  bottom: -24px;
+  width: 88px;
+  height: 88px;
+  border: 2px solid var(--vp-c-brand-soft);
+  border-radius: 999px;
+  opacity: 0.8;
+}
+
+.vp-doc .comic-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.vp-doc .comic-card strong {
+  display: block;
+}
+
+.vp-doc .comic-card p {
+  margin: 10px 0 0;
+  color: var(--vp-c-text-2);
+}
+
+.vp-doc .comic-card__eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 10px;
+  border-radius: 999px;
+  background-color: var(--vp-c-brand-soft);
+  padding: 3px 10px;
+  color: var(--vp-c-brand-1);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.vp-doc .comic-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
 /* ── Headings: Tighter spacing ── */
 
 .vp-doc h2 {

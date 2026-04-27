@@ -37,6 +37,7 @@ export default withMermaid(defineConfig({
             ],
           },
           { text: "Architecture", link: "/architecture/overview" },
+          { text: "Comics", link: "/zh/comics/" },
           { text: "Reference", link: "/reference/commands" },
         ],
         sidebar: {
@@ -184,6 +185,7 @@ export default withMermaid(defineConfig({
             ],
           },
           { text: "架构", link: "/zh/architecture/overview" },
+          { text: "漫画", link: "/zh/comics/" },
           { text: "参考", link: "/zh/reference/commands" },
         ],
         sidebar: {
@@ -219,6 +221,18 @@ export default withMermaid(defineConfig({
                 {
                   text: "操作系统模型",
                   link: "/zh/architecture/os-model",
+                },
+              ],
+            },
+          ],
+          "/zh/comics/": [
+            {
+              text: "漫画图解",
+              items: [
+                { text: "漫画专区", link: "/zh/comics/" },
+                {
+                  text: "AAEP 操作系统模型",
+                  link: "/zh/comics/aaep-os-model",
                 },
               ],
             },
