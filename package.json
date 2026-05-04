@@ -1,23 +1,21 @@
 {
   "name": "archon-protocol",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
-    "lint": "node scripts/lint-links.mjs && node scripts/lint-integrity.mjs && vitest run --config vitest.config.js",
+    "lint": "node scripts/lint-links.mjs",
     "lint:links": "node scripts/lint-links.mjs",
-    "lint:integrity": "node scripts/lint-integrity.mjs",
-    "lint:coupling": "node scripts/lint-coupling.mjs",
-    "test": "vitest run --config vitest.config.js"
+    "migrate:source-pages": "node scripts/generate-source-pages.mjs",
+    "migrate:fix-links": "node scripts/fix-migrated-links.mjs",
+    "migrate:escape-brackets": "node scripts/escape-inline-code-brackets.mjs"
   },
   "devDependencies": {
     "mermaid": "^11.13.0",
     "vitepress": "^1.6.4",
-    "vitepress-plugin-llms": "^1.11.0",
-    "vitepress-plugin-mermaid": "^2.0.17",
-    "vitest": "^4.0.18"
+    "vitepress-plugin-mermaid": "^2.0.17"
   }
 }

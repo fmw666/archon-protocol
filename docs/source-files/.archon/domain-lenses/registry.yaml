@@ -1,0 +1,240 @@
+{
+  "version": 1,
+  "description": "Domain Lens registry. JSON-compatible YAML so lightweight checkers can parse it without a YAML dependency.",
+  "defaults": {
+    "max_tools_per_delivery": 5,
+    "preferred_tools_per_delivery": 3,
+    "max_tools_per_lens": 7,
+    "tool_selection": "ordered-priority",
+    "conflict_policy": "decompose-on-equal-match",
+    "max_total_load_lines": 300,
+    "preferred_total_load_lines": 180,
+    "load_lines_tolerance": 10
+  },
+  "tool_index": [
+    {
+      "id": "dev/implementation-path",
+      "description": "Find the smallest implementation route through existing ownership boundaries.",
+      "when_to_use": "Use when the demand asks for a code change, module touchpoint, or implementation sequence.",
+      "load_hint": "Read after the dev lens is selected and the demand needs implementation sequencing.",
+      "load_lines": 30
+    },
+    {
+      "id": "dev/blast-radius",
+      "description": "Estimate affected files, modules, reversibility, and risk before editing.",
+      "when_to_use": "Use when a change may cross module boundaries, introduce a pattern, or alter shared behavior.",
+      "load_hint": "Read when the dev lens needs risk sizing before Verdict or validation planning.",
+      "load_lines": 30
+    },
+    {
+      "id": "dev/validation-plan",
+      "description": "Choose focused and full validation commands proportional to the change risk.",
+      "when_to_use": "Use when the demand changes code or governance checks and needs proof of correctness.",
+      "load_hint": "Read when the dev lens needs to map changed surfaces to validation evidence.",
+      "load_lines": 31
+    },
+    {
+      "id": "platform/platform-boundary",
+      "description": "Map data, deployment, secret, and permission concerns into one platform planning boundary.",
+      "when_to_use": "Use when the demand touches hosted data, deployment runtime, environment config, secrets, or launch risk.",
+      "load_hint": "Read after the platform lens is selected to classify the platform risk and proof needed.",
+      "load_lines": 52
+    },
+    {
+      "id": "ecosystem/starter-catalog",
+      "description": "Normalize known starter systems into comparable records for a new environment.",
+      "when_to_use": "Use when the demand asks what system, framework, template, or repository to start from.",
+      "load_hint": "Read after the ecosystem lens is selected to compare candidate starter-system records.",
+      "load_lines": 58
+    },
+    {
+      "id": "ecosystem/evidence-gate",
+      "description": "Separate verified ecosystem facts from user-provided or search-only claims.",
+      "when_to_use": "Use when an external repository, framework, or template needs confidence before recommendation.",
+      "load_hint": "Read after the ecosystem lens is selected to decide whether a candidate can be trusted.",
+      "load_lines": 54
+    },
+    {
+      "id": "ecosystem/adoption-path",
+      "description": "Turn the selected external system into a first runnable adoption path.",
+      "when_to_use": "Use when Archon should help directly use a chosen starter system in a new project.",
+      "load_hint": "Read after the ecosystem lens is selected to produce setup, proof, and fallback steps.",
+      "load_lines": 54
+    },
+    {
+      "id": "capability/need-map",
+      "description": "Translate a user request into a reusable capability category and expected knowledge asset.",
+      "when_to_use": "Use when the demand asks for a best-practice toolset, adoption guidance, or implementation strategy.",
+      "load_hint": "Read after the capability lens is selected to classify the requested capability and asset lane.",
+      "load_lines": 54
+    },
+    {
+      "id": "capability/practice-selector",
+      "description": "Choose whether the capability should load a skill, domain tool, rule, test, or design plan.",
+      "when_to_use": "Use when multiple reusable knowledge vehicles could satisfy the same capability request.",
+      "load_hint": "Read after need-map when Archon must pick the strongest fitting reusable vehicle.",
+      "load_lines": 52
+    },
+    {
+      "id": "capability/adoption-plan",
+      "description": "Convert the selected capability practice into a project-specific adoption path and proof.",
+      "when_to_use": "Use when a reusable practice must be applied inside the current project without copying assumptions.",
+      "load_hint": "Read after practice-selector to produce the concrete adoption boundary and validation evidence.",
+      "load_lines": 53
+    },
+    {
+      "id": "design/palette-boundary",
+      "description": "Convert color or theme inspiration into a bounded palette contract.",
+      "when_to_use": "Use when the demand mentions colors, theme, palette, visual mood, or design tokens.",
+      "load_hint": "Read after the design lens is selected for palette decisions or color constraints.",
+      "load_lines": 48
+    },
+    {
+      "id": "design/layout-reference",
+      "description": "Extract reusable layout, diagram, or comic explainer structure without copying unsupported assumptions.",
+      "when_to_use": "Use for screenshots, reference layouts, diagrams, system maps, comic explainers, or visual metaphors.",
+      "load_hint": "Read after the design lens is selected for layout, diagram, or comic brief structure.",
+      "load_lines": 71
+    },
+    {
+      "id": "design/component-pattern",
+      "description": "Select the interface component pattern and hierarchy for a page or UI element.",
+      "when_to_use": "Use when creating or reshaping a component, form, card, list, navigation, or page section.",
+      "load_hint": "Read after the design lens is selected for component structure and information hierarchy.",
+      "load_lines": 31
+    },
+    {
+      "id": "design/interaction-state",
+      "description": "Define user feedback for interactive, async, editable, or error-prone UI states.",
+      "when_to_use": "Use when the demand involves clicks, loading, disabled states, errors, edits, or transitions.",
+      "load_hint": "Read after the design lens is selected for interaction behavior and feedback timing.",
+      "load_lines": 30
+    },
+    {
+      "id": "design/visual-constraint",
+      "description": "Apply active visual rules to styling, responsive behavior, and overflow containment.",
+      "when_to_use": "Use when styling classes, responsiveness, layout overflow, or visual-system compliance matter.",
+      "load_hint": "Read after the design lens is selected for visual constraint checks before editing UI.",
+      "load_lines": 31
+    },
+    {
+      "id": "design/critique-audit-loop",
+      "description": "Separate UX critique from technical audit and define a bounded refinement loop.",
+      "when_to_use": "Use when a draft interface needs review, critique, audit, prioritization, or stop conditions.",
+      "load_hint": "Read after the design lens is selected for improving an existing UI draft.",
+      "load_lines": 49
+    }
+  ],
+  "lenses": {
+    "dev": {
+      "purpose": "Implementation-focused reasoning: path, blast radius, and validation.",
+      "signals": [
+        "implementation",
+        "code change",
+        "module boundary",
+        "validation",
+        "refactor risk"
+      ],
+      "lens": "lenses/dev.md",
+      "tools": [
+        "dev/implementation-path",
+        "dev/blast-radius",
+        "dev/validation-plan"
+      ]
+    },
+    "platform": {
+      "purpose": "Platform-focused reasoning: data boundaries, deployment runtime, and secret/permission risk.",
+      "signals": [
+        "database",
+        "schema",
+        "migration",
+        "auth boundary",
+        "deployment",
+        "serverless",
+        "environment variables",
+        "secrets",
+        "permissions",
+        "cron",
+        "domain",
+        "production readiness"
+      ],
+      "lens": "lenses/platform.md",
+      "tools": [
+        "platform/platform-boundary"
+      ]
+    },
+    "ecosystem": {
+      "purpose": "Ecosystem-focused reasoning: recommend, verify, and adopt external starter systems for a new environment.",
+      "signals": [
+        "starter system",
+        "new environment",
+        "framework recommendation",
+        "repository catalog",
+        "template adoption",
+        "open source project",
+        "ecosystem research",
+        "直接使用",
+        "开箱即用"
+      ],
+      "lens": "lenses/ecosystem.md",
+      "tools": [
+        "ecosystem/starter-catalog",
+        "ecosystem/evidence-gate",
+        "ecosystem/adoption-path"
+      ]
+    },
+    "capability": {
+      "purpose": "Capability-focused reasoning: route reusable best-practice requests to the right knowledge asset and adoption path.",
+      "signals": [
+        "toolset",
+        "best practice",
+        "capability",
+        "deployment strategy",
+        "data platform",
+        "state management",
+        "responsive behavior",
+        "loading strategy",
+        "skeleton screen",
+        "adoption guidance"
+      ],
+      "lens": "lenses/capability.md",
+      "tools": [
+        "capability/need-map",
+        "capability/practice-selector",
+        "capability/adoption-plan"
+      ]
+    },
+    "design": {
+      "purpose": "Interface-focused reasoning: palette boundary, layout/diagram reference, component pattern, interaction state, visual constraints, and critique/audit loop.",
+      "signals": [
+        "ui",
+        "component",
+        "interaction",
+        "visual",
+        "layout",
+        "color",
+        "theme",
+        "palette",
+        "screenshot",
+        "reference",
+        "diagram",
+        "architecture diagram",
+        "system map",
+        "comic",
+        "cartoon",
+        "visual metaphor",
+        "critique",
+        "audit"
+      ],
+      "lens": "lenses/design.md",
+      "tools": [
+        "design/palette-boundary",
+        "design/layout-reference",
+        "design/component-pattern",
+        "design/interaction-state",
+        "design/visual-constraint",
+        "design/critique-audit-loop"
+      ]
+    }
+  }
+}

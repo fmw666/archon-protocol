@@ -1,112 +1,93 @@
 ---
 layout: home
+title: Archon
 hero:
-  name: Archon Protocol
-  text: AI Architect Evolution Protocol
-  tagline: "The operating system for AI agents — kernel, drivers, syscalls, filesystem. One protocol governs all."
+  name: Archon
+  text: AI Engineering Governance
+  tagline: A session-based framework that elevates the AI agent from "tool that follows instructions" to "engineering owner with full project accountability."
+  image:
+    src: /logo.svg
+    alt: Archon
   actions:
     - theme: brand
-      text: Get Started
-      link: /guide/getting-started
+      text: 10-Minute Overview
+      link: /concepts/overview
     - theme: alt
-      text: Design Philosophy
-      link: /guide/design-philosophy
+      text: 5-Minute Quickstart
+      link: /setup/quickstart
     - theme: alt
-      text: Architecture
-      link: /architecture/overview
+      text: Full Source
+      link: /source/
 features:
-  - icon: 🧠
-    title: "Kernel: Always Resident"
-    details: "AGENTS.md is the kernel image — always in context, never paged out. It defines identity, workflow, and constraint enforcement. Everything obeys it."
-  - icon: 🔌
-    title: "Drivers: Constraint Skills"
-    details: "Hard boundaries loaded into kernel space via `skills:` field. ❌ prohibitions are law, not suggestions. Grep-verifiable, CI-testable."
-  - icon: ⚡
-    title: "Syscalls: 4 Commands"
-    details: "boot() init → exec() demand → stat() audit → defrag() refactor. Each triggers a well-defined kernel operation."
-  - icon: 🔧
-    title: "Hardware Detection"
-    details: "Auto-detects Cursor, Claude Code, Codex, Copilot, Windsurf, Gemini CLI. Deploys drivers to the right paths."
+  - icon: 🧭
+    title: Ownership, not Assistance
+    details: The agent is the owner, accountable end-to-end — decisions, implementation, verification, knowledge crystallization, self-review. The user expresses product intent; Archon translates it into engineering action.
+  - icon: 🔒
+    title: Constraints over Prose
+    details: A five-level pyramid (L0 runtime → L5 habit) pushes every load-bearing rule to the lowest level a machine can still enforce. If a linter or test can catch it, no governance prose is written.
+  - icon: 🌀
+    title: Directed Evolution
+    details: Each delivery feeds the drift counter, the debt registry, and the preservation axis. Mechanisms that prove themselves are promoted; prose that silently drains is pinned by anchor + body-shape test + portable contract.
   - icon: 🧬
-    title: "Directed Evolution"
-    details: "Every task strengthens the constraint system. Anti-patterns become prohibitions. Quality monotonically increases."
-  - icon: 📂
-    title: "Filesystem: Persistent Memory"
-    details: "Architecture = /usr/src/, guides = man pages, ADRs = /var/log/, proposed-rules = staging repo. Clear mount semantics."
+    title: Cognitive Loop Core
+    details: Six phases — Recognize → Model → Decide → Execute → Verify → Learn — mapped to concrete files. Every phase has a machine check so the loop does not degrade into lip-service.
+  - icon: 🗂️
+    title: Decoupled, Portable
+    details: .archon/ is project-agnostic. Platform-specific surfaces (.cursor/ or .claude/) plug in via Universal Module Guard. One export pipeline produces ready-to-use kits for both platforms.
+  - icon: 🔍
+    title: Claim Verifier
+    details: ADR-27 catches "said-vs-truth" drift. When governance prose claims a behavior, a portable verifier script walks the repo to prove it — or the claim fails the gate.
 ---
 
-<div class="vp-doc" style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+<div style="max-width: 980px; margin: 3rem auto; padding: 0 2rem;">
 
-## What Is AAEP?
+## What problem does Archon solve?
 
-**AAEP** (AI Architect Evolution Protocol) defines how an AI agent evolves into a project's architect through continuous **constraint → execution → evolution** cycles.
+Every new AI coding session starts from zero. The agent forgets your product
+vocabulary, re-invents your architecture, skips the tests your team has already
+written, and re-proposes decisions the team already rejected three weeks ago.
 
-AI coding tools provide **capability** — code generation, file operations, terminal execution. They don't provide **methodology** — workflow governance, quality assurance, experience accumulation.
+The industry's reflex is to reach for **bigger models** or **bigger prompts**.
+Archon's diagnosis is different: the agent needs **engineering environment**,
+not more raw capability. Specifically it needs:
 
-AAEP is the methodology layer.
+1. A **cognitive loop** it must walk on every delivery, not a free-form chat.
+2. **Mechanical gates** that fail closed — tests, contract checks, lint rules
+   — instead of optional prose it can ignore.
+3. **Persistent state** — a manifest, a drift counter, a debt registry, an
+   ADR log — that survives across sessions and across agents.
+4. A **preservation axis** that refuses to let load-bearing rules silently
+   disappear during well-meaning refactors.
+5. An **ownership contract** that treats the agent as the accountable
+   engineering party, not a suggestion-generator the user has to babysit.
 
-### One Command to Start
+Archon ships this as **one consistent vocabulary** — soul, manifest, drift,
+debt, memos, decisions, domain lenses, signs, run-state — plus the portable
+contract that keeps all of it mechanically verifiable.
 
-```bash
-# Tell your AI tool:
-curl -s https://aaep.site/init.md
-```
+## The 5 navigation entries
 
-The AI reads the init prompt, detects your environment, and deploys the protocol. That's it.
+| Section | What you find |
+|---------|----------------|
+| [**Core Concepts**](/concepts/) | The why: identity axioms · cognitive loop · user journeys · architecture reference · every ADR · drift mechanism |
+| [**Install & Boot**](/setup/) | The how: 5-minute quickstart · full setup guide · `archon` CLI · state templates |
+| [**Full Source**](/source/) | The what: every shipped file — soul · commands · agents · rules · skills · domain lenses · contracts · scripts · CLI |
+| [**Testing**](/testing/) | The verification: governance contract tests · portable checkers · test strategy · how to run the gates in your own project |
+| [**Changelog**](/changelog/) | The history: framework changelog · CLI changelog · ADR timeline |
 
-### The Five Layers
+## Who is this for?
 
-| Layer | What | How | Enforcement |
-|-------|------|-----|-------------|
-| **Constraint** | Boundaries that shape code generation | `❌` prohibitions in constraint skills, injected into agent context | SHOULD (generative guidance) |
-| **Workflow** | Standard delivery sequences | `/archon-demand` pipeline with opt-out flags | SHOULD (procedural guidance) |
-| **Evolution** | System that gets smarter with every task | Stage 3.6 discovers patterns → staging → approved → constraint or test | SHOULD → MUST |
-| **Knowledge** | Project memory that persists across sessions | `archon.config.yaml`, architecture docs, ADRs | Knowledge base |
-| **Enforcement** | Process-level compliance gates | Lint rules + structural tests + CI pipeline | MUST (unbypassable) |
+- **AI coding adopters** who have outgrown "ask the agent to add a file" and
+  need a durable engineering collaborator that owns the result.
+- **Framework builders** who want a concrete example of a session-based
+  governance system before inventing their own.
+- **Engineering leads** evaluating what guardrails are required before
+  letting autonomous agents land code.
 
-### The Feedback Loop
+## Start here
 
-```
-Task 1 → Agent writes code under constraints
-       → 6-dimension self-audit catches issue X
-       → Proposes: ❌ prohibit X
-       → User approves → constraint added
-
-Task 2 → Agent cannot make mistake X (it's in the constraint set)
-       → Audit catches issue Y → same cycle
-
-Task N → Constraint system is comprehensive
-       → Code quality monotonically increases
-       → Fewer fixes → faster delivery
-```
-
-**More tasks → better constraints → higher quality.** This is directed evolution — always toward fewer bugs, better performance, more consistent architecture.
-
-### Why Not Just Use Linters?
-
-| Dimension | Linters (ESLint, Ruff, etc.) | AAEP |
-|-----------|------------------------------|------|
-| Type safety / syntax rules | ✅ | ✅ |
-| File size / structure limits | ⚠️ | ✅ |
-| Tests updated when signatures change | ❌ | ✅ |
-| Error handling: structured patterns per layer | ❌ | ✅ |
-| Cross-boundary contract enforcement | ❌ | ✅ |
-| Self-evolution: learns from every task | ❌ | ✅ |
-
-Linters catch syntax. AAEP catches architecture. **Documents achieve SHOULD (generative guidance). Lint and tests achieve MUST (process enforcement). AAEP is the complete OS — not just documents, but documents + lint + tests + CI as an integrated system.** See [ADR-003](/decisions/ADR-003-executable-enforcement).
-
-### Cross-Tool Compatibility
-
-| Tool | Agents | Skills | Constraints |
-|------|--------|--------|-------------|
-| Cursor | ✅ (primary) | ✅ | ✅ (preloaded) |
-| Claude Code | ✅ (primary) | ✅ | ✅ (preloaded) |
-| Codex | — | ✅ | ✅ |
-| Copilot | — | ✅ | ✅ |
-| Windsurf | — | ✅ | ✅ |
-| Gemini CLI | — | ✅ | ✅ |
-| 20+ others | — | ✅ | ✅ |
-
-One protocol, every tool. Agent-first where supported, skill-fallback everywhere else.
+- If you want to **understand the design** → [10-Minute Overview](/concepts/overview)
+- If you want to **install it today** → [5-Minute Quickstart](/setup/quickstart)
+- If you want to **see every file** → [Full Source](/source/)
 
 </div>

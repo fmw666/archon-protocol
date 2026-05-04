@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Archon Run-State v2",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "runId",
+    "demand",
+    "mode",
+    "startedAt",
+    "worktree",
+    "branch",
+    "baseHead",
+    "status",
+    "changedPaths",
+    "permitCommit"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 2 },
+    "runId": { "type": "string", "minLength": 1 },
+    "demand": { "type": "string", "minLength": 1 },
+    "mode": {
+      "enum": ["standard", "fast-path", "rejected", "emergency-remediation"]
+    },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "worktree": { "type": "string", "minLength": 1 },
+    "branch": { "type": "string", "minLength": 1 },
+    "baseHead": { "type": "string", "minLength": 1 },
+    "status": {
+      "type": "object",
+      "required": [
+        "boot.soul_loaded",
+        "boot.mode_extension_loaded",
+        "boot.manifest_loaded",
+        "prescan.memos_scanned",
+        "prescan.archive_scanned",
+        "prescan.adrs_scanned",
+        "prescan.extensions_hooked",
+        "decision.fastpath_assessed",
+        "decision.convergence_classified",
+        "decision.plan_mode_declared",
+        "decision.verdict_output",
+        "execute.changes_applied",
+        "validate.validation_green",
+        "closeout.manifest_synced",
+        "closeout.subagent_dispatched",
+        "closeout.auditor_ran",
+        "closeout.auditor_processed",
+        "closeout.drift_updated",
+        "closeout.milestone_gate",
+        "closeout.memos_appended",
+        "closeout.extensions_hooked",
+        "closeout.statement_output"
+      ],
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^(0|1|2|skip:[a-z0-9-]+)$"
+      }
+    },
+    "changedPaths": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "permitCommit": { "type": "boolean" }
+  },
+  "additionalProperties": true
+}

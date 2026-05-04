@@ -1,0 +1,808 @@
+{
+  "version": 1,
+  "description": "Portable Archon governance contract. JSON-compatible YAML so reference checkers need no external parser.",
+  "file_budgets": {
+    ".archon/soul.md": {
+      "limit": 310,
+      "hint": "Core soul — move mode-specific material to .archon/soul/<mode>.md. Cap raised 300→310 for ADR-28 §Preservation Axis (evolution dual-motion)."
+    },
+    ".archon/soul/delivery.md": {
+      "limit": 150,
+      "hint": "Delivery extension (demand only) — move shared material back to core soul"
+    },
+    ".archon/soul/review.md": {
+      "limit": 150,
+      "hint": "Review extension (plan + review) — move shared material back to core soul"
+    },
+    ".archon/manifest.md": {
+      "limit": 380,
+      "hint": "Keep current state hot; move long latest-review detail to .archon/manifest/archive/<year>-Q<N>.md. Cap raised 350→370 for ADR-23 §Module Boundary Map (radius-probe input); 370→380 for ADR-29 §Source Modularity Map (modularity-probe input)."
+    },
+    ".archon/drift.md": {
+      "limit": 80,
+      "hint": "Per ADR-22, hot rows in drift.md are auto-generated from .archon/drift/records/ via scripts/archon-records.mjs; do not hand-edit between archon-records sentinels. Older records fold to .archon/drift/archive/<year>-Q<N>.md quarterly."
+    },
+    ".archon/debt.md": {
+      "limit": 50,
+      "hint": "Per ADR-22, hot rows in debt.md are auto-generated from .archon/debt/items/ via scripts/archon-records.mjs; do not hand-edit between archon-records sentinels. Full rationale lives in .archon/debt/archive/<year>-Q<N>.md."
+    },
+    ".archon/memos.md": {
+      "limit": 30,
+      "hint": "Keep memos.md as hot index; move full rationale to .archon/memos-archive/<year>-Q<N>.md"
+    },
+    ".archon/decisions.md": {
+      "limit": 120,
+      "hint": "Keep project ADRs separate from portable Archon framework docs"
+    },
+    "docs/archon/decisions.md": {
+      "limit": 320,
+      "hint": "Keep this as portable Archon framework ADRs only; project ADRs belong in .archon/decisions.md. Cap raised 300→312 for ADR-29 §Source Modularity Probe; 312→320 for ADR-29 §重审条件 closure pass (mechanized (a)/(b) + explicit-rejection (c)/(e)/(f))."
+    }
+  },
+  "forbidden_substrings": {
+    "description": "Portable negative wording guard. These phrases encode obsolete full-boot/full-read Archon runtime semantics and must not reappear in hot-path governance surfaces.",
+    "files": [
+      ".archon/soul.md",
+      ".archon/manifest.md",
+      ".archon/memos.md",
+      ".cursor/commands/archon.md",
+      ".cursor/commands/archon-plan.md",
+      ".cursor/commands/archon-demand.md",
+      ".cursor/commands/archon-review.md",
+      ".cursor/rules/archon.mdc",
+      ".cursor/rules/archon-wake.mdc",
+      ".cursor/skills/archon-framework/SKILL.md",
+      "docs/archon/README.md",
+      "docs/archon/architecture.md",
+      "docs/archon/setup.md"
+    ],
+    "optional_files": [
+      "README.md",
+      "CLAUDE.md",
+      ".archon/dashboard/public/js/workflow-data.js",
+      "docs/archon/templates/manifest.template.md",
+      "docs/archon/templates/memos.template.md",
+      "docs/archon/user-journeys.md"
+    ],
+    "substrings": [
+      "loaded every boot",
+      "loaded on every boot",
+      "boot-loaded",
+      "always loaded",
+      "soul + manifest",
+      "soul+manifest",
+      "Files loaded at startup",
+      "Yes (every boot)",
+      "reads this file on every boot",
+      "Loaded on every Archon boot",
+      "Loaded on Boot",
+      "loaded on boot",
+      "On boot, Archon loads",
+      "Full read",
+      "Close-out 8"
+    ]
+  },
+  "universal_module_guard": {
+    "description": "Portable project-term guard. Terms declared by the adopter manifest must not leak into universal Archon files that are copied verbatim across projects.",
+    "forbidden_terms_source": ".archon/manifest.md",
+    "forbidden_terms_marker": "archon-universal-forbidden-terms",
+    "scan_paths": [
+      ".archon/soul.md",
+      ".archon/soul",
+      ".archon/domain-lenses",
+      ".archon/contracts",
+      ".cursor/commands",
+      ".cursor/agents",
+      ".cursor/rules/archon.mdc",
+      ".cursor/rules/archon-wake.mdc",
+      ".cursor/skills/archon-framework/SKILL.md",
+      ".cursor/skills/archon-git-commit/SKILL.md",
+      ".cursor/skills/blink-dispatch/SKILL.md",
+      ".cursor/skills/external-agent-patterns/SKILL.md",
+      "docs/archon",
+      "scripts/archon-check.py",
+      "scripts/archon-check.sh",
+      "scripts/archon-run-state.mjs"
+    ]
+  },
+  "memos_archive": {
+    "archive_dir": ".archon/memos-archive",
+    "max_hot_entries": 5,
+    "max_hot_row_chars": 260,
+    "required_hot_sections": [
+      "## Archive Index",
+      "## Hot Memos"
+    ],
+    "required_archive_markers": [
+      "# Stakeholder Memos Archive",
+      "Keyword index",
+      "Archived On"
+    ]
+  },
+  "debt_archive": {
+    "archive_dir": ".archon/debt/archive",
+    "max_hot_row_chars": 260,
+    "required_hot_sections": [
+      "## Archive Index",
+      "## Active Debt Index"
+    ],
+    "required_hot_columns": [
+      "ID",
+      "Source",
+      "Severity",
+      "Compact Description",
+      "Deadline",
+      "Status",
+      "Details"
+    ],
+    "required_archive_markers": [
+      "# Debt Archive",
+      "## Archived Debt Details",
+      "Archived On"
+    ]
+  },
+  "manifest_archive": {
+    "archive_dir": ".archon/manifest/archive",
+    "max_latest_review_chars": 340,
+    "required_archive_markers": [
+      "# Manifest Archive",
+      "## Archived Latest Reviews",
+      "Archived On"
+    ]
+  },
+  "critical_rule_substrings": [
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Plan-mode binding**",
+      "rationale": "ADR-11 Verdict × Cursor Plan mode binding header must remain in §Decision Gate. Body substance pinned by sibling token \"BEFORE any write-side tool invocation\" — no separate body-shape test needed."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "BEFORE any write-side tool invocation",
+      "rationale": "ADR-11 substantive rule phrase — the binding without this phrase degrades to self-discipline"
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "## Self-Directed Execution Interior",
+      "rationale": "Browser Harness/Bitter Lesson translation — delivery execution must stay agent-planned rather than hard-coded as orchestration steps. Body substance pinned by sibling tokens \"Boundary-hard, process-soft\" + \"The hard boundaries still apply\"."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "Boundary-hard, process-soft",
+      "rationale": "Process-soft architecture anchor — hard gates protect project integrity while the agent owns the execution loop"
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "The hard boundaries still apply",
+      "rationale": "Boundary-hard substantive clause — process-soft execution must not erase validation, Run-State, independent review, or evolution-filter gates"
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Architecture forecast**",
+      "rationale": "Predictive architecture loop anchor — close-out must forecast likely next pressure without adding a backlog or planner lane. Body substance pinned by sibling token \"This is not a backlog, roadmap, or permission to skip the next Verdict\"."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "This is not a backlog, roadmap, or permission to skip the next Verdict",
+      "rationale": "Forecast boundary clause — predictions must guide future pre-scan without bypassing the next Decision Gate"
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Acceptance criteria delta check**",
+      "rationale": "Dynamic acceptance anchor — non-fast-path delivery close-out must explicitly decide whether new technology, modules, patterns, or optimizations changed what done means. Body substance pinned by sibling Close-Out checklist token \"Acceptance criteria delta: updated\"."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "Acceptance criteria delta: updated",
+      "rationale": "Close-Out compliance checkbox — acceptance criteria changes must be visible in the delivery self-check rather than buried in prose"
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Convergence gate**",
+      "rationale": "ADR-12 forced-convergence gate header must remain in §Decision Gate. Body substance pinned by sibling token \"out of convergence scope\" + portable contract `convergence_gate.required_demand_substrings`."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "out of convergence scope",
+      "rationale": "ADR-12 rejection phrase — removing it decouples the gate from manifest convergence_scope"
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Numeric-claim cross-check**",
+      "rationale": "DEBT-058 rule-of-three 3/3 countermeasure (2026-04-23) — grep-verify numeric claims in delivered governance/skill docs; header removal silently re-enables the miscount failure mode seen in DEBT-026/027/017. Body substance pinned by sibling tokens \"Numeric-claim cross-check: yes\" + \"§Manifest numeric ground-truth\" + L1 grep enforcement via archon-claim-verifier --mode=numeric."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "Numeric-claim cross-check: yes",
+      "rationale": "DEBT-058 Close-Out compliance checkbox — without this line the verification step can be silently skipped in the self-check output"
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "§Manifest numeric ground-truth",
+      "rationale": "DEBT-058 F2 broadening cross-ref — pins the archon-demand clause to the manifest-numeric-ground-truth.test.ts describe-block name (§Manifest numeric ground-truth) so the per-delivery L1 clause and the CI backstop co-reference each other; renaming one without the other silently decouples the two layers"
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Reject-path borrowed-concepts check**",
+      "rationale": "DEBT-052 rule-of-four countermeasure — external proposal rejection must still inspect reusable mechanisms instead of closing cognition at \"reject\". Body substance pinned by sibling token \"Borrowed concepts (if any):\" + drift-borrowed-concepts-substance.test.ts L1 substance gate + archon-claim-verifier --mode=borrowed."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "Borrowed concepts (if any):",
+      "rationale": "DEBT-052 Verdict output anchor — reject/alternative verdicts for external frameworks/tools/architecture must expose borrowed concepts or an explicit empty list"
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Reject path is not a menu**",
+      "rationale": "DEBT-054 AskQuestion anti-pattern countermeasure — rejection must remain an agent decision, not a user-facing option menu. Body substance pinned by sibling tokens \"Do not present 3-option override menus\" + \"required rationale as prose\"."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "Do not present 3-option override menus",
+      "rationale": "DEBT-054 substantive rule phrase — prevents A/B/C reject-reviewer-override menus from returning as the default rejection path"
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "required rationale as prose",
+      "rationale": "DEBT-054 boundary clause — keeps explicit override conditions expressible without reintroducing a user-choice menu"
+    },
+    {
+      "file": ".archon/soul.md",
+      "substring": "rename + a rule promotion on the same concept still counts as two hats",
+      "rationale": "DEBT-037 two-hats clause extension — prevents silent deletion after emergency review 2026-04-19 W-1"
+    },
+    {
+      "file": ".archon/soul.md",
+      "substring": "Glossary scope",
+      "rationale": "Glossary hygiene rule header (framework vs product term scope) — emergency review 2026-04-19 W-6"
+    },
+    {
+      "file": ".archon/soul.md",
+      "substring": "## Imperatives",
+      "rationale": "ADR-25 Imperative Card header — soul-top hot-path imperative bridge; removal collapses the L3-prose-to-L2-reference card and silently re-allows scrolling-to-recall the strongest gates. Body substance pinned by separate `Imperative card shape` describe block (cap ≤12 + `→ <file> §<anchor>` per bullet)."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Radius probe (mechanical)**",
+      "rationale": "ADR-23 Mechanical Radius Probe header — Verdict input grounded in manifest Module Boundary Map rather than pure self-assessment; removal re-enables the Radius-self-assessment-only failure mode that mechanical floor only catches post-Verdict. Body substance pinned by sibling output token \"radius_probe:\"."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "radius_probe:",
+      "rationale": "ADR-23 Verdict output token — probe must appear with the Verdict so the differ-must-explain pattern (mirroring numeric-claim cross-check) is visible at the decision point"
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Signs sweep**",
+      "rationale": "ADR-24 Signs Table sweep anchor — Pre-Scan must scan signs.md trigger column before Verdict; removal silently disables trigger-indexed recurring-failure surfacing. Body substance pinned by separate `Signs table shape (ADR-24)` describe block (3-column · ≤30 rows · trigger forms)."
+    },
+    {
+      "file": ".cursor/skills/archon-signs/SKILL.md",
+      "substring": "mechanically matchable",
+      "rationale": "ADR-24 writing-discipline anchor — Signs trigger column must remain mechanical (keyword/path/error/phrase forms); removing this discipline silently re-allows abstract triggers that pre-scan cannot fire"
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Reversibility verb mapping**",
+      "rationale": "ADR-23 risk-verb mapping anchor — Reversibility must dispatch to mandatory verbs (auditor / characterization test / validation); removal lets Reversibility regress to descriptor-only label. Body substance pinned by separate `Reversibility verb mapping body shape (ADR-23 / O1)` describe block (3 rows + MUST tokens)."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Soul-headroom probe (mechanical)**",
+      "rationale": "ADR-23 extension countermeasure for DEBT-072 (soul.md cap headroom <5%) — Decision Gate must surface soul cap pressure when changed-paths intersect soul, forcing compress-first or explicit-cap-widening ADR rather than letting validate-time cap breaches surprise the close-out. Removal silently re-allows soul-edit demands to land at 99% cap without restructuring. Body substance pinned by sibling token \"soul_headroom:\" (output format must remain present in §Decision Gate prose)."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "soul_headroom:",
+      "rationale": "ADR-23 extension Verdict output token for soul-headroom probe — without this anchor in §Decision Gate prose, the probe output format becomes free-form and cap-pressure surfacing can be silently dropped. Pinned at the same density as `radius_probe:`."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Modularity probe (mechanical)**",
+      "rationale": "ADR-29 Source Modularity Probe header — Decision Gate must surface fan-out-needed before a delivery folds a second concept-axis into a file already responsible for one; removal silently re-allows the reactive-split-by-size failure mode. Body substance pinned by sibling output token \"modularity_probe:\" (three-state status enumeration is too narrative for a body-shape assertion)."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "modularity_probe:",
+      "rationale": "ADR-29 Verdict output token — probe must appear with the Verdict so foresight pressure (this delivery folds a second axis into the same file) is visible at the decision point rather than after the fact. Pinned at the same density as `radius_probe:` and `soul_headroom:`."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Override observability**",
+      "rationale": "Override Observability project-policy-pluggable framework hook (resolves DEBT-053 reframe) — every gate-bypassing demand must emit a structured `Override (if any):` line in the Verdict carrying class + rationale ≥60 chars. Removal silently re-allows owner overrides without audit trail; cumulative-frequency feedback collapses. Body substance pinned by sibling token \"Override (if any):\"."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "Override (if any):",
+      "rationale": "Override Observability Verdict output token — without this anchor in the Verdict block, the override channel becomes opaque and the cumulative-frequency surface fails. Pinned at the same density as `Borrowed concepts (if any):`."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Final Imperative**",
+      "rationale": "ADR-25 / G5 Close-Out tail anchor — three-line hard self-check below the full checklist; removal re-enables checklist-blindness failure mode where ≥10-row close-out is skimmed. Body substance pinned by separate `Final Imperative tail body shape (ADR-25 / G5 / O1)` describe block (exactly 3 numbered question lines)."
+    },
+    {
+      "file": ".archon/soul/review.md",
+      "substring": "**Vocabulary coherence**",
+      "rationale": "DEBT-038.a Proactive Scrutiny 4th question header — prevents regression to 3-question form. Header-only is sufficient: the body is a single prose paragraph identifying the failure mode; substance is too narrative for a meaningful body-shape assertion (any tightening produces brittle wording matches). Re-evaluate to body-shape if a future regression slips through."
+    },
+    {
+      "file": ".archon/soul/review.md",
+      "substring": "**Rejection closure bias**",
+      "rationale": "DEBT-067 countermeasure (rule-of-three 4/4 across cycle 11-13 external-framework rejections) — soul/review.md §Known Blindspot Patterns must enumerate the rejection-closure-bias pattern alongside Tunnel vision / Documentation-over-mechanism / Inside-out design; removal silently re-allows the first-pass-Reject-without-borrowed-concepts failure mode that took multiple stakeholder push-backs to surface in prior cycles. Body substance is the table-row pair (Manifestation + Countermeasure); enforced by separate `Known Blindspot Patterns row coverage` describe block which asserts the row count + cross-references DEBT-066 substance check anchor."
+    },
+    {
+      "file": ".cursor/agents/archon-capture-auditor.md",
+      "substring": "**Soul-edit self-citation capsule**",
+      "rationale": "DEBT-070 countermeasure pre-L1 (rule-of-three 3/3 fired 2026-05-02 by user push-back) — capture-auditor §Hygiene scan must enumerate the soul-edit-self-citation pattern; pinning the prose anchor prevents silent regression. ADR-27 Claim Verifier `self-cite` mode is the L1 grep mechanism; capsule remains as the human-facing reference. Removal re-enables the governance-self-coup failure mode. Body substance pinned by separate `Soul-edit self-citation capsule body shape (DEBT-070)` describe block (4 substantive tokens)."
+    },
+    {
+      "file": ".cursor/agents/archon-capture-auditor.md",
+      "substring": "**Destructive-git fixture capsule**",
+      "rationale": "Incident-prevention capsule from 2026-05-02 debt-cleanup-synthesis demand — W7-injection harness used `git reset --hard` with ARCHON_ALLOW_DESTRUCTIVE=1 inside the live working tree and reverted in-flight uncommitted edits across multiple files. Capture-auditor §Hygiene scan MUST flag destructive-git operations in test/harness files; pin anchor so the rule cannot silently disappear before being promoted to L1. Body substance pinned by separate `Destructive-git fixture capsule body shape (incident 2026-05-02)` describe block (4 tokens)."
+    },
+    {
+      "file": "scripts/archon-claim-verifier.mjs",
+      "substring": "const MODES = ['numeric', 'borrowed', 'self-cite', 'missed-trig', 'preservation']",
+      "rationale": "ADR-27 Claim Verifier mode registry — single line declares the 5 unified assertion-vs-reality modes (numeric / borrowed / self-cite / missed-trig / preservation). Removal silently disables all 5 DEBT family countermeasures (DEBT-058 numeric · DEBT-066 borrowed · DEBT-070 self-cite · DEBT-071 missed-trig · DEBT-074 preservation). Pinned at L1 because the script body itself is the enforcement and the mode list is the contract."
+    },
+    {
+      "file": ".husky/pre-commit",
+      "substring": "archon-claim-verifier.mjs verify",
+      "rationale": "ADR-27 Claim Verifier pre-commit invocation — hook MUST run claim-verifier before web validate so soul-citation / borrowed-substance / missed-trigger drift fail-closed at commit time, not just at full validate. Removal silently demotes the gate."
+    },
+    {
+      "file": ".archon/soul/review.md",
+      "substring": "Light cannot satisfy a Full-threshold crossing",
+      "rationale": "DEBT-060 Full-tier enforcement clause — removing it decouples soul prose from drift-gates.test.ts §Full-review gate; the Cycle 11 saturation cascade (drift 11→13 light-issued-instead-of-full) is the failure mode this clause + gate pair prevents"
+    },
+    {
+      "file": ".cursor/commands/archon-review.md",
+      "substring": "Light cannot satisfy a Full-threshold crossing",
+      "rationale": "DEBT-060 tier-crossing guard mirror — when archon-review runs, the Light-tier branch must self-check against Full threshold before proceeding; substring removed = guard silently absent"
+    },
+    {
+      "file": ".husky/pre-push",
+      "substring": "Archon B4 destructive push blocked",
+      "rationale": "B4 git-guardrails pre-push anchor — husky pre-push must retain the block message so CI/export smoke tests and the governance contract can mechanically verify destructive-push interception is in place"
+    },
+    {
+      "file": ".cursor/hooks.json",
+      "substring": "archon-destructive-guard.mjs",
+      "rationale": "B4 git-guardrails hook registration anchor — Cursor hooks.json must reference the guard script by path; removal silently disables beforeShellExecution interception for agent-issued destructive git commands"
+    },
+    {
+      "file": ".cursor/hooks/archon-destructive-guard.mjs",
+      "substring": "Archon B4 blocked a destructive git command",
+      "rationale": "B4 git-guardrails guard script user_message anchor — the deny payload must retain this user-facing string so auditors can distinguish intentional blocks from hook failures"
+    },
+    {
+      "file": ".archon/domain-lenses/README.md",
+      "substring": "## Load Budget",
+      "rationale": "Reasoning Skills translation — per-tool load_lines + max_total_load_lines budget anchor; removal silently re-enables count-only selection where one over-large card eats the whole context. Body substance pinned by sibling tokens \"max_total_load_lines\" + \"total_load_lines\"."
+    },
+    {
+      "file": ".archon/domain-lenses/README.md",
+      "substring": "max_total_load_lines",
+      "rationale": "Load-budget ceiling phrase — the selector contract collapses to count-only without this token"
+    },
+    {
+      "file": ".archon/domain-lenses/README.md",
+      "substring": "total_load_lines",
+      "rationale": "Selector packet field — capability_selection acceptance gate cannot enforce line budget if this field name disappears"
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "total_load_lines",
+      "rationale": "Capability selector protocol clause — the line-budget acceptance check in archon-demand mirrors README field name; renaming one without the other silently decouples the two layers"
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Governance-docs mirror check**",
+      "rationale": "DEBT-063 countermeasure (rule-of-three 3/3 2026-04-30 Full review) — anchors the Close-Out clause that prevents governance-surface edits (commands, agents, rules, skills, contracts, scripts, hooks) from drifting away from docs/archon narrative; pairs with governance-docs-mirror.test.ts L1 backstop. Body substance pinned by sibling Close-Out checklist token \"Governance-docs mirror: yes\"."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "Governance-docs mirror: yes",
+      "rationale": "DEBT-063 Close-Out compliance checkbox — without this checkbox line the mirror check can be silently skipped in the self-check output"
+    },
+    {
+      "file": ".archon/soul.md",
+      "substring": "### Preservation Axis",
+      "rationale": "ADR-28 Preservation Axis section header — soul §Evolution second motion (dual to crystallization). Removal silently re-collapses evolution to a correction-only loop and removes the L3 frame that the Close-Out preservation question and capture-auditor §Preservation Scan reference. Pinned because preservation is the load-bearing-rule guard itself; losing this anchor is the canonical Correction-only evolution bias regression. Body substance pinned by separate `Preservation Axis body shape` describe block (boundary tokens + pointer to soul/review.md §Preservation Signals)."
+    },
+    {
+      "file": ".archon/soul.md",
+      "substring": "MUST run the Preservation pass alongside crystallization at every Close-Out",
+      "rationale": "ADR-28 Imperative card line — promotes the Preservation pass to soul-top hot-path imperatives so every demand sees it. Removal silently demotes preservation from MUST to advisory, allowing future deliveries to skip the dual-motion pass without surfacing the violation in the imperatives bridge."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "**Preservation pass**",
+      "rationale": "ADR-28 post-delivery review (d) anchor — Close-Out delivery log + post-delivery review must include the explicit preservation question. Removal silently re-allows post-delivery reviews to cover only (a)/(b)/(c) (correction-only axis) and skip naming what worked that is now worth pinning. Casing normalized to capitalized form per Full review 2026-05-02 W1 (vocabulary coherence). Body substance pinned by sibling Close-Out checklist token \"Preservation pass: pinned\" + L1 substance gate via archon-claim-verifier --mode=preservation (DEBT-074 closure)."
+    },
+    {
+      "file": ".cursor/commands/archon-demand.md",
+      "substring": "Preservation pass: pinned",
+      "rationale": "ADR-28 Close-Out compliance checkbox — without this line the per-delivery Preservation pass result becomes invisible in the self-check output, decoupling the post-delivery review (d) clause from the Close-Out audit surface."
+    },
+    {
+      "file": ".cursor/agents/archon-capture-auditor.md",
+      "substring": "### Preservation Scan",
+      "rationale": "ADR-28 capture-auditor output anchor — Preservation Scan is dual to Knowledge Capture and runs as an independent (sub-agent) judgment. Removal silently demotes preservation back to main-agent self-assessment, which is exactly the sunk-cost-bias failure mode auditor independence guards against (soul §Sub-Agent Independence). Body substance is the table shape (Candidate · Class · Pin Recommendation) + the Recommendation block; enforced by separate `Preservation Scan body shape` describe block."
+    },
+    {
+      "file": ".archon/soul/review.md",
+      "substring": "**Preservation pass**",
+      "rationale": "ADR-28 Proactive Scrutiny 5th question header — plan/review must answer \"what works that I might silently erode?\" alongside the existing four questions. Removal silently regresses Proactive Scrutiny to the 4-question form and decouples plan §Proactive Scrutiny preservation probe from soul §Reflection. Body substance is one-paragraph guidance whose key clause \"name at least one rule, gate, output token, or convergent shape\" is enforced via §Preservation Signals body-shape test (4-row signal table + Q1/Q5 clarifier + first-pass-degeneracy clause)."
+    },
+    {
+      "file": ".archon/soul/review.md",
+      "substring": "**Correction-only evolution bias**",
+      "rationale": "ADR-28 Known Blindspot Patterns row — names the failure mode (evolution reads only the \"what failed?\" axis and silently drains load-bearing rules) the Preservation Axis guards against. Removal silently re-allows the bias to recur without a named pattern, blocking countermeasure routing during reactive reflection. Body substance is the table-row pair (Manifestation + Countermeasure); enforced via the same `Known Blindspot Patterns row coverage` describe block as **Rejection closure bias**."
+    }
+  ],
+  "convergence_gate": {
+    "manifest_scope_marker": "**Convergence scope**",
+    "required_demand_substrings": [
+      "**Convergence gate**",
+      "out of convergence scope"
+    ]
+  },
+  "drift_gate": {
+    "archive_dir": ".archon/drift/archive",
+    "required_archive_headings": [
+      "# Drift Archive",
+      "## Index",
+      "## Archived Log"
+    ],
+    "required_hot_sections": [
+      "## Archive Index",
+      "## Log"
+    ],
+    "thresholds": {
+      "light": 6,
+      "full": 12,
+      "emergency": 20
+    },
+    "reset_row_keywords": [
+      "Light review",
+      "Full review",
+      "Emergency review",
+      "EMERGENCY REVIEW",
+      "Review reset"
+    ],
+    "full_or_emergency_reset_keywords": [
+      "Full review",
+      "Emergency review",
+      "EMERGENCY REVIEW",
+      "Review reset"
+    ]
+  },
+  "soul_anchor": {
+    "source_files": [
+      ".cursor/commands/archon.md",
+      ".cursor/commands/archon-plan.md",
+      ".cursor/commands/archon-demand.md",
+      ".cursor/commands/archon-review.md",
+      ".cursor/agents/archon-capture-auditor.md",
+      ".cursor/agents/archon-reviewer.md",
+      ".archon/soul.md",
+      ".archon/soul/delivery.md",
+      ".archon/soul/review.md"
+    ],
+    "skip_anchors": [
+      "x",
+      "trigger conditions · \"concept discovered\" row"
+    ],
+    "required_extension_loads": [
+      {
+        "command": ".cursor/commands/archon-demand.md",
+        "substring": "soul/delivery.md"
+      },
+      {
+        "command": ".cursor/commands/archon-plan.md",
+        "substring": "soul/review.md"
+      },
+      {
+        "command": ".cursor/commands/archon-review.md",
+        "substring": "soul/review.md"
+      }
+    ]
+  },
+  "export_manifest": {
+    "required_files": [
+      ".archon/soul.md",
+      ".archon/soul/delivery.md",
+      ".archon/soul/review.md",
+      ".archon/domain-lenses/README.md",
+      ".archon/domain-lenses/registry.yaml",
+      ".archon/domain-lenses/lenses/dev.md",
+      ".archon/domain-lenses/lenses/design.md",
+      ".archon/domain-lenses/lenses/platform.md",
+      ".archon/domain-lenses/lenses/ecosystem.md",
+      ".archon/domain-lenses/lenses/capability.md",
+      ".archon/domain-lenses/tools/dev/implementation-path.md",
+      ".archon/domain-lenses/tools/dev/blast-radius.md",
+      ".archon/domain-lenses/tools/dev/validation-plan.md",
+      ".archon/domain-lenses/tools/platform/platform-boundary.md",
+      ".archon/domain-lenses/tools/ecosystem/starter-catalog.md",
+      ".archon/domain-lenses/tools/ecosystem/evidence-gate.md",
+      ".archon/domain-lenses/tools/ecosystem/adoption-path.md",
+      ".archon/domain-lenses/tools/capability/need-map.md",
+      ".archon/domain-lenses/tools/capability/practice-selector.md",
+      ".archon/domain-lenses/tools/capability/adoption-plan.md",
+      ".archon/domain-lenses/tools/design/palette-boundary.md",
+      ".archon/domain-lenses/tools/design/layout-reference.md",
+      ".archon/domain-lenses/tools/design/component-pattern.md",
+      ".archon/domain-lenses/tools/design/interaction-state.md",
+      ".archon/domain-lenses/tools/design/visual-constraint.md",
+      ".archon/domain-lenses/tools/design/critique-audit-loop.md",
+      ".archon/domain-lenses/templates/lens.md",
+      ".archon/domain-lenses/templates/tool.md",
+      ".archon/contracts/governance-contract.yaml",
+      ".archon/decisions.md",
+      "docs/archon/decisions.md",
+      "scripts/archon-check.py",
+      "scripts/archon-check.sh",
+      "scripts/archon-run-state.mjs",
+      ".husky/pre-commit",
+      ".husky/pre-push",
+      ".cursor/hooks.json",
+      ".cursor/hooks/archon-destructive-guard.mjs",
+      ".gitattributes",
+      "scripts/archon-records.mjs",
+      "scripts/archon-records-fold.mjs",
+      ".archon/templates/run.template.md",
+      ".archon/templates/run-state.schema.json"
+    ],
+    "required_setup_mentions": [
+      "governance-contract.yaml",
+      "archon-check.py",
+      "archon-check.sh",
+      "archon-run-state.mjs",
+      "blink-dispatch/SKILL.md",
+      ".archon/domain-lenses/registry.yaml"
+    ],
+    "required_readme_mentions": [
+      "governance-contract.yaml",
+      "archon-check.py",
+      "archon-check.sh",
+      "archon-run-state.mjs",
+      "blink-dispatch/SKILL.md",
+      ".archon/domain-lenses/registry.yaml"
+    ]
+  },
+  "domain_lenses": {
+    "registry": ".archon/domain-lenses/registry.yaml",
+    "readme": ".archon/domain-lenses/README.md",
+    "max_tools_per_delivery": 5,
+    "preferred_tools_per_delivery": 3,
+    "max_tools_per_lens": 7,
+    "tool_index_description_max_chars": 180,
+    "tool_index_when_to_use_max_chars": 180,
+    "tool_index_load_hint_max_chars": 180,
+    "tool_selection": "ordered-priority",
+    "conflict_policy": "decompose-on-equal-match",
+    "max_total_load_lines": 300,
+    "preferred_total_load_lines": 180,
+    "load_lines_tolerance_percent": 10,
+    "forbidden_universal_terms_source": ".archon/manifest.md",
+    "forbidden_universal_terms_marker": "archon-universal-forbidden-terms",
+    "required_initial_lenses": [
+      "dev",
+      "design",
+      "platform"
+    ]
+  },
+  "run_state": {
+    "template": ".archon/templates/run.template.md",
+    "schema_v2": ".archon/templates/run-state.schema.json",
+    "helper": "scripts/archon-run-state.mjs",
+    "runs_dir": ".archon/runs",
+    "active_file": ".archon/run.md",
+    "line_budget": 50,
+    "single_block": {
+      "front_matter_delimiter_count": 2,
+      "permit_commit_count": 1,
+      "sop_table_header_count": 1
+    },
+    "front_matter_keys": [
+      "demand",
+      "mode",
+      "started_at",
+      "plan_mode",
+      "convergence"
+    ],
+    "status_keys": [
+      "boot.soul_loaded",
+      "boot.mode_extension_loaded",
+      "boot.manifest_loaded",
+      "prescan.memos_scanned",
+      "prescan.archive_scanned",
+      "prescan.adrs_scanned",
+      "prescan.extensions_hooked",
+      "decision.fastpath_assessed",
+      "decision.convergence_classified",
+      "decision.plan_mode_declared",
+      "decision.verdict_output",
+      "execute.changes_applied",
+      "validate.validation_green",
+      "closeout.manifest_synced",
+      "closeout.subagent_dispatched",
+      "closeout.auditor_ran",
+      "closeout.auditor_processed",
+      "closeout.drift_updated",
+      "closeout.milestone_gate",
+      "closeout.memos_appended",
+      "closeout.extensions_hooked",
+      "closeout.statement_output"
+    ],
+    "smart_skip_allowed": [
+      "prescan.archive_scanned",
+      "closeout.auditor_ran",
+      "closeout.auditor_processed",
+      "closeout.memos_appended",
+      "closeout.milestone_gate",
+      "closeout.extensions_hooked"
+    ],
+    "required_static_checks": [
+      {
+        "file": ".archon/templates/run.template.md",
+        "substring": "permit_commit"
+      },
+      {
+        "file": ".archon/templates/run-state.schema.json",
+        "substring": "\"schemaVersion\""
+      },
+      {
+        "file": "scripts/archon-run-state.mjs",
+        "substring": "resolve-for-commit"
+      },
+      {
+        "file": ".cursor/skills/archon-git-commit/SKILL.md",
+        "substring": "Run-State v2"
+      },
+      {
+        "file": ".husky/pre-commit",
+        "substring": "archon-run-state.mjs resolve-for-commit"
+      },
+      {
+        "file": ".cursor/commands/archon-demand.md",
+        "substring": "Run-State Lazy Activation"
+      },
+      {
+        "file": ".gitignore",
+        "substring": ".archon/runs/"
+      },
+      {
+        "file": ".gitignore",
+        "substring": ".archon/run.md"
+      }
+    ]
+  },
+  "records_folder": {
+    "description": "ADR-22 records-folder contract. Each governance event lives as one file under <kind>.dir; hot summary files contain sentinel-bounded sections regenerated by helper_script. Hand-edits between sentinels fail validation; new entries MUST be created as new record files. fold_helper compacts past-quarter records into <kind>.archive_dir cold logs once a kind exceeds fold_threshold.",
+    "helper_script": "scripts/archon-records.mjs",
+    "fold_helper": "scripts/archon-records-fold.mjs",
+    "fold_threshold": 40,
+    "kinds": {
+      "drift": {
+        "dir": ".archon/drift/records",
+        "hot": ".archon/drift.md",
+        "sentinels": [
+          "current-value",
+          "log"
+        ],
+        "required_frontmatter": [
+          "id",
+          "date",
+          "type",
+          "delta"
+        ],
+        "allowed_types": [
+          "delivery",
+          "review-release",
+          "fast-path-delivery"
+        ]
+      },
+      "memos": {
+        "dir": ".archon/memos/records",
+        "hot": ".archon/memos.md",
+        "sentinels": [
+          "hot-memos"
+        ],
+        "required_frontmatter": [
+          "id",
+          "date",
+          "topic",
+          "conclusion",
+          "source"
+        ],
+        "allowed_types": null
+      },
+      "debt": {
+        "dir": ".archon/debt/items",
+        "hot": ".archon/debt.md",
+        "sentinels": [
+          "active-debt"
+        ],
+        "required_frontmatter": [
+          "id",
+          "severity",
+          "status",
+          "deadline",
+          "source"
+        ],
+        "allowed_types": null
+      }
+    }
+  },
+  "governance_docs_mirror": {
+    "description": "DEBT-063 countermeasure (rule-of-three 3/3 2026-04-30 Full review). Whenever a delivery's changed-files list includes a path matching governance_surface_patterns, the same delivery MUST also touch a docs/archon/ file OR record one of allowed_skip_reasons in the Close-Out output. State files (manifest.md, drift.md, memos.md, debt.md, records folders) are explicitly excluded — they are state, not framework.",
+    "governance_surface_patterns": [
+      ".archon/soul",
+      ".archon/contracts/",
+      ".archon/domain-lenses/",
+      ".cursor/commands/archon-",
+      ".cursor/agents/archon-",
+      ".cursor/rules/archon-",
+      ".cursor/skills/archon-",
+      "scripts/archon-",
+      "scripts/export-archon-",
+      ".husky/pre-",
+      ".cursor/hooks"
+    ],
+    "allowed_skip_reasons": [
+      "skip:no-narrative-change",
+      "skip:already-mirrored",
+      "skip:fast-path",
+      "skip:rejected"
+    ],
+    "required_close_out_anchor": "**Governance-docs mirror check**",
+    "required_checklist_anchor": "Governance-docs mirror: yes"
+  },
+  "blink_dispatch": {
+    "skill": ".cursor/skills/blink-dispatch/SKILL.md",
+    "command": ".cursor/commands/archon-demand.md",
+    "run_state_row": "closeout.subagent_dispatched",
+    "output_contract": "subagent_dispatch: skip:<reason> | use:<subagent>:<reason>",
+    "project_high_risk_path_patterns_source": ".archon/manifest.md",
+    "project_high_risk_path_patterns_marker": "archon-blink-project-high-risk-paths",
+    "high_risk_path_patterns": [
+      "^scripts/",
+      "^docs/archon/",
+      "^\\.archon/contracts/",
+      "^\\.archon/templates/",
+      "^\\.husky/pre-commit$",
+      "^\\.archon/soul",
+      "^\\.archon/domain-lenses/",
+      "^\\.cursor/commands/",
+      "^\\.cursor/agents/",
+      "^\\.cursor/rules/",
+      "^\\.cursor/skills/",
+      "governance\\.test\\.ts$"
+    ],
+    "required_static_checks": [
+      {
+        "file": ".cursor/skills/blink-dispatch/SKILL.md",
+        "substring": "When in doubt, dispatch"
+      },
+      {
+        "file": ".cursor/commands/archon-demand.md",
+        "substring": "High-risk slices MUST NOT skip"
+      },
+      {
+        "file": ".archon/templates/run.template.md",
+        "substring": "| closeout | subagent_dispatched | 0 |"
+      }
+    ],
+    "allowed_skip_reasons": [
+      "skip:copy-only",
+      "skip:drift-budget",
+      "skip:low-risk-ci",
+      "skip:verified-manifest-sync",
+      "skip:fast-path"
+    ]
+  }
+}

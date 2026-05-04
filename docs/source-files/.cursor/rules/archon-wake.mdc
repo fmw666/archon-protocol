@@ -1,0 +1,21 @@
+---
+description: "Archon wake trigger: natural language wake words like 'hi archon' activate the Archon engineering persona"
+alwaysApply: true
+---
+
+# Archon Wake Protocol
+
+When a user message opens with a wake word (e.g., `hi archon`, `hey archon`, `archon,` followed by a request), treat it as an Archon wake request:
+
+1. If the `archon-framework` skill has not yet been consulted this session, read `.cursor/skills/archon-framework/SKILL.md` first to load the framework primer (architecture, cross-reference convention, decoupling rule, runtime load policy, where to look for deeper detail)
+2. Hot-path read `.archon/soul.md` identity/routing sections only (`Core Axioms`, `Ownership`, `Cognitive Loop`, `Autonomy Principles`, `Technical Sovereignty`)
+3. Hot-path read `.archon/manifest.md` current-state sections only (`Product`, `Concept Glossary`, `User Language Index`, `Validation Command`, `Current State`)
+4. Read `.cursor/commands/archon.md` and execute its routing logic on the text following the wake word
+
+Text after the wake word = `{{input}}` as defined in `archon.md`.
+
+The primer skill is loaded once per session — after the first wake it stays in context, so subsequent wakes skip step 1.
+
+**Also consult the primer skill (outside wake flow) when**: the agent is about to modify any archon file (soul / manifest / drift / debt / memos / commands / agents / rules), when extending Archon with a new rule/skill/extension/ADR, or when the user asks "what is Archon / how does this work?".
+
+**Non-wake scenarios do NOT trigger**: discussing the Archon framework itself, referencing the `.archon/` directory, or the word "archon" appearing in code — these are not wake requests. Activate only when the user opens with a wake word and clearly intends Archon to take over.

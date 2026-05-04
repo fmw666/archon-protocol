@@ -1,0 +1,18 @@
+Archon Framework
+Copyright 2026 Distilgent / Archon Framework contributors
+
+This product includes software developed by the Distilgent project
+(https://github.com/fmw666/Distilgent).
+
+Licensed under the Apache License, Version 2.0. See LICENSE for the
+full license text.
+
+Documentation bundled under docs/archon/** is distributed under the
+same Apache-2.0 license.
+
+Comic illustrations under docs/images/archon/** were generated using
+Google Gemini image models; the generated images are distributed under
+Apache-2.0 as part of this repository.
+
+Third-party components retain their own licenses; see the individual
+package.json dependency lists in this repository.

@@ -1,0 +1,71 @@
+---
+description: Archon meta-system guardian — keeps universal Archon files decoupled from project specifics
+globs: .archon/*.md,.archon/soul/*.md,.archon/domain-lenses/**/*.md,.archon/contracts/*.yaml,.cursor/commands/archon-*.md,.cursor/agents/archon-*.md,.cursor/skills/archon-*/SKILL.md,.cursor/skills/blink-dispatch/SKILL.md,.cursor/skills/external-agent-patterns/SKILL.md,docs/archon/*.md,docs/archon/templates/*.md
+alwaysApply: false
+---
+
+# Archon Decoupling Rules
+
+Archon is a project-agnostic, platform-agnostic meta-capability framework. soul.md (core) and its soul/*.md extensions can be copied directly into any project on any AI coding platform without modification. Commands and agents require only the first-line path prefix to be adapted by the export script (`.cursor/` → `.claude/`, etc.).
+
+## Responsibility Matrix
+
+| File | Role | May contain project specifics? |
+|------|------|------|
+| `soul.md` | Universal engineering principles (core, section-scoped hot path) | ❌ |
+| `soul/delivery.md` | Universal delivery-mode extension (loaded by demand) | ❌ |
+| `soul/review.md` | Universal review-mode extension (loaded by plan/review) | ❌ |
+| `archon-demand.md` | Universal delivery workflow | ❌ |
+| `archon-review.md` | Universal review workflow | ❌ |
+| `archon-reviewer.md` | Universal review protocol | ❌ |
+| `archon-*/SKILL.md` | Universal or framework-adjacent Archon skills | ❌ |
+| `blink-dispatch/SKILL.md` | Universal subagent dispatch gate | ❌ |
+| `external-agent-patterns/SKILL.md` | Universal external-framework evaluation guard | ❌ |
+| `docs/archon/*.md` | Portable framework reference docs | ❌ |
+| `docs/archon/templates/*.md` | Project-state templates and schema contracts | ❌ for filled project facts; placeholders/examples only |
+| `.archon/domain-lenses/**` | Universal lens/tool contracts | ❌ |
+| `.archon/contracts/*.yaml` | Portable governance contracts | ❌ |
+| `drift.md` rules section | Universal drift mechanism | ❌ |
+| `drift.md` log section | This project's delivery records | ✅ |
+| `manifest.md` | This project's hot context carrier | ✅ |
+| `debt.md` | This project's active debt gate index | ✅ |
+| `memos.md` | This project's stakeholder memory hot index | ✅ |
+| `decisions.md` | This project's ADR ledger | ✅ |
+
+## Prohibited Content in Universal Files
+
+### Project Specifics (Absolutely Prohibited in Universal Files)
+
+- Concrete technology/framework names from the adopting project stack
+- Concrete project file paths
+- Concrete shell commands from the adopting project
+- Concrete package names from the adopting project
+- Concrete metric numbers from the adopting project
+
+### Platform Path Prefixes (Tiered Restrictions)
+
+| File | `.cursor/`, `.claude/`, etc. platform paths | Note |
+|------|------|------|
+| `soul.md` / `soul/*.md` | ❌ Fully prohibited | Pure philosophy, zero path references; use abstract terms ("platform rules directory", etc.) |
+| Command first line | ✅ Allowed | Bridge line — declares soul.md, soul/*.md extension, and manifest.md locations; mechanically converted by export script |
+| Command body | ❌ Prohibited | Use short names (manifest.md, drift.md, debt.md); AI infers the archon directory from the bridge line |
+| Agents | ❌ Prohibited | Use "in the archon directory" and similar relative descriptions; main agent resolves actual paths when constructing sub-agent prompts |
+| Rules | ✅ Allowed (frontmatter declaration) | `.mdc` / `.md` formats are inherently platform-specific; converted wholesale by export script |
+
+## Correct Phrasing
+
+| ❌ Coupled | ✅ Decoupled |
+|-----------|-------------|
+| Specific language strictness mode | The project's type system at its strictest mode |
+| Specific linter rule/package names | Linter + architecture boundary rules |
+| Concrete validation command | The validation command declared in the manifest |
+| Specific test framework + library names | Test framework + component test library |
+| Concrete source directory name | Project source directory |
+| Concrete quality threshold number | Quality gate thresholds defined in the manifest |
+| `.cursor/rules/` | Platform rules directory |
+| `.cursor/skills/` | Platform skills directory |
+| `{platform}/archon/debt.md` | debt.md (use short name in body) |
+
+## Required Post-Edit Check
+
+After every modification to an Archon universal file, scan line by line to confirm no project-specific content or platform-specific paths were introduced (per the tiered restrictions above). Project-state files (`manifest.md`, `drift.md` log rows, `debt.md`, `memos.md`, `decisions.md`) may contain project facts, but they must not be copied into portable framework docs unless rewritten as generic examples. The reviewer's checklist already includes this check.
