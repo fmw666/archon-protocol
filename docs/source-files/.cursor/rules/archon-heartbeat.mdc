@@ -1,0 +1,32 @@
+---
+globs: .archon/**
+---
+
+# Archon Dashboard Heartbeat Protocol (Optional Enhancement)
+
+The dashboard now monitors agent session state automatically via the passive inference engine (based on transcript JSONL). No active heartbeat writes are required. The following is an **optional enhancement** — provides more precise demand summaries, but omitting it does not affect monitoring.
+
+## Optional: Write Demand Summary
+
+After receiving a demand (started phase), you may write a heartbeat file for a more precise demand summary:
+
+Path: `.archon/dashboard/heartbeats/{sessionId}.json`
+
+```json
+{
+  "sessionId": "s-{6 random lowercase alphanumeric chars}",
+  "phase": "started",
+  "demand": "One-sentence demand summary",
+  "startedAt": "ISO8601 timestamp",
+  "updatedAt": "ISO8601 timestamp"
+}
+```
+
+If not written, the inference engine automatically extracts the demand summary from the transcript's user_query.
+
+## Notes
+
+- **Not required** to write heartbeats at each lifecycle phase (inference engine tracks automatically)
+- **Not required** to write idle state (inference engine detects session end automatically)
+- **Not required** to write sub-agent state (inference engine detects Task calls automatically)
+- Only write when the `.archon/dashboard/` directory exists

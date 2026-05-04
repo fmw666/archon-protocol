@@ -1,0 +1,9 @@
+{
+  "name": "archon-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Archon governance state visualizer",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

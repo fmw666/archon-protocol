@@ -1,6 +1,8 @@
 // Generate VitePress wrapper pages for every file under docs/source-files/.
-// Each wrapper embeds the source file inline via VitePress <<< snippet syntax,
-// so the rendered docs site stays a mirror of the actual kit material.
+// Strategy: auto-walk source-files/, derive a wrapper path + language from the
+// file location, and allow a manual override table for ergonomic path flattening
+// and titles. Each wrapper embeds the original file inline so the rendered docs
+// site stays a perfect mirror of the shipped kit.
 //
 // Usage: node scripts/generate-source-pages.mjs
 import { promises as fs } from 'node:fs'
@@ -10,67 +12,133 @@ const ROOT = path.resolve(process.cwd(), 'docs')
 const SOURCE_FILES_DIR = path.join(ROOT, 'source-files')
 const OUTPUT_DIR = path.join(ROOT, 'source')
 
-// Map: rel path under source-files → { wrapperPath: rel path under /source/, title, description }
-// wrapperPath uses dashes to flatten nested directories into single level when ergonomic.
-const WRAPPER_MAP = [
-  // Soul
-  { src: '.archon/soul.md', out: 'soul.md', title: '.archon/soul.md', lang: 'md' },
-  { src: '.archon/soul/delivery.md', out: 'soul-delivery.md', title: '.archon/soul/delivery.md', lang: 'md' },
-  { src: '.archon/soul/review.md', out: 'soul-review.md', title: '.archon/soul/review.md', lang: 'md' },
-  // Commands
-  { src: '.cursor/commands/archon.md', out: 'commands/archon.md', title: '.cursor/commands/archon.md', lang: 'md' },
-  { src: '.cursor/commands/archon-plan.md', out: 'commands/archon-plan.md', title: '.cursor/commands/archon-plan.md', lang: 'md' },
-  { src: '.cursor/commands/archon-demand.md', out: 'commands/archon-demand.md', title: '.cursor/commands/archon-demand.md', lang: 'md' },
-  { src: '.cursor/commands/archon-review.md', out: 'commands/archon-review.md', title: '.cursor/commands/archon-review.md', lang: 'md' },
-  { src: '.cursor/commands/archon-dashboard.md', out: 'commands/archon-dashboard.md', title: '.cursor/commands/archon-dashboard.md', lang: 'md' },
-  // Agents
-  { src: '.cursor/agents/archon-reviewer.md', out: 'agents/archon-reviewer.md', title: '.cursor/agents/archon-reviewer.md', lang: 'md' },
-  { src: '.cursor/agents/archon-capture-auditor.md', out: 'agents/archon-capture-auditor.md', title: '.cursor/agents/archon-capture-auditor.md', lang: 'md' },
-  // Rules — .mdc is Cursor-specific extension; render as markdown
-  { src: '.cursor/rules/archon.mdc', out: 'rules/archon.md', title: '.cursor/rules/archon.mdc', lang: 'md' },
-  { src: '.cursor/rules/archon-wake.mdc', out: 'rules/archon-wake.md', title: '.cursor/rules/archon-wake.mdc', lang: 'md' },
-  // Skills
-  { src: '.cursor/skills/archon-framework/SKILL.md', out: 'skills/archon-framework.md', title: '.cursor/skills/archon-framework/SKILL.md', lang: 'md' },
-  { src: '.cursor/skills/archon-git-commit/SKILL.md', out: 'skills/archon-git-commit.md', title: '.cursor/skills/archon-git-commit/SKILL.md', lang: 'md' },
-  { src: '.cursor/skills/archon-signs/SKILL.md', out: 'skills/archon-signs.md', title: '.cursor/skills/archon-signs/SKILL.md', lang: 'md' },
-  { src: '.cursor/skills/blink-dispatch/SKILL.md', out: 'skills/blink-dispatch.md', title: '.cursor/skills/blink-dispatch/SKILL.md', lang: 'md' },
-  { src: '.cursor/skills/external-agent-patterns/SKILL.md', out: 'skills/external-agent-patterns.md', title: '.cursor/skills/external-agent-patterns/SKILL.md', lang: 'md' },
-  // Domain lenses
-  { src: '.archon/domain-lenses/registry.yaml', out: 'domain-lenses/registry.md', title: '.archon/domain-lenses/registry.yaml', lang: 'yaml' },
-  { src: '.archon/domain-lenses/lenses/dev.md', out: 'domain-lenses/dev.md', title: '.archon/domain-lenses/lenses/dev.md', lang: 'md' },
-  { src: '.archon/domain-lenses/lenses/design.md', out: 'domain-lenses/design.md', title: '.archon/domain-lenses/lenses/design.md', lang: 'md' },
-  { src: '.archon/domain-lenses/lenses/platform.md', out: 'domain-lenses/platform.md', title: '.archon/domain-lenses/lenses/platform.md', lang: 'md' },
-  { src: '.archon/domain-lenses/lenses/ecosystem.md', out: 'domain-lenses/ecosystem.md', title: '.archon/domain-lenses/lenses/ecosystem.md', lang: 'md' },
-  { src: '.archon/domain-lenses/lenses/capability.md', out: 'domain-lenses/capability.md', title: '.archon/domain-lenses/lenses/capability.md', lang: 'md' },
-  // Contracts
-  { src: '.archon/contracts/governance-contract.yaml', out: 'contracts/governance-contract.md', title: '.archon/contracts/governance-contract.yaml', lang: 'yaml' },
+// Files / globs to skip when auto-walking (runtime noise, hidden, binary, etc.)
+const EXCLUDE_BASENAMES = new Set(['.DS_Store', '.gitignore', '.gitkeep'])
+const EXCLUDE_EXT = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico'])
+
+function inferLang(relPath) {
+  const ext = path.extname(relPath).toLowerCase()
+  const base = path.basename(relPath).toLowerCase()
+  if (ext === '.md' || ext === '.mdc') return 'md'
+  if (ext === '.js' || ext === '.mjs' || ext === '.cjs') return 'js'
+  if (ext === '.ts') return 'ts'
+  if (ext === '.json') return 'json'
+  if (ext === '.yaml' || ext === '.yml') return 'yaml'
+  if (ext === '.py') return 'python'
+  if (ext === '.sh') return 'bash'
+  if (ext === '.css') return 'css'
+  if (ext === '.html' || ext === '.htm') return 'html'
+  if (base === 'license' || base === 'notice' || base === 'version') return 'text'
+  return 'text'
+}
+
+// Convert a source path like `.archon/domain-lenses/tools/design/palette-boundary.md`
+// into a wrapper output path like `domain-lenses/tools/design/palette-boundary.md`.
+// We drop any leading dotfolder (`.archon`, `.cursor`) and collapse deeply-nested
+// structures into a sensible URL-friendly layout.
+function defaultWrapperPath(relSrc) {
+  const normalized = relSrc.split(path.sep).join('/')
+  const parts = normalized.split('/')
+
+  // Drop leading dot-folder segment (.archon / .cursor).
+  if (parts[0] && parts[0].startsWith('.')) parts.shift()
+
+  // tools/archon-cli/bin/archon.mjs -> cli/bin-archon.md
+  // tools/archon-cli/lib/common.mjs -> cli/lib-common.md
+  // tools/archon-cli/package.json   -> cli/package.md
+  if (parts[0] === 'tools' && parts[1] === 'archon-cli') {
+    const tail = parts.slice(2)
+    if (tail[0] === 'bin') return 'cli/bin-' + path.basename(tail[1], path.extname(tail[1])) + '.md'
+    if (tail[0] === 'lib') return 'cli/lib-' + path.basename(tail[1], path.extname(tail[1])) + '.md'
+    return 'cli/' + path.basename(tail.join('/'), path.extname(tail[tail.length - 1])) + '.md'
+  }
+
+  // scripts/archon-check.py -> scripts/archon-check-py.md (disambiguate ext)
+  if (parts[0] === 'scripts') {
+    const filename = parts[parts.length - 1]
+    const ext = path.extname(filename).slice(1)
+    const stem = path.basename(filename, path.extname(filename))
+    const dirs = parts.slice(0, -1).join('/')
+    if (ext === 'py' || ext === 'sh') {
+      return dirs + '/' + stem + '-' + ext + '.md'
+    }
+    return dirs + '/' + stem + '.md'
+  }
+
+  // skills/<name>/SKILL.md -> skills/<name>.md
+  if (parts[0] === 'skills' && parts[parts.length - 1] === 'SKILL.md') {
+    return 'skills/' + parts[1] + '.md'
+  }
+
+  // Generic: flatten dirs as-is, turn file ext into .md
+  const filename = parts[parts.length - 1]
+  const ext = path.extname(filename)
+  const stem = path.basename(filename, ext)
+  const dirs = parts.slice(0, -1)
+  return [...dirs, stem + '.md'].join('/')
+}
+
+// Manual overrides — only override when the default heuristic is wrong or a
+// nicer URL is desired. Everything else is auto-derived.
+const OVERRIDES = {
+  // soul layout: flatten soul/delivery.md → soul-delivery.md
+  '.archon/soul/delivery.md': { out: 'soul-delivery.md' },
+  '.archon/soul/review.md': { out: 'soul-review.md' },
+  // registry + contract: .yaml source, wrapper named without the .yaml infix
+  '.archon/domain-lenses/registry.yaml': { out: 'domain-lenses/registry.md' },
+  '.archon/contracts/governance-contract.yaml': { out: 'contracts/governance-contract.md' },
+  // Lenses live under domain-lenses/lenses/ in source but read better flat.
+  '.archon/domain-lenses/lenses/dev.md': { out: 'domain-lenses/dev.md' },
+  '.archon/domain-lenses/lenses/design.md': { out: 'domain-lenses/design.md' },
+  '.archon/domain-lenses/lenses/platform.md': { out: 'domain-lenses/platform.md' },
+  '.archon/domain-lenses/lenses/ecosystem.md': { out: 'domain-lenses/ecosystem.md' },
+  '.archon/domain-lenses/lenses/capability.md': { out: 'domain-lenses/capability.md' },
+  // Domain-lenses README becomes the section index elsewhere; wrapper still useful.
+  '.archon/domain-lenses/README.md': { out: 'domain-lenses/README.md' },
   // Runtime templates
-  { src: '.archon/templates/run.template.md', out: 'runtime-templates/run.template.md', title: '.archon/templates/run.template.md', lang: 'md' },
-  { src: '.archon/templates/run-state.schema.json', out: 'runtime-templates/run-state.schema.md', title: '.archon/templates/run-state.schema.json', lang: 'json' },
-  // Scripts — .py / .sh / .mjs
-  { src: 'scripts/archon-check.py', out: 'scripts/archon-check-py.md', title: 'scripts/archon-check.py', lang: 'python' },
-  { src: 'scripts/archon-check.sh', out: 'scripts/archon-check-sh.md', title: 'scripts/archon-check.sh', lang: 'bash' },
-  { src: 'scripts/archon-run-state.mjs', out: 'scripts/archon-run-state.md', title: 'scripts/archon-run-state.mjs', lang: 'js' },
-  { src: 'scripts/archon-claim-verifier.mjs', out: 'scripts/archon-claim-verifier.md', title: 'scripts/archon-claim-verifier.mjs', lang: 'js' },
-  { src: 'scripts/archon-records.mjs', out: 'scripts/archon-records.md', title: 'scripts/archon-records.mjs', lang: 'js' },
-  { src: 'scripts/archon-records-fold.mjs', out: 'scripts/archon-records-fold.md', title: 'scripts/archon-records-fold.mjs', lang: 'js' },
-  { src: 'scripts/export-archon-core.mjs', out: 'scripts/export-archon-core.md', title: 'scripts/export-archon-core.mjs', lang: 'js' },
-  { src: 'scripts/test-archon-export.mjs', out: 'scripts/test-archon-export.md', title: 'scripts/test-archon-export.mjs', lang: 'js' },
-  // CLI
-  { src: 'tools/archon-cli/package.json', out: 'cli/package.md', title: 'tools/archon-cli/package.json', lang: 'json' },
-  { src: 'tools/archon-cli/bin/archon.mjs', out: 'cli/bin-archon.md', title: 'tools/archon-cli/bin/archon.mjs', lang: 'js' },
-  { src: 'tools/archon-cli/lib/common.mjs', out: 'cli/lib-common.md', title: 'tools/archon-cli/lib/common.mjs', lang: 'js' },
-  { src: 'tools/archon-cli/lib/init.mjs', out: 'cli/lib-init.md', title: 'tools/archon-cli/lib/init.mjs', lang: 'js' },
-  { src: 'tools/archon-cli/lib/doctor.mjs', out: 'cli/lib-doctor.md', title: 'tools/archon-cli/lib/doctor.mjs', lang: 'js' },
-  { src: 'tools/archon-cli/lib/export.mjs', out: 'cli/lib-export.md', title: 'tools/archon-cli/lib/export.mjs', lang: 'js' },
-]
+  '.archon/templates/run.template.md': { out: 'runtime-templates/run.template.md' },
+  '.archon/templates/run-state.schema.json': { out: 'runtime-templates/run-state.schema.md' },
+  // VERSION is a plain text file
+  '.archon/VERSION': { out: 'version.md' },
+  // License/notice at repo root
+  'LICENSE': { out: 'license.md' },
+  'NOTICE': { out: 'notice.md' },
+  // Dashboard: rename the public/index.html mirror to avoid colliding with
+  // VitePress section index convention.
+  '.archon/dashboard/public/index.html': { out: 'dashboard/public/public-index.md' },
+  // Domain-lens templates contain prose placeholders like `<tool-name>` and
+  // `<domain>` that Vue's template parser mistakes for unclosed HTML tags.
+  // Render them as literal markdown code blocks instead of inlining, which
+  // preserves the visual layout while side-stepping the compiler.
+  '.archon/domain-lenses/templates/lens.md': { out: 'domain-lenses/templates/lens.md', renderAs: 'code', lang: 'markdown' },
+  '.archon/domain-lenses/templates/tool.md': { out: 'domain-lenses/templates/tool.md', renderAs: 'code', lang: 'markdown' },
+}
+
+async function walkDir(dir) {
+  const entries = []
+  async function walk(current) {
+    const list = await fs.readdir(current, { withFileTypes: true })
+    for (const entry of list) {
+      const full = path.join(current, entry.name)
+      if (entry.isDirectory()) {
+        await walk(full)
+      } else if (entry.isFile()) {
+        if (EXCLUDE_BASENAMES.has(entry.name)) continue
+        if (EXCLUDE_EXT.has(path.extname(entry.name).toLowerCase())) continue
+        entries.push(full)
+      }
+    }
+  }
+  await walk(dir)
+  return entries
+}
 
 function buildWrapperContent(entry) {
-  // Use VitePress `<<< @/...` import. The `@` alias points to the site root
-  // (the folder containing .vitepress), i.e. docs/. We reference the file
-  // under docs/source-files/…
-  const alias = '@/source-files/' + entry.src
-  const isMarkdown = entry.lang === 'md'
+  // Special-case: render this markdown file as a fenced code block instead of
+  // inlining it, to protect Vue's template compiler from prose-level HTML-like
+  // placeholders (e.g. `<tool-name>` in a doc template).
+  const renderAsCode = entry.renderAs === 'code'
+  const isMarkdown = entry.lang === 'md' && !renderAsCode
 
   const header = `---
 title: ${entry.title}
@@ -83,49 +151,45 @@ outline: deep
 
 `
 
-  // For markdown source files, embedding them raw (with <<<) loses their
-  // own image refs and header anchors. A cleaner outcome: inline the file
-  // contents verbatim. VitePress supports `<!--@include: path/to/file.md-->`
-  // for this purpose (v1.x).
-  if (isMarkdown) {
-    // Include relative path (from the wrapper page's folder)
-    // Wrapper is at docs/source/<...>.md, include target at docs/source-files/<src>
-    // We need a relative path from the wrapper md to the included file.
-    const wrapperAbs = path.join(OUTPUT_DIR, entry.out)
-    const wrapperDir = path.dirname(wrapperAbs)
-    const includedAbs = path.join(SOURCE_FILES_DIR, entry.src)
-    let relIncluded = path.relative(wrapperDir, includedAbs).replace(/\\/g, '/')
-    if (!relIncluded.startsWith('.')) relIncluded = './' + relIncluded
-    return header + `<!--@include: ${relIncluded}-->\n`
-  }
-
-  // For code (py/sh/js/json/yaml), use <<< with a fenced language hint.
   const wrapperAbs = path.join(OUTPUT_DIR, entry.out)
   const wrapperDir = path.dirname(wrapperAbs)
   const includedAbs = path.join(SOURCE_FILES_DIR, entry.src)
   let relIncluded = path.relative(wrapperDir, includedAbs).replace(/\\/g, '/')
   if (!relIncluded.startsWith('.')) relIncluded = './' + relIncluded
+
+  if (isMarkdown) {
+    return header + `<!--@include: ${relIncluded}-->\n`
+  }
   return header + `<<< ${relIncluded}{${entry.lang}}\n`
 }
 
 async function main() {
+  const absFiles = await walkDir(SOURCE_FILES_DIR)
+  const entries = []
+  for (const abs of absFiles) {
+    const relSrc = path.relative(SOURCE_FILES_DIR, abs).split(path.sep).join('/')
+    const override = OVERRIDES[relSrc]
+    const out = override?.out ?? defaultWrapperPath(relSrc)
+    const lang = override?.lang ?? inferLang(relSrc)
+    const title = override?.title ?? relSrc
+    const renderAs = override?.renderAs
+    entries.push({ src: relSrc, out, title, lang, renderAs })
+  }
+
   let written = 0
-  for (const entry of WRAPPER_MAP) {
-    const srcAbs = path.join(SOURCE_FILES_DIR, entry.src)
-    try {
-      await fs.access(srcAbs)
-    } catch {
-      console.warn(`  SKIP (source missing): ${entry.src}`)
-      continue
+  const conflictCheck = new Map()
+  for (const entry of entries) {
+    if (conflictCheck.has(entry.out)) {
+      console.error(`  CONFLICT: ${entry.out} maps from both ${conflictCheck.get(entry.out)} and ${entry.src}`)
+      process.exit(1)
     }
+    conflictCheck.set(entry.out, entry.src)
     const outAbs = path.join(OUTPUT_DIR, entry.out)
     await fs.mkdir(path.dirname(outAbs), { recursive: true })
     await fs.writeFile(outAbs, buildWrapperContent(entry), 'utf8')
     written += 1
-    console.log(`  wrote: source/${entry.out}`)
   }
-  console.log('')
-  console.log(`Generated ${written} source wrapper pages.`)
+  console.log(`Generated ${written} source wrapper pages from ${absFiles.length} source files.`)
 }
 
 main().catch((err) => {
