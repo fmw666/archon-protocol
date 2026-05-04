@@ -1,5 +1,15 @@
 # @archon/cli Changelog
 
+## [1.0.1] — 2026-05-05
+
+### Fixed
+- `archon update` no longer hand-synthesises `.archon/VERSION` after the
+  core-version module has already written it. The manual write used `'\n'`
+  on all platforms, which drifted from canonical bytes when the upstream
+  ships CRLF, causing `archon sync` to immediately report 1 modified file
+  after any update. VERSION now flows through the same fetch-verify-write
+  path as every other manifest file.
+
 ## [1.0.0] — 2026-05-05
 
 **Architectural shift**: the CLI no longer requires a checkout of the Archon

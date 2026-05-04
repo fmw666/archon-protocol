@@ -114,7 +114,10 @@ export async function runUpdate({ args }) {
     })
   }
 
-  await fs.writeFile(path.join(projectRoot, '.archon', 'VERSION'), manifest.version + '\n')
+  // VERSION is written by writeFileSafe above as part of the core-version
+  // module. Do not write it manually here — doing so with a synthetic '\n'
+  // introduces line-ending drift against the canonical bytes on platforms
+  // where upstream uses CRLF.
   await logUpdate({ projectRoot, manifest, installedVersion, plan })
 
   console.log('')
