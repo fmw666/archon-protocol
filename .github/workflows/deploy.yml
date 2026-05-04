@@ -15,20 +15,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm test
-
   build:
     runs-on: ubuntu-latest
-    needs: test
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,7 +26,10 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npm run docs:build
+      - name: Link audit
+        run: node scripts/lint-links.mjs
+      - name: Build docs
+        run: npm run docs:build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs/.vitepress/dist

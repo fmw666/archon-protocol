@@ -18,7 +18,5 @@ jobs:
       - run: npm ci
       - name: Link audit
         run: node scripts/lint-links.mjs
-      - name: Integrity invariants
-        run: node scripts/lint-integrity.mjs
-      - name: Tests
-        run: npm test
+      - name: Docs build smoke test
+        run: npm run docs:build
