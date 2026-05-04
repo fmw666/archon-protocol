@@ -33,7 +33,7 @@ export async function runSync({ args }) {
   const canonicalFiles = flattenFiles(manifest, { moduleIds: installedMods })
   const canonicalByPath = new Map(canonicalFiles.map((f) => [f.path, f]))
 
-  const report = { ok: [], modified: [], missing: [], extra: [], ledgers: [] }
+  const report = { ok: [], modified: [], missing: [], extra: [], ledgers: [], installedMods: [...installedMods] }
 
   // Check canonical presence on disk
   for (const f of canonicalFiles) {
@@ -109,7 +109,8 @@ export async function runSync({ args }) {
 
 function summariseByModule(manifest, report) {
   const byMod = {}
-  for (const mod of manifest.modules) byMod[mod.id] = { total: mod.file_count, ok: 0, modified: 0, missing: 0 }
+  const installedSet = new Set(report.installedMods || [])
+  for (const mod of manifest.modules) byMod[mod.id] = { total: mod.file_count, ok: 0, modified: 0, missing: 0, required: Boolean(mod.required), installed: installedSet.has(mod.id) }
   for (const r of report.ok) byMod[r.module].ok += 1
   for (const r of report.modified) byMod[r.module].modified += 1
   for (const r of report.missing) byMod[r.module].missing += 1
@@ -153,6 +154,10 @@ function printReport({ projectRoot, installedVersion, canonicalVersion, report, 
 
   console.log('Per-module status:')
   for (const [mod, s] of Object.entries(moduleSummary)) {
+    if (!s.installed) {
+      console.log(`  ${mod.padEnd(26)} not installed (optional, ${s.total} files available)`)
+      continue
+    }
     const parts = [`${s.ok}/${s.total} ok`]
     if (s.modified) parts.push(`${s.modified} modified`)
     if (s.missing) parts.push(`${s.missing} missing`)

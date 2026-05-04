@@ -44,8 +44,32 @@ export async function runUpdate({ args }) {
     return
   }
 
-  const installedMods = await detectInstalledModules({ projectRoot, manifest })
+  const detectedMods = await detectInstalledModules({ projectRoot, manifest })
+  const installedMods = applyModuleOverrides({
+    detected: detectedMods,
+    manifest,
+    withFlag: flags['with'],
+    withoutFlag: flags['without'],
+  })
+  if (!setsEqual(detectedMods, installedMods)) {
+    const added = [...installedMods].filter((m) => !detectedMods.has(m))
+    const removed = [...detectedMods].filter((m) => !installedMods.has(m))
+    if (added.length) console.log(`[archon update] --with adds:     ${added.join(', ')}`)
+    if (removed.length) console.log(`[archon update] --without skips: ${removed.join(', ')}`)
+  }
   const files = flattenFiles(manifest, { moduleIds: installedMods })
+
+  // Plan removals for modules the user explicitly opted out of (--without).
+  // Files that exist on disk but are no longer in the installed module set
+  // must be removed, otherwise `sync` will flag them as "extra".
+  const keepPathSet = new Set(files.map((f) => f.path))
+  const removals = []
+  const allCanonicalFiles = flattenFiles(manifest)
+  for (const f of allCanonicalFiles) {
+    if (keepPathSet.has(f.path)) continue
+    const abs = path.join(projectRoot, f.path)
+    if (await pathExists(abs)) removals.push(f.path)
+  }
 
   const plan = { add: [], update: [], same: [] }
   for (const f of files) {
@@ -60,10 +84,11 @@ export async function runUpdate({ args }) {
   console.log(`  add:     ${plan.add.length}`)
   console.log(`  update:  ${plan.update.length}`)
   console.log(`  same:    ${plan.same.length}`)
+  console.log(`  remove:  ${removals.length}`)
   console.log(`  bytes to fetch: ${formatBytes(totalBytes)}`)
 
   const changing = [...plan.add, ...plan.update]
-  if (changing.length === 0) {
+  if (changing.length === 0 && removals.length === 0) {
     console.log('[archon update] nothing to do.')
     return
   }
@@ -97,7 +122,7 @@ export async function runUpdate({ args }) {
   process.stdout.write('\n')
 
   const backupRoot = path.join(projectRoot, `.archon-backup-${isoStamp()}`)
-  if (plan.update.length > 0) {
+  if (plan.update.length > 0 || removals.length > 0) {
     await fs.mkdir(backupRoot, { recursive: true })
     console.log(`[archon update] backups → ${path.relative(projectRoot, backupRoot)}`)
   }
@@ -112,6 +137,25 @@ export async function runUpdate({ args }) {
       buf: buffers.get(f.path),
       backupRoot: plan.update.some((p) => p.path === f.path) ? backupRoot : null,
     })
+  }
+
+  for (const rel of removals) {
+    if (isRuntimeLedgerPath(rel, manifest)) continue
+    const abs = path.join(projectRoot, rel)
+    if (await pathExists(abs)) {
+      const backupAbs = path.join(backupRoot, rel)
+      await fs.mkdir(path.dirname(backupAbs), { recursive: true })
+      await fs.rename(abs, backupAbs)
+    }
+  }
+  if (removals.length > 0) {
+    console.log(`[archon update] removed ${removals.length} files from opted-out modules (moved to backup).`)
+    await pruneEmptyDirs(projectRoot, [
+      'tools/archon-cli/bin',
+      'tools/archon-cli/lib',
+      'tools/archon-cli',
+      'tools',
+    ])
   }
 
   // VERSION is written by writeFileSafe above as part of the core-version
@@ -139,4 +183,59 @@ async function logUpdate({ projectRoot, manifest, installedVersion, plan }) {
 
 function isoStamp() {
   return new Date().toISOString().replace(/[:.]/g, '-')
+}
+
+function parseModuleList(raw) {
+  if (!raw || raw === true) return null
+  if (raw === 'all') return 'all'
+  if (raw === 'none') return new Set()
+  return new Set(String(raw).split(',').map((s) => s.trim()).filter(Boolean))
+}
+
+// Refines the auto-detected module set using --with / --without overrides.
+// Required modules are never dropped (they are Archon's core contract).
+function applyModuleOverrides({ detected, manifest, withFlag, withoutFlag }) {
+  const result = new Set(detected)
+  const withParsed = parseModuleList(withFlag)
+  const withoutParsed = parseModuleList(withoutFlag)
+  const optionals = manifest.modules.filter((m) => !m.required).map((m) => m.id)
+  const requiredIds = new Set(manifest.modules.filter((m) => m.required).map((m) => m.id))
+
+  if (withParsed === 'all') {
+    for (const id of optionals) result.add(id)
+  } else if (withParsed instanceof Set) {
+    for (const id of withParsed) result.add(id)
+  }
+
+  if (withoutParsed instanceof Set) {
+    for (const id of withoutParsed) {
+      if (requiredIds.has(id)) {
+        console.warn(`[archon update] --without=${id} ignored (required module).`)
+        continue
+      }
+      result.delete(id)
+    }
+  }
+
+  for (const id of requiredIds) result.add(id)
+  return result
+}
+
+function setsEqual(a, b) {
+  if (a.size !== b.size) return false
+  for (const v of a) if (!b.has(v)) return false
+  return true
+}
+
+async function pruneEmptyDirs(projectRoot, dirs) {
+  for (const d of dirs) {
+    const abs = path.join(projectRoot, d)
+    if (!(await pathExists(abs))) continue
+    try {
+      const entries = await fs.readdir(abs)
+      if (entries.length === 0) await fs.rmdir(abs)
+    } catch {
+      // best-effort
+    }
+  }
 }

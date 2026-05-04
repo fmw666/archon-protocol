@@ -24,6 +24,7 @@ export async function runInstall({ args }) {
   const dryRun = Boolean(flags['dry-run'])
   const yes = Boolean(flags.yes || flags.y)
   const includeOptional = parseModuleFlag(flags)
+  const excludeOptional = parseWithoutFlag(flags)
 
   console.log(`[archon install] target: ${targetDir}`)
 
@@ -43,7 +44,7 @@ export async function runInstall({ args }) {
   const manifest = await fetchManifest({ baseUrl })
   console.log(`[archon install] manifest v${manifest.version} — ${manifest.totals.files} files across ${manifest.totals.modules} modules`)
 
-  const selectedModules = await pickModules({ manifest, includeOptional, yes })
+  const selectedModules = await pickModules({ manifest, includeOptional, excludeOptional, yes })
   const files = flattenFiles(manifest, { moduleIds: selectedModules })
 
   const totalBytes = files.reduce((s, f) => s + f.bytes, 0)
@@ -105,7 +106,13 @@ function parseModuleFlag(flags) {
   return new Set(raw.split(',').map((s) => s.trim()).filter(Boolean))
 }
 
-async function pickModules({ manifest, includeOptional, yes }) {
+function parseWithoutFlag(flags) {
+  const raw = flags['without']
+  if (!raw || raw === true) return null
+  return new Set(String(raw).split(',').map((s) => s.trim()).filter(Boolean))
+}
+
+async function pickModules({ manifest, includeOptional, excludeOptional, yes }) {
   const chosen = new Set()
   const optionals = []
   for (const mod of manifest.modules) {
@@ -118,26 +125,33 @@ async function pickModules({ manifest, includeOptional, yes }) {
 
   if (includeOptional === 'all') {
     for (const m of optionals) chosen.add(m.id)
-    return chosen
-  }
-  if (includeOptional instanceof Set) {
+  } else if (includeOptional instanceof Set) {
     for (const id of includeOptional) chosen.add(id)
-    return chosen
-  }
-
-  if (yes) {
-    return chosen
-  }
-
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
-  try {
-    for (const m of optionals) {
-      const answer = await ask(rl, `  Include optional module "${m.id}" (${m.file_count} files)? ${m.title}\n  [y/N] `)
-      if (answer.toLowerCase().startsWith('y')) chosen.add(m.id)
+  } else if (yes) {
+    // no prompt, no --with: default = required only
+  } else {
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
+    try {
+      for (const m of optionals) {
+        const answer = await ask(rl, `  Include optional module "${m.id}" (${m.file_count} files)? ${m.title}\n  [y/N] `)
+        if (answer.toLowerCase().startsWith('y')) chosen.add(m.id)
+      }
+    } finally {
+      rl.close()
     }
-  } finally {
-    rl.close()
   }
+
+  if (excludeOptional instanceof Set) {
+    const requiredIds = new Set(manifest.modules.filter((m) => m.required).map((m) => m.id))
+    for (const id of excludeOptional) {
+      if (requiredIds.has(id)) {
+        console.warn(`[archon install] --without=${id} ignored (required module).`)
+        continue
+      }
+      chosen.delete(id)
+    }
+  }
+
   return chosen
 }
 

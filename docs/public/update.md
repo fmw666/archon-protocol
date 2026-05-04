@@ -55,6 +55,17 @@ For optional modules that are **not** currently installed:
 - Ask the user if they want to opt in during this update. Don't add them
   silently.
 
+For optional modules that **are** currently installed but the user may wish
+to drop during this update (e.g., they now want to `npx @archon/cli` instead
+of vendoring `tools/archon-cli/`):
+
+- If the user opts out, mark every file in that module as `REMOVE`.
+- Move removed files into the same `.archon-backup-<ts>/` directory that
+  holds overwrites, so the operation is reversible.
+- After file removal, prune empty parent directories.
+- Runtime ledger paths listed under `manifest.runtime_ledger_paths` are
+  **never** removed, even if the containing module is opted out.
+
 Present the plan:
 
 ```
@@ -62,6 +73,7 @@ Archon update: v{{INSTALLED_VERSION}} → v{{CANONICAL_VERSION}}
 
 Files to add    ({{N_ADD}}): ...
 Files to update ({{N_UPDATE}}): ...
+Files remove   ({{N_REMOVE}}): ... (from opted-out modules)
 Files unchanged ({{N_SAME}}): {{N_SAME}} (will not be touched)
 
 Runtime ledgers that will be PRESERVED (never touched by update):
@@ -71,6 +83,9 @@ Runtime ledgers that will be PRESERVED (never touched by update):
 
 Optional modules NOT currently installed:
 - {{list}} — include any of these?
+
+Optional modules CURRENTLY installed (can be dropped):
+- {{list}} — drop any of these?
 
 OK to proceed?
 ```

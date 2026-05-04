@@ -1,5 +1,27 @@
 # @archon/cli Changelog
 
+## [1.1.0] — 2026-05-05
+
+### Added
+- `archon update` now honors `--with=<list|all|none>` and `--without=<list>`
+  to refine the auto-detected module set. Previously `update` was driven
+  purely by on-disk detection: an adopter who wanted to drop a previously
+  installed optional module (e.g. `cli`, `dashboard`) had no way to express
+  that intent without a manual cleanup + re-install.
+- `update` now plans **removals** for modules the user opts out of via
+  `--without`. Removed files are moved into the same `.archon-backup-<ts>/`
+  directory that holds overwrites, and empty parent dirs (`tools/archon-cli/`
+  etc.) are pruned. This closes the drift loop: after
+  `archon update --without=cli`, `archon sync` reports 0 extra files.
+- `archon install` gains a symmetric `--without=<list>` flag (required
+  modules are always preserved and `--without=<required>` is ignored with a
+  warning). Useful for non-interactive CI scripts.
+
+### Notes
+- Required modules are never removable — the contract guarantees that any
+  Archon-governed project always ships core soul, contracts, templates,
+  domain-lenses, commands, agents, rules, skills, scripts, version, legal.
+
 ## [1.0.1] — 2026-05-05
 
 ### Fixed
