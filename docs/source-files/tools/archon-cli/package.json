@@ -1,7 +1,7 @@
 {
   "name": "@archon/cli",
-  "version": "0.1.0",
-  "description": "Archon framework CLI — init, doctor, export governance kits for any project (placeholder name; final npm name TBD).",
+  "version": "1.0.0",
+  "description": "Archon framework CLI — install, update, sync, doctor, uninstall governance kits for any project by consuming https://aaep.site/manifest.json.",
   "type": "module",
   "bin": {
     "archon": "./bin/archon.mjs"

@@ -1,84 +1,123 @@
 # Archon Protocol — Documentation Site
 
-VitePress-powered documentation site for the **Archon engineering governance framework**.
+VitePress-powered documentation + distribution site for the **Archon
+engineering governance framework**.
 
-- 🔗 Live site: https://aaep.site (current CNAME — may be re-pointed later)
-- 🧬 Framework source: mirrored into [`docs/source-files/`](docs/source-files/) and rendered under `/source/*` on the site.
+- 🌐 Live: https://aaep.site
+- 🤖 Agent entry: <https://aaep.site/skill.md>
+- 📜 Canonical manifest: <https://aaep.site/manifest.json>
+- 🧬 Raw source files: <https://aaep.site/source-files/…>
 
-## What's inside
+## Role
 
-The site has five top-level sections:
+This repo is the **canonical source of truth** for Archon. Everything
+adopter projects install — `.archon/`, `.cursor/`, `scripts/`,
+`tools/archon-cli/`, the dashboard reference UI, the demand-pool
+extension, LICENSE, NOTICE — lives under [`docs/source-files/`](docs/source-files/).
 
-| Nav | Path | What it covers |
-|-----|------|----------------|
-| **Core Concepts** | `/concepts/` | Identity · cognitive loop · 16 user journeys · architecture reference · ADRs · drift / model-vs-harness / workflow deep dives |
-| **Install & Boot** | `/setup/` | 5-minute quickstart · full setup guide · `archon` CLI · state templates · dashboard PRD |
-| **Full Source** | `/source/` | Every shipped Archon file (82 files across soul, commands, agents, rules, skills, domain-lenses, contracts, templates, scripts, CLI, dashboard, extensions), mirrored from [`docs/source-files/`](docs/source-files/) via VitePress snippet imports |
-| **Testing** | `/testing/` | Test strategy · representative samples · how to run the gate chain in an adopter project |
-| **Changelog** | `/changelog/` | Framework changelog · CLI changelog · ADR timeline |
+Adopter projects (including `Distilgent`, the reference host) **pull**
+from this repo:
+
+- **Agent path** (preferred): user tells their coding agent *"read
+  aaep.site/skill.md and install archon"* → agent fetches the manifest,
+  verifies sha256, writes files.
+- **CLI path**: `npx @archon/cli install` — same manifest, same verification,
+  scripted.
+
+Nothing in `docs/source-files/` is generated from another repo. Edit
+here.
+
+## Six entry points on the site
+
+| Nav | Path | Purpose |
+|-----|------|---------|
+| **Agent Protocol** | `/agent/` | How agents install, update, sync, uninstall Archon via `aaep.site/*.md` + manifest. |
+| **Core Concepts** | `/concepts/` | Identity · cognitive loop · 16 user journeys · architecture · ADRs · deep dives. |
+| **Install & Boot** | `/setup/` | Human path: 5-min quickstart · CLI · state templates · dashboard PRD. |
+| **Full Source** | `/source/` | Every shipped file (~87), rendered from `docs/source-files/` via snippet imports. |
+| **Testing** | `/testing/` | Test strategy · contract checkers · how to run the gates in your project. |
+| **Changelog** | `/changelog/` | Framework changelog · CLI changelog · ADR timeline. |
 
 ## Develop locally
 
 ```bash
 npm install
-npm run docs:dev       # dev server (auto-reload)
-npm run docs:build     # production build → docs/.vitepress/dist
+npm run docs:dev       # dev server (auto-rebuilds manifest + source pages)
+npm run build          # production build → docs/.vitepress/dist/
 npm run docs:preview   # preview production build locally
 ```
 
-## Sync from the authoring repo (one command)
+The `prebuild` step runs before every build:
 
-The Archon framework is **authored** inside the `Distilgent` project (its
-reference host). When framework files change there, re-sync the docs site by
-running one command from this repo root:
+1. `scripts/build-manifest.mjs` — scans `docs/source-files/`, computes sha256
+   for every file, buckets them into modules, emits
+   `docs/public/manifest.json`, and mirrors the raw bytes into
+   `docs/public/source-files/` so the published site serves them at the URL
+   the manifest advertises.
+2. `scripts/generate-source-pages.mjs` — creates one wrapper markdown page
+   per source file under `docs/source/` so human visitors can browse them.
 
-```bash
-npm run sync                          # pulls from ../Distilgent by default
-npm run sync -- --src=E:/Distilgent   # explicit path
-npm run sync:dry                      # preview what would change
+## Repo layout
+
+```
+archon-protocol/
+├── docs/
+│   ├── public/                    # served at site root (generated)
+│   │   ├── manifest.json            ← aaep.site/manifest.json
+│   │   ├── skill.md · install.md …  ← agent-facing instructions
+│   │   └── source-files/…           ← raw bytes of every shipped file
+│   ├── source-files/              # CANONICAL — edit here
+│   │   ├── .archon/…
+│   │   ├── .cursor/…
+│   │   ├── scripts/…
+│   │   ├── tools/archon-cli/…
+│   │   ├── LICENSE
+│   │   └── NOTICE
+│   ├── agent/                     # human-readable agent-protocol pages
+│   ├── concepts/ · setup/ · testing/ · changelog/ · source/
+│   └── .vitepress/
+└── scripts/
+    ├── build-manifest.mjs         # scan source-files → manifest.json + mirror
+    ├── generate-source-pages.mjs  # create /source/**/*.md wrappers
+    └── lint-links.mjs             # verify every internal link resolves
 ```
 
-What `sync` does, in order:
+## Editing flows
 
-1. **Mirror**: copy every Archon source file from the authoring repo into
-   `docs/source-files/`, following the rule table in
-   [`scripts/sync-archon-source.mjs`](scripts/sync-archon-source.mjs). Any
-   file in `docs/source-files/` that no longer matches an upstream rule is
-   removed so the mirror stays a true reflection.
-2. **Regenerate wrappers**: run `scripts/generate-source-pages.mjs` to
-   produce one `/source/**/*.md` wrapper per file. Wrapper paths are derived
-   by convention (with small overrides for URL ergonomics) so adding a new
-   source file only requires editing the mirror rules, never the generator.
-3. **Lint**: run `scripts/lint-links.mjs` to catch any broken internal links
-   introduced by the sync.
+### Adding a new framework file
 
-When the authoring repo grows a new Archon-owned file category (for example,
-a new `.cursor/rules/archon-*.mdc` or a new domain-lens tool), edit
-`MIRROR_RULES` in `scripts/sync-archon-source.mjs` to describe it. That file
-is the **single source of truth** for what the docs site promises to ship.
+1. Write the file under the appropriate path inside `docs/source-files/`
+   (e.g. `.archon/domain-lenses/tools/dev/new-tool.md`).
+2. If it should belong to a specific module, update `MODULE_DEFS` in
+   `scripts/build-manifest.mjs`; otherwise it will land in the `misc`
+   bucket.
+3. Run `npm run build`. The manifest, the public mirror, and the wrapper
+   pages regenerate automatically.
+4. If the file needs a custom sidebar entry or URL alias, edit
+   `docs/.vitepress/config.ts` and `OVERRIDES` inside
+   `scripts/generate-source-pages.mjs`.
 
-### What the sync intentionally does NOT copy
+### Shipping a new framework version
 
-These live in the authoring repo but are considered project-private runtime
-state, not framework material:
+1. Bump `docs/source-files/.archon/VERSION` to the new semver.
+2. Write a `docs/changelog/framework.md` entry.
+3. Build. The manifest picks up the new version automatically.
 
-- `.archon/debt.md`, `drift.md`, `manifest.md`, `memos.md`, `signs.md`, `decisions.md` (active ledgers)
-- `.archon/debt/items/*`, `.archon/drift/records/*`, `.archon/memos/records/*`, `.archon/*/archive/*`
-- `.archon/dashboard/heartbeats/*` (per-project heartbeat logs)
-- `.archon/extensions/*/demands.md` entries — only the extension contract (`extension.md`) and the file's schema are mirrored.
+### Adding a placeholder-aware file
 
-Adopters will generate their own versions of these when they run
-`archon init` or the cognitive loop writes its first record.
+1. Use `{{PLACEHOLDER_NAME}}` inside the file (uppercase, underscore
+   separated).
+2. Add an entry to `placeholderCat` inside `scripts/build-manifest.mjs` so
+   agents know how to ask the user for the value.
+3. Build; the manifest exposes the catalogue + which files use each
+   placeholder.
 
-## Other scripts
+## Not in scope here
 
-| Script | Purpose |
-|--------|---------|
-| `lint-links.mjs` | Verify every internal `](...)` link resolves to an existing file. Runs in CI. |
-| `generate-source-pages.mjs` | (Re)generate the `/source/*.md` wrapper pages from `docs/source-files/`. Called by `sync`. |
-| `fix-migrated-links.mjs` | One-off helper: rewrite legacy Distilgent-relative links (`../images/archon/...`) to site-absolute paths. |
-| `escape-inline-code-brackets.mjs` | One-off helper: escape `<token>` inside inline-code spans so the VitePress/Vue compiler does not misparse them as HTML. |
+- Adopter-side runtime state (`drift.md`, `debt.md`, `memos.md`, record
+  directories, dashboard heartbeat store, demand-pool demands). These live
+  in each adopter project and are never touched by updates.
 
 ## License
 
-Archon framework: Apache-2.0 (see `docs/source-files/LICENSE`).
+Archon framework: Apache-2.0. See [`docs/source-files/LICENSE`](docs/source-files/LICENSE).

@@ -4,6 +4,10 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
 import { runInit } from '../lib/init.mjs'
+import { runInstall } from '../lib/install.mjs'
+import { runUpdate } from '../lib/update.mjs'
+import { runSync } from '../lib/sync.mjs'
+import { runUninstall } from '../lib/uninstall.mjs'
 import { runDoctor } from '../lib/doctor.mjs'
 import { runExport } from '../lib/export.mjs'
 import { readCliVersion } from '../lib/common.mjs'
@@ -12,9 +16,13 @@ const BIN_DIR = path.dirname(fileURLToPath(import.meta.url))
 const CLI_ROOT = path.resolve(BIN_DIR, '..')
 
 const SUBCOMMANDS = {
-  init: runInit,
+  install: runInstall,
+  init: runInit, // alias for install
+  update: runUpdate,
+  sync: runSync,
   doctor: runDoctor,
-  export: runExport,
+  uninstall: runUninstall,
+  export: runExport, // legacy: authoring-side standalone kit builder
 }
 
 function printHelp() {
@@ -24,22 +32,36 @@ function printHelp() {
   console.log('Usage:')
   console.log('  archon <command> [args...]')
   console.log('')
-  console.log('Commands:')
-  console.log('  init <target-dir>       Scaffold Archon governance into a target project')
-  console.log('  doctor [project-dir]    Audit an Archon-governed project for contract violations')
-  console.log('  export <output-dir>     Export a standalone Archon kit from the current repo')
+  console.log('Lifecycle commands (consume https://aaep.site/manifest.json):')
+  console.log('  install [target-dir]   Fresh install into a project')
+  console.log('  update  [project-dir]  Upgrade an installed project to canonical')
+  console.log('  sync    [project-dir]  Diff project vs canonical (read-only)')
+  console.log('  doctor  [project-dir]  Full health check (structural + contract + canonical)')
+  console.log('  uninstall [project-dir]  Remove Archon (preserve or archive ledgers)')
   console.log('')
-  console.log('Flags (shared):')
-  console.log('  --platform=<cursor|claude-code>   Platform target (default: cursor)')
-  console.log('  --overwrite                        Replace existing output directory')
-  console.log('  --dry-run                          Print the plan without writing files')
-  console.log('  --help, -h                         Show this message')
-  console.log('  --version, -v                      Print CLI version')
+  console.log('Aliases / legacy:')
+  console.log('  init <target-dir>      Alias for `install <target-dir>`')
+  console.log('  export <output-dir>    Build a standalone kit from a local Archon source checkout')
+  console.log('')
+  console.log('Shared flags:')
+  console.log('  --base-url=<url>       Override manifest source (default: https://aaep.site)')
+  console.log('  --with=<list|all|none> Comma-separated optional modules to include (install only)')
+  console.log('  --yes, -y              Skip interactive prompts')
+  console.log('  --force                Force re-install / re-verify (install, update)')
+  console.log('  --dry-run              Print the plan without writing files')
+  console.log('  --json                 Machine-readable output (sync only)')
+  console.log('  --offline              Skip L4 canonical diff (doctor only)')
+  console.log('  --archive-ledgers      Move runtime ledgers to .archon-history-<ts>/ (uninstall only)')
+  console.log('  --delete-ledgers       Delete runtime ledgers (uninstall only, DESTRUCTIVE)')
+  console.log('  --help, -h             Show this message')
+  console.log('  --version, -v          Print CLI version')
   console.log('')
   console.log('Examples:')
-  console.log('  archon init ./my-new-project --platform=cursor')
-  console.log('  archon doctor .')
-  console.log('  archon export ./archon-kit --platform=claude-code --overwrite')
+  console.log('  archon install ./my-new-project --with=cli,dashboard')
+  console.log('  archon update')
+  console.log('  archon sync --json')
+  console.log('  archon doctor')
+  console.log('  archon uninstall --archive-ledgers')
 }
 
 async function main() {

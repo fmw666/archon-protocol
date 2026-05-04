@@ -26,6 +26,7 @@ export default withMermaid(defineConfig({
     logo: "/logo.svg",
 
     nav: [
+      { text: "Agent Protocol", link: "/agent/" },
       { text: "Core Concepts", link: "/concepts/" },
       { text: "Install & Boot", link: "/setup/" },
       { text: "Full Source", link: "/source/" },
@@ -34,6 +35,36 @@ export default withMermaid(defineConfig({
     ],
 
     sidebar: {
+      "/agent/": [
+        {
+          text: "Agent Protocol",
+          items: [
+            { text: "Overview", link: "/agent/" },
+            { text: "Canonical Manifest", link: "/agent/manifest" },
+          ],
+        },
+        {
+          text: "Lifecycle commands",
+          items: [
+            { text: "Install", link: "/agent/install" },
+            { text: "Update", link: "/agent/update" },
+            { text: "Sync", link: "/agent/sync" },
+            { text: "Uninstall", link: "/agent/uninstall" },
+          ],
+        },
+        {
+          text: "Raw agent files (served verbatim)",
+          items: [
+            { text: "skill.md", link: "https://aaep.site/skill.md" },
+            { text: "install.md", link: "https://aaep.site/install.md" },
+            { text: "update.md", link: "https://aaep.site/update.md" },
+            { text: "sync.md", link: "https://aaep.site/sync.md" },
+            { text: "uninstall.md", link: "https://aaep.site/uninstall.md" },
+            { text: "manifest.json", link: "https://aaep.site/manifest.json" },
+          ],
+        },
+      ],
+
       "/concepts/": [
         {
           text: "Core Concepts",
@@ -216,8 +247,13 @@ export default withMermaid(defineConfig({
             { text: "package.json", link: "/source/cli/package" },
             { text: "bin/archon.mjs", link: "/source/cli/bin-archon" },
             { text: "lib/common.mjs", link: "/source/cli/lib-common" },
-            { text: "lib/init.mjs", link: "/source/cli/lib-init" },
+            { text: "lib/manifest.mjs", link: "/source/cli/lib-manifest" },
+            { text: "lib/install.mjs", link: "/source/cli/lib-install" },
+            { text: "lib/update.mjs", link: "/source/cli/lib-update" },
+            { text: "lib/sync.mjs", link: "/source/cli/lib-sync" },
+            { text: "lib/uninstall.mjs", link: "/source/cli/lib-uninstall" },
             { text: "lib/doctor.mjs", link: "/source/cli/lib-doctor" },
+            { text: "lib/init.mjs", link: "/source/cli/lib-init" },
             { text: "lib/export.mjs", link: "/source/cli/lib-export" },
           ],
         },

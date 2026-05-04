@@ -5,15 +5,23 @@ import process from 'node:process'
 import { spawn } from 'node:child_process'
 
 import { parseFlags } from './common.mjs'
+import {
+  fetchManifest,
+  resolveBaseUrl,
+  classifyFile,
+  detectInstalledModules,
+  flattenFiles,
+} from './manifest.mjs'
 
 /**
  * `archon doctor [project-dir]`
  *
- * Three-layer health check for an Archon-governed project:
- *   L1 — Structural: required files present (soul.md, manifest.md, drift.md, ...)
- *   L2 — Contract:   delegates to scripts/archon-check.py when available
- *   L3 — Hints:      cheap readability signals (unfilled template placeholders,
- *                    missing validation command, empty concept glossary)
+ * Four-layer health check for an Archon-governed project:
+ *   L1 — Structural:  required files present (soul.md, manifest.md, drift.md, ...)
+ *   L2 — Contract:    delegates to scripts/archon-check.py when available
+ *   L3 — Hints:       cheap readability signals (unfilled template placeholders,
+ *                     missing validation command, empty concept glossary)
+ *   L4 — Canonical:   diff vs aaep.site/manifest.json (opt-out with --offline)
  *
  * Exit code 0 = green, 1 = any failure. Non-fatal warnings print but do not fail.
  */
@@ -29,6 +37,9 @@ export async function runDoctor({ args }) {
   await checkStructure(projectDir, results)
   await checkContract(projectDir, results, flags)
   await checkManifestHints(projectDir, results)
+  if (!flags.offline) {
+    await checkCanonical(projectDir, results, flags)
+  }
 
   console.log('')
   if (results.fail === 0 && results.warn === 0) {
@@ -149,6 +160,42 @@ async function checkManifestHints(root, results) {
       results.warn += 1
     } else {
       console.log('  [OK]   Validation Command declared.')
+    }
+  }
+  console.log('')
+}
+
+async function checkCanonical(root, results, flags) {
+  console.log('[L4 Canonical diff (vs aaep.site/manifest.json)]')
+  let manifest
+  try {
+    manifest = await fetchManifest({ baseUrl: resolveBaseUrl({ flags }) })
+  } catch (err) {
+    console.log(`  [WARN] could not fetch canonical manifest: ${err.message}`)
+    console.log('         pass --offline to skip this layer.')
+    results.warn += 1
+    console.log('')
+    return
+  }
+  const installedMods = await detectInstalledModules({ projectRoot: root, manifest })
+  const files = flattenFiles(manifest, { moduleIds: installedMods })
+  let modified = 0
+  let missing = 0
+  for (const f of files) {
+    const c = await classifyFile({ projectRoot: root, manifestFile: f })
+    if (c === 'modified') modified += 1
+    else if (c === 'missing') missing += 1
+  }
+  if (modified === 0 && missing === 0) {
+    console.log(`  [OK]   ${files.length}/${files.length} files match canonical v${manifest.version}`)
+  } else {
+    if (missing > 0) {
+      console.log(`  [WARN] ${missing} file(s) missing vs canonical v${manifest.version}. Run \`archon sync\` for details.`)
+      results.warn += 1
+    }
+    if (modified > 0) {
+      console.log(`  [WARN] ${modified} file(s) modified vs canonical v${manifest.version}. Run \`archon sync\` for details.`)
+      results.warn += 1
     }
   }
   console.log('')

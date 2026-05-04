@@ -13,9 +13,35 @@
 
 ---
 
-## Step 1 — Copy the Archon export package (~60 s)
+## Option A — Zero-tool path (preferred): tell your agent
 
-Run the export script from an existing Archon-enabled project, or download the bundled export. Drop its contents into your project root:
+Open your AI coding assistant in the project and say:
+
+> **read `aaep.site/skill.md` and install archon**
+
+The agent will:
+
+1. Fetch the skill file and the canonical manifest (`aaep.site/manifest.json`).
+2. Ask about your project name, tech stack, and which optional modules you want (CLI, dashboard, demand-pool).
+3. Fetch every required file over HTTPS, verify sha256, and write the tree.
+4. Seed your runtime ledgers and log the install to `.archon/drift.md`.
+
+Skip to **Step 2** below to fill in the manifest and continue the quickstart.
+
+Details of what the agent does: [Agent Protocol](/agent/).
+
+## Option B — CLI path: run `archon install`
+
+If you prefer a scripted install, or you are in CI:
+
+```bash
+npx @archon/cli@latest install           # interactive, install into cwd
+npx @archon/cli@latest install ./my-project --with=all --yes
+```
+
+The CLI consumes the same manifest, performs the same sha256 verification, and
+writes the same tree. Use whichever path fits your environment — the result is
+identical.
 
 ```
 your-project/
@@ -31,27 +57,22 @@ your-project/
 
 ![Comic explainer: drop Archon into your project](/images/quickstart/02-drop-in.png)
 
-> The export package is produced by `scripts/export-archon-core.mjs`. It includes only portable files; your project's own state files are created in Step 2.
+> Both paths fetch from [`aaep.site/manifest.json`](https://aaep.site/manifest.json). Override the base URL with `--base-url=` or `ARCHON_BASE_URL` if you host a mirror.
 
-## Step 2 — Initialize project state (~90 s)
+## Step 2 — Fill in your project manifest (~90 s)
 
-Create the four state files from their templates:
-
-```bash
-cp docs/archon/templates/manifest.template.md  .archon/manifest.md
-cp docs/archon/templates/drift.template.md     .archon/drift.md
-cp docs/archon/templates/memos.template.md     .archon/memos.md
-cp docs/archon/templates/debt.template.md      .archon/debt.md
-cp docs/archon/templates/decisions.template.md .archon/decisions.md
-```
-
-Open `.archon/manifest.md` and fill in at minimum:
+The `install` flow seeded empty runtime ledgers for you. Open `.archon/manifest.md`
+and fill in at minimum:
 
 - **§Platform path mappings** — which IDE folder (`.cursor/` / `.codex/` / `.claude/`) this project uses.
 - **§Tech Stack** — your language / framework / package manager.
 - **§Validation Command** — the single command that runs lint + typecheck + test. This is what Archon's validate gate will invoke.
 
 Leave the rest blank for now — Archon will grow these as you use it.
+
+> Tip: after editing, run `npx @archon/cli@latest doctor` (or ask your agent
+> to "check archon"). The L3 hints layer flags any remaining template
+> placeholders and the missing Validation Command.
 
 ## Step 3 — Wire the validation command (~60 s)
 

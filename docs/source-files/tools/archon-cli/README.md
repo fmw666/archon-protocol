@@ -1,106 +1,127 @@
 # Archon CLI
 
-> **Status:** v0.1.0 preview (placeholder package name `@archon/cli` — the final name on npm is not yet decided).
+> **Status:** v1.0.0 — manifest-driven.
 >
-> This is a thin, in-repo CLI that packages the three operations Archon adopters
-> care about: `init`, `doctor`, and `export`. It currently runs from a checkout
-> of the Archon source repo (the Distilgent host project); self-contained
-> distribution via `npm create archon` / `npx` is the next milestone.
+> The CLI now consumes `https://aaep.site/manifest.json` and fetches every
+> framework file over HTTPS, verifying sha256 before writing. No local checkout
+> of the Archon source repo is required.
 
-## Install (local dev)
-
-```bash
-# From the Archon repo root
-npm link ./tools/archon-cli
-# You now have `archon` on PATH
-archon --version
-```
-
-Or run without linking:
+## Install
 
 ```bash
-node tools/archon-cli/bin/archon.mjs --help
+npx @archon/cli@latest --help
+# or pin it:
+npm i -g @archon/cli
+archon --help
 ```
 
-## Commands
+## Five lifecycle commands
 
-### `archon init <target-dir>`
+### `archon install [target-dir]`
 
-Scaffolds a new Archon-governed project.
+Fresh install. Fetches the canonical manifest, verifies every file, writes
+atomically, seeds empty runtime ledgers, and logs the install to
+`.archon/drift.md`.
 
 ```bash
-archon init ../my-new-project --platform=cursor
-archon init ../claude-project --platform=claude-code --overwrite
-archon init ./demo --dry-run    # show the plan, no files written
+archon install                         # install into cwd
+archon install ./my-new-project
+archon install --with=all              # include every optional module
+archon install --with=cli,dashboard    # specific optional modules
+archon install --with=none --yes       # required modules only, no prompts
+archon install --dry-run               # show the plan
 ```
 
-Output includes the six `.archon/` state files (manifest/drift/debt/memos/decisions + soul),
-the platform-scoped `.cursor/` or `.claude/` tree (commands · agents · rules · skills),
-portable helpers (`scripts/archon-check.py`, `scripts/archon-run-state.mjs`, ...),
-bundled reference docs, and a post-init banner reminding the adopter which manifest
-sections to fill before the first `/archon` run.
+### `archon update [project-dir]`
+
+Upgrades an existing installation. Preserves runtime ledgers (drift, debt,
+memos, manifest, signs, decisions — files and record directories). Every
+overwrite is backed up to `.archon-backup-<ISO>/`.
+
+```bash
+archon update
+archon update --force                  # re-verify + rewrite even if versions match
+archon update --dry-run
+```
+
+### `archon sync [project-dir]`
+
+Read-only health check: diffs the installed files against canonical by
+sha256. Reports `ok / modified / missing / extra / ledgers` counts per
+module.
+
+```bash
+archon sync
+archon sync --json                     # machine-readable
+```
 
 ### `archon doctor [project-dir]`
 
-Audits an Archon-governed project across three layers:
+Four-layer audit:
 
-- **L1 Structural** — required files exist (`soul.md`, `manifest.md`, `drift.md`,
-  `debt.md`, `memos.md`, `decisions.md`, `VERSION`, platform directory).
-- **L2 Contract** — delegates to `scripts/archon-check.py` (the portable
-  governance-contract guard). Pass `--python=<path>` to pick a specific
-  interpreter.
-- **L3 Hints** — cheap readability signals: remaining template placeholders,
-  missing `Validation Command`, empty sections.
-
-Exit code is `0` when all checks pass, `1` when any L1 or L2 failure is
-detected. Warnings alone do not fail the command.
+- **L1 Structural** — required files exist (soul, manifest, drift, debt, …).
+- **L2 Contract** — delegates to `scripts/archon-check.py`.
+- **L3 Hints** — manifest placeholder / validation-command readability.
+- **L4 Canonical** — diffs against `aaep.site/manifest.json`. Skip with `--offline`.
 
 ```bash
-archon doctor .
-archon doctor ../my-project --python=python3
+archon doctor
+archon doctor --offline
 ```
 
-### `archon export <output-dir>`
+### `archon uninstall [project-dir]`
 
-Emits a standalone Archon kit (same behavior as `npm run archon:export` inside
-the source repo). Useful when you want a ready-to-copy kit rather than
-scaffolding directly into a project.
+Safely removes Archon-owned files. Runtime ledgers are **preserved in place**
+by default. Other options:
 
 ```bash
-archon export ./archon-kit-v0.1.0 --platform=cursor --overwrite
-archon export ./archon-claude --platform=claude-code
+archon uninstall                       # preserve ledgers (safe default)
+archon uninstall --archive-ledgers     # move ledgers to .archon-history-<ISO>/
+archon uninstall --delete-ledgers      # DELETE governance history (requires typing "DELETE")
+archon uninstall --dry-run
 ```
 
 ## Shared flags
 
-- `--platform=<cursor|claude-code>` — which platform's command/agent/rule/skill
-  layout to materialize (default: `cursor`).
-- `--overwrite` — allow replacing an existing target directory.
-- `--dry-run` — print the plan without writing files (supported by `init` and
-  `export`).
-- `--source=<path>` — pin the Archon source repo location (otherwise walks up
-  from `cwd` looking for `.archon/VERSION` + `scripts/export-archon-core.mjs`).
-- `--help`, `-h` — show usage.
-- `--version`, `-v` — print CLI version.
+| Flag | Purpose |
+|------|---------|
+| `--base-url=<url>` | Override manifest source (also `ARCHON_BASE_URL`). |
+| `--yes`, `-y` | Skip interactive prompts. |
+| `--force` | Force re-install / re-verify. |
+| `--dry-run` | Print the plan without writing. |
+| `--json` | Machine-readable output (`sync` only). |
+| `--offline` | Skip L4 canonical diff (`doctor` only). |
+| `--with=<list\|all\|none>` | Optional module selection (`install` only). |
+| `--archive-ledgers` / `--delete-ledgers` | Ledger handling (`uninstall` only). |
+| `--help`, `-h` | Show usage. |
+| `--version`, `-v` | Print CLI version. |
+
+## Aliases and legacy
+
+- `archon init <target-dir>` — alias for `archon install <target-dir>`. The
+  legacy `--platform=<cursor\|claude-code>` flag is ignored (a single
+  canonical surface is shipped).
+- `archon export <output-dir>` — authoring-side tool: packages a
+  distributable kit from a local Archon source checkout. Adopters should not
+  need this.
+
+## Agent alternative
+
+Agents don't need the CLI at all. They can read
+[`https://aaep.site/skill.md`](https://aaep.site/skill.md) and follow the
+agent-facing instruction files (`install.md`, `update.md`, `sync.md`,
+`uninstall.md`). Every action corresponds 1:1 to a CLI subcommand; use
+whichever path fits the environment.
 
 ## Exit codes
 
 | Code | Meaning |
 |------|---------|
-| 0    | Success (or dry-run plan printed) |
-| 1    | Invalid arguments, missing source repo, export/doctor failure |
+| 0    | Success |
+| 1    | Invalid arguments, network failure, sha256 mismatch, doctor failure |
 
 ## Versioning
 
-The CLI's own version (from `tools/archon-cli/package.json`) is reported by
-`archon --version`. The version of the governance kit itself (the material that
-`init` and `export` land) is read from `.archon/VERSION` at runtime and printed
-in every command's banner.
-
-## Not yet supported
-
-- Self-contained npm distribution (the CLI still needs access to the
-  `docs/archon/templates/` and `scripts/` in the Archon source repo). Planned
-  for v0.2.0.
-- Interactive prompts (everything is flag-driven today for CI compatibility).
-- Custom-named sub-agents or lens curation during `init`.
+`archon --version` reports the CLI's own version.
+`.archon/VERSION` records the installed framework version.
+`aaep.site/manifest.json` reports the canonical framework version.
