@@ -1,6 +1,7 @@
 import { defineConfig } from "vitepress";
 import { withMermaid } from "vitepress-plugin-mermaid";
 import { codeBlockTitlePlugin } from "./theme/codeBlockTitle";
+import { zhLocaleConfig } from "./locales/zh";
 
 export default withMermaid(defineConfig({
   base: "/",
@@ -20,6 +21,22 @@ export default withMermaid(defineConfig({
       md.use(codeBlockTitlePlugin);
     },
     lineNumbers: true,
+  },
+
+  locales: {
+    root: {
+      label: "English",
+      lang: "en-US",
+    },
+    zh: {
+      label: "简体中文",
+      lang: "zh-CN",
+      link: "/zh/",
+      title: "Archon",
+      description:
+        "基于会话的 AI 工程治理框架。把 AI 代理从「按指令办事的工具」抬升为「对项目负完整工程责任的所有者」。",
+      themeConfig: zhLocaleConfig,
+    },
   },
 
   themeConfig: {
