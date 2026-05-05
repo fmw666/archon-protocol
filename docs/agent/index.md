@@ -28,6 +28,7 @@ confirm the plan; the agent executes it. Nothing happens silently.
 |------|---------|
 | [`/manifest.json`](https://aaep.site/manifest.json) | Machine-readable file ledger — version, modules, sha256 per file, placeholder catalogue, runtime-ledger protection list. |
 | [`/skill.md`](https://aaep.site/skill.md) | Agent entry point — describes all commands and how to pick one based on project state. |
+| [`/init.md`](https://aaep.site/init.md) | Alias of `install.md` for users who prefer the word "init". Forwards to install. |
 | [`/install.md`](https://aaep.site/install.md) | Step-by-step install protocol for agents (10 steps). |
 | [`/update.md`](https://aaep.site/update.md) | Step-by-step update protocol (9 steps, preserves runtime ledgers). |
 | [`/sync.md`](https://aaep.site/sync.md) | Read-only health check protocol. |

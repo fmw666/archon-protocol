@@ -56,6 +56,7 @@ export default withMermaid(defineConfig({
           text: "Raw agent files (served verbatim)",
           items: [
             { text: "skill.md", link: "https://aaep.site/skill.md" },
+            { text: "init.md (alias of install)", link: "https://aaep.site/init.md" },
             { text: "install.md", link: "https://aaep.site/install.md" },
             { text: "update.md", link: "https://aaep.site/update.md" },
             { text: "sync.md", link: "https://aaep.site/sync.md" },

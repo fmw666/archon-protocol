@@ -31,7 +31,7 @@ file:
 
 | User intent (examples) | Fetch and follow |
 |------------------------|------------------|
-| "install archon", "set up archon", "add archon to this project" | `https://aaep.site/install.md` |
+| "install archon", "set up archon", "add archon to this project", "init archon", "initialise archon" | `https://aaep.site/install.md` (or `init.md`, an alias) |
 | "update archon", "upgrade archon", "pull latest archon" | `https://aaep.site/update.md` |
 | "check archon", "is archon healthy", "any drift from canonical", "sync archon" | `https://aaep.site/sync.md` |
 | "remove archon", "uninstall archon" | `https://aaep.site/uninstall.md` |
