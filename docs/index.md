@@ -36,7 +36,7 @@ features:
     details: Six phases — Recognize → Model → Decide → Execute → Verify → Learn — mapped to concrete files. Every phase has a machine check so the loop does not degrade into lip-service.
   - icon: 🗂️
     title: Decoupled, Portable
-    details: .archon/ is project-agnostic. Platform-specific surfaces (.cursor/ or .claude/) plug in via Universal Module Guard. One export pipeline produces ready-to-use kits for both platforms.
+    details: .archon/ is project-agnostic and works with any AI coding agent (Cursor / Claude Code / Codex / Continue / Aider / Windsurf). Platform-specific binding directories plug in via Universal Module Guard; one manifest produces ready-to-use kits for every platform.
   - icon: 🔍
     title: Claim Verifier
     details: ADR-27 catches "said-vs-truth" drift. When governance prose claims a behavior, a portable verifier script walks the repo to prove it — or the claim fails the gate.
@@ -89,9 +89,23 @@ contract that keeps all of it mechanically verifiable.
 
 ## Start here
 
-- If your coding agent is on — just tell it: **"read aaep.site/skill.md and install archon"** (or `update` / `sync` / `uninstall`). Details: [Install & Boot](/setup/).
-- If you want to **understand the design** → [10-Minute Overview](/concepts/overview)
-- If you prefer to **run the CLI yourself** → [5-Minute Quickstart](/setup/quickstart)
-- If you want to **see every file** → [Full Source](/source/)
+- **First time? Bootstrap your agent**: open your AI coding chat (Cursor /
+  Claude Code / Codex / Continue / Aider / Windsurf — any platform with
+  web-fetch + write tools) and say:
+  **"read aaep.site/skill.md and install archon"**. The agent fetches the
+  protocol, asks 3-4 questions, sha256-verifies every file, and writes the
+  framework. Per-platform walkthroughs:
+  [5-Minute Quickstart](/setup/quickstart#step-1-install).
+- **After install**, the wake rule loads on every session — no URL needed.
+  Just say *"hi archon, update yourself"* / *"is archon healthy?"* /
+  *"uninstall archon"*. Details: [Install & Boot](/setup/).
+- If you want to **understand the design** → [10-Minute Overview](/concepts/overview).
+- If you prefer to **run a CLI** (optional, requires Node ≥ 18) →
+  [5-Minute Quickstart Path B](/setup/quickstart#path-b-cli-scripted-no-conversation).
+- If you want to **see every file** → [Full Source](/source/).
+
+> **No Node required for the framework itself.** Archon's core is plain
+> markdown + a Python contract checker (stdlib-only). Node ≥ 18 is needed
+> only for the optional `cli` and `dashboard` modules.
 
 </div>

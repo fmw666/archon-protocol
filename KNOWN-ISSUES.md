@@ -66,6 +66,62 @@ A clean fix requires a coordinated change across two repos:
 
 ---
 
+### KNOWN-002 — CLI is Node-only; no parity for non-Node projects (2026-05-08)
+
+**Severity:** Info · **Category:** Distribution surface
+
+**Symptom:**
+The Archon CLI under `tools/archon-cli/` is implemented in JavaScript and
+requires Node ≥ 18 to run. The agent-first install path now correctly
+documents this as **optional** and never blocks non-Node projects from
+adopting Archon — but adopters who *want* a scripted, non-conversational
+install (e.g. for CI on a Python or Go project) currently have to either
+install Node just for the CLI, or write their own shell glue around
+`curl https://aaep.site/manifest.json` + sha256 verification.
+
+**Impact:**
+- Python/Go/Rust/Java/etc. projects without an existing Node toolchain
+  must either (a) accept Node as a CI dependency, (b) use the agent path
+  (manual chat invocation, not great in CI), or (c) write their own
+  installer.
+- The portable contract checker (`scripts/archon-check.py`) already proves
+  Python is a viable second-class implementation — extending the same idea
+  to install/update/sync would close the loop.
+
+**Why it's deferred (not fixed in this commit):**
+Implementing a second CLI is a non-trivial engineering project:
+1. Decide language: Python (matches the contract checker, broadest
+   ecosystem reach) vs Bash (smallest surface, but limited JSON parsing).
+2. Replicate the manifest fetch + sha256 + write pipeline that lives in
+   `tools/archon-cli/lib/{install,update,sync,uninstall,manifest,...}.mjs`.
+3. Decide how to ship the second CLI (`pip install archon-cli`?
+   `tools/archon-cli-py/`? a single bundled `archon` shell shim that picks
+   Node or Python based on what's available?).
+4. Keep the two implementations in lock-step — every behaviour change
+   needs to land in both, or one becomes the second-class drift target.
+
+The current stance is: **agent-first is the universal scripted path**
+(every modern coding agent has web-fetch + write tools, even in CI via
+their headless modes), and the CLI is the convenience path for
+JS/TS-native projects. We will revisit when an adopter project files a
+concrete need for a non-Node, non-agent CLI in CI.
+
+**Triggers for picking this up:**
+- An adopter blocks adoption purely because their CI image cannot install
+  Node and headless agent invocation isn't acceptable to their security
+  posture.
+- Multiple adopters surface the same gap (rule of three).
+- The CLI grows a feature that is genuinely awkward to express through the
+  agent prompt path, raising the value of a second native CLI.
+
+**See also:**
+- `docs/source-files/tools/archon-cli/` — current Node implementation.
+- `docs/source-files/scripts/archon-check.py` — proves Python stdlib-only
+  is a viable parallel implementation language.
+- Agent path: `https://aaep.site/install.md` + `manifest.json`.
+
+---
+
 ## Closed
 
 _(none yet)_

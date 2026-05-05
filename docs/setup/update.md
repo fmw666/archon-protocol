@@ -12,11 +12,14 @@ the agent's path is conversational, the CLI path is scripted.
 
 ## When this protocol applies
 
-The user says:
+The user says (no URL needed once `archon-wake.mdc` or its platform
+equivalent is loaded — that happens automatically after a successful
+install):
 
 - "update archon"
 - "upgrade archon"
 - "pull latest archon"
+- "hi archon, update yourself"
 
 …and `.archon/soul.md` + `.archon/VERSION` already exist.
 
@@ -141,9 +144,12 @@ Print a concise summary:
 
 ## Module selection on update
 
-`update` accepts the same `--with=` / `--without=` flags as install:
+`update` accepts the same `--with=` / `--without=` flags as install (CLI
+path; agents accept the same selection conversationally):
 
 ```bash
+# (CLI examples — Node ≥ 18 required)
+
 # pull latest, keep current module selection
 npx @archon/cli@latest update
 
@@ -166,7 +172,7 @@ removal plan first.
 - Always log to `drift.md`.
 - Never auto-delete extras outside the `--without=` plan.
 
-## CLI equivalent
+## CLI equivalent (optional, requires Node ≥ 18)
 
 ```bash
 # fetch latest, apply diffs
@@ -181,6 +187,9 @@ npx @archon/cli@latest update --dry-run
 # update + drop a module
 npx @archon/cli@latest update --without=cli,dashboard
 ```
+
+The CLI itself requires Node ≥ 18. If you don't have Node, use the agent
+path described above — same result.
 
 ## Raw agent file
 

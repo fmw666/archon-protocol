@@ -13,13 +13,15 @@ findings are interesting.
 
 ## When this protocol applies
 
-The user says:
+The user says (no URL needed once `archon-wake.mdc` or its platform
+equivalent is loaded):
 
 - "check archon"
 - "is archon healthy?"
 - "any archon drift?"
 - "sync archon"
 - "diff archon"
+- "hi archon, sync yourself"
 
 This is **idempotent and side-effect-free** by default. Run it as often as
 you like — pre-commit, in CI, or whenever you're suspicious.
@@ -99,7 +101,7 @@ To install an optional module that's currently absent, run:
 npx @archon/cli@latest update --with=<module-id>
 ```
 
-## CLI equivalent
+## CLI equivalent (optional, requires Node ≥ 18)
 
 ```bash
 # human-readable report
@@ -111,6 +113,9 @@ npx @archon/cli@latest sync --json
 # private mirror
 npx @archon/cli@latest sync --base-url=https://archon.mycorp.com
 ```
+
+The CLI itself requires Node ≥ 18. If you don't have Node, ask your agent
+*"sync archon"* — the conversational path works on any platform.
 
 ## Raw agent file
 

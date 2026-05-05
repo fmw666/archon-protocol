@@ -11,18 +11,24 @@ engineering governance framework**.
 ## Role
 
 This repo is the **canonical source of truth** for Archon. Everything
-adopter projects install — `.archon/`, `.cursor/`, `scripts/`,
-`tools/archon-cli/`, the dashboard reference UI, the demand-pool
-extension, LICENSE, NOTICE — lives under [`docs/source-files/`](docs/source-files/).
+adopter projects install — `.archon/`, IDE binding directories
+(`.cursor/` / `.claude/` / `.codex/` / `.continue/` / `.aider/` /
+`.windsurf/`), `scripts/` (Python + Bash, no Node), `tools/archon-cli/`
+(optional, Node ≥ 18), the dashboard reference UI (optional, Node ≥ 18),
+the demand-pool extension, LICENSE, NOTICE — lives under
+[`docs/source-files/`](docs/source-files/).
 
 Adopter projects (including `Distilgent`, the reference host) **pull**
 from this repo:
 
-- **Agent path** (preferred): user tells their coding agent *"read
-  aaep.site/skill.md and install archon"* → agent fetches the manifest,
-  verifies sha256, writes files.
-- **CLI path**: `npx @archon/cli install` — same manifest, same verification,
-  scripted.
+- **Agent path** (preferred, no Node needed): user tells their coding agent
+  *"read aaep.site/skill.md and install archon"* on first install → agent
+  fetches the manifest, sha256-verifies, writes files. Works with any
+  coding agent that has web-fetch + write tools (Cursor, Claude Code,
+  OpenAI Codex CLI, Continue, Aider, Windsurf, …). After install, the
+  installed wake rule routes subsequent commands without the URL.
+- **CLI path** (optional, requires Node ≥ 18): `npx @archon/cli@latest install`
+  — same manifest, same verification, scripted.
 
 Nothing in `docs/source-files/` is generated from another repo. Edit
 here.
@@ -61,18 +67,19 @@ The `prebuild` step runs before every build:
 ```
 archon-protocol/
 ├── docs/
-│   ├── public/                    # served at site root (generated)
-│   │   ├── manifest.json            ← aaep.site/manifest.json
-│   │   ├── skill.md · install.md …  ← agent-facing instructions
-│   │   └── source-files/…           ← raw bytes of every shipped file
+│   ├── public/                    # served at site root (generated + checked-in)
+│   │   ├── manifest.json            ← aaep.site/manifest.json (generated)
+│   │   ├── skill.md · install.md …  ← agent-facing instructions (checked-in)
+│   │   ├── source-files/…           ← raw bytes of every shipped file (generated)
+│   │   └── images/…                 ← comic illustrations
 │   ├── source-files/              # CANONICAL — edit here
 │   │   ├── .archon/…
-│   │   ├── .cursor/…
-│   │   ├── scripts/…
-│   │   ├── tools/archon-cli/…
+│   │   ├── .cursor/…                ← canonical paths (rewritten on write
+│   │   │                              for non-Cursor IDEs)
+│   │   ├── scripts/…                ← Python + Bash (no Node)
+│   │   ├── tools/archon-cli/…       ← optional CLI (Node ≥ 18)
 │   │   ├── LICENSE
 │   │   └── NOTICE
-│   ├── agent/                     # human-readable agent-protocol pages
 │   ├── concepts/ · setup/ · testing/ · changelog/ · source/
 │   └── .vitepress/
 └── scripts/

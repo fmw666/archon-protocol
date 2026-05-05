@@ -11,6 +11,12 @@ canonical lifecycle command is `install`, not `init`. Rather than make agents
 guess, this file exists as a stable URL that simply forwards to the install
 protocol.
 
+Both forms work as the user's very-first sentence to a coding agent that
+has never heard of Archon:
+
+- `read aaep.site/init.md and install archon`
+- `read aaep.site/skill.md and install archon`
+
 ## What you should do, right now
 
 1. Fetch [`https://aaep.site/install.md`](https://aaep.site/install.md).

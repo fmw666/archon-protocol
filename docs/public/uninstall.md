@@ -4,6 +4,9 @@ You are removing Archon from a project. This is a destructive operation; do
 it carefully and with the user's explicit consent at every step.
 
 If you haven't read `https://aaep.site/skill.md` yet, stop and read it first.
+You will need `$IDE_PLATFORM` and `$BINDING_ROOT` from `skill.md` §3 — read
+them off `.archon/drift.md` (the install record logs both) or re-detect from
+the project.
 
 ---
 
@@ -19,10 +22,10 @@ Ask the user explicitly:
 
 ```
 You are uninstalling Archon. This will remove framework files from:
-- .archon/              (except runtime ledgers — see below)
-- .cursor/commands/archon*, agents/archon*, rules/archon*, skills/archon-*
+- .archon/                          (except runtime ledgers — see below)
+- {{BINDING_ROOT}}/commands/archon*, agents/archon*, rules/archon*, skills/archon-*
 - scripts/archon-*, export-archon-*, test-archon-*
-- tools/archon-cli/
+- tools/archon-cli/                 (if installed)
 
 Your governance history (runtime ledgers) will be {{preserve_mode}}:
 - .archon/manifest.md, drift.md, debt.md, memos.md, signs.md, decisions.md
@@ -67,7 +70,7 @@ Also include **directories** that will become empty after removal. Examples:
 
 - `.archon/domain-lenses/tools/design/` becomes empty after removing its
   files → remove the directory.
-- `.cursor/skills/archon-framework/` becomes empty → remove.
+- `{{BINDING_ROOT}}/skills/archon-framework/` becomes empty → remove.
 
 Never remove a directory that has other (user-owned) files in it.
 
@@ -112,7 +115,7 @@ happens. Ask "proceed?" one last time.
 
 Check these locations for emptiness and prune:
 
-- `.cursor/skills/` — if your removal emptied any `archon-*` skill
+- `{{BINDING_ROOT}}/skills/` — if your removal emptied any `archon-*` skill
   directory, it's already gone; do not touch sibling skill directories.
 - `tools/` — remove only if Archon's `archon-cli/` was its only occupant
   AND it is now empty.
@@ -140,9 +143,11 @@ Archon v{{INSTALLED_VERSION}} uninstalled.
 - Runtime ledgers: {{preserve_mode}}  {{" → .archon-history-<ISO>/" if archive}}
 - Uninstall log: .archon-uninstall-<ISO>.log (if written)
 
-To reinstall later: ask your agent to "install archon" or run
-`npx archon@latest install`. If your ledgers were preserved or archived,
-you can restore them afterwards by copying them back into `.archon/`.
+To reinstall later: ask your agent to "install archon" (URL no longer
+needed if `.cursor/rules/archon-wake.mdc` or its platform equivalent is
+still loaded; otherwise use the bootstrap form
+`read aaep.site/skill.md and install archon`). Or run
+`npx @archon/cli@latest install` if you have Node ≥ 18.
 ```
 
 ---
@@ -157,10 +162,12 @@ you can restore them afterwards by copying them back into `.archon/`.
 
 ---
 
-## CLI equivalent
+## CLI equivalent (optional, for users with Node ≥ 18)
 
 ```bash
-npx archon@latest uninstall
-npx archon@latest uninstall --archive-ledgers
-npx archon@latest uninstall --preserve-ledgers   # default
+npx @archon/cli@latest uninstall
+npx @archon/cli@latest uninstall --archive-ledgers
+npx @archon/cli@latest uninstall --preserve-ledgers   # default
 ```
+
+The CLI itself requires Node ≥ 18; the agent path described above does not.

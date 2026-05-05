@@ -10,11 +10,12 @@ ledgers are preserved unless you explicitly choose otherwise.
 
 ## When this protocol applies
 
-The user says:
+The user says (no URL needed once the wake rule is loaded):
 
 - "uninstall archon"
 - "remove archon"
 - "I want to stop using archon"
+- "hi archon, uninstall yourself"
 
 The agent treats this as a destructive operation: every step asks for
 explicit consent.
@@ -75,10 +76,10 @@ Print the full removal list. Ask one final confirmation. Then remove.
 
 ### 6. Final cleanup
 
-Prune empty Archon-owned directories (`.archon/`, `.cursor/commands/`, etc.)
-that resulted from the removal. **Never touch** sibling directories with
-non-Archon content — for example, `.cursor/rules/` may still contain user
-rules that don't start with `archon`.
+Prune empty Archon-owned directories (`.archon/`, `<binding-root>/commands/`,
+etc.) that resulted from the removal. **Never touch** sibling directories
+with non-Archon content — for example, `<binding-root>/rules/` may still
+contain user rules that don't start with `archon`.
 
 ### 7. Log the uninstall
 
@@ -99,8 +100,11 @@ Print a concise summary:
 - ✓ N files removed.
 - 📁 Ledgers: preserved / archived to `<path>` / deleted.
 - 🪵 Log written to `.archon-uninstall-<ISO>.log`.
-- 💡 To reinstall later: `npx @archon/cli@latest install` (your ledgers will
-  resume if Preserved or Archived).
+- 💡 To reinstall later: ask your agent
+  *"read aaep.site/skill.md and install archon"* (the wake rule was
+  removed by uninstall, so the URL bootstrap is needed again), or
+  `npx @archon/cli@latest install --force` if you have Node ≥ 18. Your
+  ledgers will resume if Preserved or Archived.
 
 ## Safety guarantees
 
@@ -111,7 +115,7 @@ Print a concise summary:
 - The uninstall log is written **outside** `.archon/` so you have a record
   even after a Delete-mode uninstall.
 
-## CLI equivalent
+## CLI equivalent (optional, requires Node ≥ 18)
 
 ```bash
 # preserve ledgers (default)
@@ -127,9 +131,27 @@ npx @archon/cli@latest uninstall --delete-ledgers
 npx @archon/cli@latest uninstall --dry-run
 ```
 
+The CLI itself requires Node ≥ 18. If you don't have Node, ask your agent
+*"uninstall archon"* — the conversational path performs the identical
+8-step protocol.
+
 ## Reinstalling after uninstall
 
-If you preserved or archived ledgers, a future re-install will restore them:
+If you preserved or archived ledgers, a future re-install will restore them.
+
+**Without Node** (any-platform agent path):
+
+```text
+# in your AI coding chat panel:
+read aaep.site/skill.md and install archon (force)
+```
+
+The URL is required again because uninstall removed the wake rule from
+your binding directory; without `archon-wake.mdc` (or its platform
+equivalent) in context, your agent has no concept of "Archon" until it
+fetches the protocol.
+
+**With Node ≥ 18** (CLI path):
 
 ```bash
 # preserved: ledgers are still in .archon/, just re-install framework around them

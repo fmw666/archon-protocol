@@ -4,6 +4,9 @@ You are upgrading an existing Archon installation in a target project to the
 current canonical version on aaep.site. Follow these steps in order.
 
 If you haven't read `https://aaep.site/skill.md` yet, stop and read it first.
+You will need `$IDE_PLATFORM` and `$BINDING_ROOT` from `skill.md` §3 — read
+them off `.archon/drift.md` (the install record logs both) or re-detect from
+the project.
 
 ---
 
@@ -107,7 +110,8 @@ For every `ADD` and `UPDATE` file:
 
 ## Step 5. Write updates
 
-For every `ADD`: write the file.
+For every `ADD`: write the file, **rewriting `.cursor/` prefix to
+`$BINDING_ROOT/` if `$IDE_PLATFORM != cursor`** (same rule as install Step 6).
 
 For every `UPDATE`:
 
@@ -131,7 +135,7 @@ it to the user:
 
 ```
 These files exist in your project but are no longer in canonical v{{CANONICAL_VERSION}}:
-- .cursor/old-path/... (was in v{{INSTALLED_VERSION}})
+- {{BINDING_ROOT}}/old-path/... (was in v{{INSTALLED_VERSION}})
 
 Options: remove, leave alone, or show me where it moved to.
 ```
@@ -199,9 +203,11 @@ breaking or behavioural changes.
 
 ---
 
-## CLI equivalent
+## CLI equivalent (optional, for users with Node ≥ 18)
 
 ```bash
-npx archon@latest update
-npx archon@latest update --force    # re-verify and rewrite even if versions match
+npx @archon/cli@latest update
+npx @archon/cli@latest update --force    # re-verify and rewrite even if versions match
 ```
+
+The CLI itself requires Node ≥ 18; the agent path described above does not.

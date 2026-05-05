@@ -44,11 +44,21 @@ flowchart TB
 
 **Trigger**: first time setting up Archon in a fresh or existing project.
 
+**Your local agent has never heard of Archon yet, so the prompt MUST include
+a URL** — this is the only way the agent can fetch the protocol:
+
 **You say**: `read aaep.site/skill.md and install archon`
-&nbsp;·&nbsp; or `npx @archon/cli@latest install`
+&nbsp;·&nbsp; or, with Node ≥ 18: `npx @archon/cli@latest install`
+
+> Works identically on Cursor, Claude Code, OpenAI Codex CLI, Continue, Aider,
+> Windsurf, and any other agent with web-fetch + write tools. The protocol
+> auto-detects your IDE and writes bindings to the right directory
+> (`.cursor/` / `.claude/` / `.codex/` / etc.). See
+> [Quickstart](/setup/quickstart#step-1-install) for per-platform chat-panel
+> instructions.
 
 **Agent fetches**: `aaep.site/manifest.json` → every framework file (sha256
-verified) → writes `.archon/`, `.cursor/`, `scripts/`, `docs/archon/`.
+verified) → writes `.archon/`, `<binding-root>/`, `scripts/`.
 
 **Outputs**:
 - 80+ framework files written (counts depend on optional modules selected).
@@ -70,8 +80,11 @@ verified) → writes `.archon/`, `.cursor/`, `scripts/`, `docs/archon/`.
    Command. Three sections, ~90 s.
 2. **Wire the validate command** — confirm `npm run validate` (or your
    equivalent) is green from a clean shell.
-3. **Install pre-commit hook** — `node scripts/archon-check.mjs` as the
-   tripwire. Verify with `git commit --dry-run`.
+3. **Install pre-commit hook** — `python3 scripts/archon-check.py --root .`
+   (Python stdlib-only, runs anywhere) as the tripwire. See
+   [Quickstart Step 4](/setup/quickstart#step-4) for three wiring options
+   (Python `pre-commit`, plain git hook, or husky). Verify with
+   `git commit --dry-run`.
 
 ![Comic explainer: project state](/images/setup/03-project-state.png)
 
@@ -89,6 +102,10 @@ demand → Decision Gate → plan → deliver → validate → Close-Out → dri
 **Trigger**: any new feature, bugfix, refactor, or piece of work.
 
 **You say**: `hi archon, ...`
+
+> No URL needed — `archon-wake.mdc` (or its platform equivalent for Claude
+> Code / Codex / Continue / etc.) loads on every session and recognises the
+> `hi archon` wake phrase.
 
 **Archon walks** (every time, no exceptions):
 
@@ -127,7 +144,10 @@ manifest's `runtime_ledger_paths` and **never touched by future updates**.
 confirm you're on the latest.
 
 **You say**: `hi archon, update yourself`
-&nbsp;·&nbsp; or `npx @archon/cli@latest update`
+&nbsp;·&nbsp; or, with Node ≥ 18: `npx @archon/cli@latest update`
+
+> URL no longer needed — the wake rule routes `update archon` /
+> `hi archon, update yourself` to `aaep.site/update.md` automatically.
 
 **Agent fetches**: latest manifest → builds plan
 (**ADD** / **UPDATE** / **UNCHANGED** / **REMOVE**) → asks about optional
@@ -154,7 +174,7 @@ Your governance history is sacred. Updates only refresh framework files.
 **Trigger**: "is anything drifted from canonical?" — read-only health check.
 
 **You say**: `hi archon, sync yourself` &nbsp;·&nbsp; `is archon healthy?`
-&nbsp;·&nbsp; `npx @archon/cli@latest sync`
+&nbsp;·&nbsp; or, with Node ≥ 18: `npx @archon/cli@latest sync`
 
 **Agent fetches**: latest manifest → walks every Archon-owned path → classifies:
 
@@ -176,7 +196,7 @@ genuinely interesting.
 **Trigger**: you're moving off Archon, or testing a clean re-install.
 
 **You say**: `hi archon, uninstall yourself`
-&nbsp;·&nbsp; or `npx @archon/cli@latest uninstall`
+&nbsp;·&nbsp; or, with Node ≥ 18: `npx @archon/cli@latest uninstall`
 
 **Three explicit choices for your governance ledgers**:
 
@@ -199,14 +219,15 @@ anything it cannot prove Archon owns.
 ## Lifecycle commands {#lifecycle-commands}
 
 Quick reference card. Each command has both an agent prompt form and a CLI
-form — they are **functionally identical**.
+form — they are **functionally identical**. The CLI is **optional** and
+requires Node ≥ 18; the agent path works on any platform.
 
-| Stage | Agent prompt | CLI | Page |
-|-------|-------------|-----|------|
-| Install | `read aaep.site/skill.md and install archon` | `archon install` | [/setup/install](/setup/install) |
-| Update | `update archon` | `archon update` | [/setup/update](/setup/update) |
-| Sync | `sync archon` &nbsp;·&nbsp; `is archon healthy?` | `archon sync` | [/setup/sync](/setup/sync) |
-| Uninstall | `uninstall archon` | `archon uninstall` | [/setup/uninstall](/setup/uninstall) |
+| Stage | First-time agent prompt (URL required) | After-install agent prompt | Optional CLI (Node ≥ 18) | Page |
+|-------|-----------------------------------------|----------------------------|---------------------------|------|
+| Install | `read aaep.site/skill.md and install archon` | (covered by install) | `npx @archon/cli@latest install` | [/setup/install](/setup/install) |
+| Update | — | `update archon` &nbsp;·&nbsp; `hi archon, update yourself` | `npx @archon/cli@latest update` | [/setup/update](/setup/update) |
+| Sync | — | `sync archon` &nbsp;·&nbsp; `is archon healthy?` | `npx @archon/cli@latest sync` | [/setup/sync](/setup/sync) |
+| Uninstall | — | `uninstall archon` | `npx @archon/cli@latest uninstall` | [/setup/uninstall](/setup/uninstall) |
 
 ## Why this lifecycle is reversible-by-design
 

@@ -4,6 +4,25 @@ You are installing Archon into a target project for the first time. Follow
 these steps in order.
 
 If you haven't read `https://aaep.site/skill.md` yet, stop and read it first.
+Steps 0 and 5 below assume you have already detected `$IDE_PLATFORM`,
+`$BINDING_ROOT`, and the project language per `skill.md` §3 and §5.
+
+---
+
+## Step 0. Detect environment (if you haven't already)
+
+Re-read `skill.md` §3 and §5 if these are not yet recorded:
+
+- `$IDE_PLATFORM` ∈ { `cursor`, `codex`, `claude`, `continue`, `aider`,
+  `windsurf`, `other` }
+- `$BINDING_ROOT` (e.g. `.cursor/`, `.codex/`, `.claude/`)
+- `$LANGUAGE` (your best inference from `package.json`, `pyproject.toml`,
+  `go.mod`, `Cargo.toml`, `pom.xml`, etc.)
+- `$HOOK_COMMAND` (per the language → hook table in `skill.md` §5)
+
+If `$IDE_PLATFORM` cannot be determined automatically, **ask the user**
+before proceeding. Defaulting to Cursor when the project clearly isn't a
+Cursor project will pollute the wrong directory.
 
 ---
 
@@ -48,24 +67,33 @@ manifest). For each optional module, use this rubric:
 
 | Module | Default | Skip if… |
 |--------|---------|----------|
-| `cli` | include | User says "agent-only" or `tools/` is disallowed |
-| `dashboard` | ask | No Node runtime on the machine, or user says "skip UI" |
+| `cli` | ask | User says "agent-only", or no Node ≥ 18 available |
+| `dashboard` | ask | No Node ≥ 18 available, or user says "skip UI" |
 | `extensions-demand-pool` | ask | Solo project, user says "no backlog extension" |
+
+> Note: the `cli` and `dashboard` modules **require Node ≥ 18 at runtime**.
+> The Archon framework itself (everything else) does not. Always ask before
+> including these on projects without Node, even if `$LANGUAGE` is something
+> like Go or Python that doesn't need Node otherwise.
 
 Present your plan to the user:
 
 ```
-I'll install Archon v{{VERSION}}. The 11 required modules (core-soul,
-core-contracts, core-templates, core-version, domain-lenses, commands,
-agents, rules, skills, scripts, legal) will always be included — that's
-{N} files.
+I'll install Archon v{{VERSION}} into this {{LANGUAGE}} project.
 
-Optional modules I recommend including based on this project:
-- [ ] cli              (tools/archon-cli — 8 files)
-- [ ] dashboard        (.archon/dashboard — 13 files)
-- [ ] extensions-demand-pool  (.archon/extensions/demand-pool — 2 files)
+IDE platform detected: {{IDE_PLATFORM}}  (binding root: {{BINDING_ROOT}})
+Pre-commit hook: {{HOOK_COMMAND}}
 
-Does this look right? Any you want to exclude?
+Required modules (always installed):
+  core-soul, core-contracts, core-templates, core-version, domain-lenses,
+  commands, agents, rules, skills, scripts, legal — {{N}} files.
+
+Optional modules:
+  [ ] cli              (tools/archon-cli — 8 files, needs Node ≥ 18)
+  [ ] dashboard        (.archon/dashboard — 13 files, needs Node ≥ 18)
+  [ ] extensions-demand-pool  (.archon/extensions/demand-pool — 2 files)
+
+Does this look right? Any you want to exclude or include?
 ```
 
 Wait for confirmation.
@@ -118,10 +146,16 @@ sequential and strict.
 
 ---
 
-## Step 6. Write files to the project
+## Step 6. Write files to the project (with binding-root rewrite)
 
-For each buffered file, write to `$PROJECT_ROOT/{file.path}`. Create parent
-directories as needed.
+For each buffered file, determine its **target path** in the project:
+
+- If `file.path` starts with `.cursor/` and `$IDE_PLATFORM != cursor`,
+  rewrite the prefix: `.cursor/foo/bar.md` → `$BINDING_ROOT/foo/bar.md`.
+- Otherwise write to `file.path` verbatim.
+
+Then write the buffered bytes to `$PROJECT_ROOT/<target_path>`. Create
+parent directories as needed.
 
 Handle collisions:
 
@@ -131,6 +165,11 @@ Handle collisions:
   fail with a clear message ("file already exists: … — was this a fresh
   install?"). The user should have started from `/update.md` or
   `/sync.md`.
+
+> Why rewrite only the binding directory? The `.archon/` framework core,
+> `scripts/`, `tools/`, and `LICENSE`/`NOTICE` are platform-neutral and
+> always go to their canonical paths. Only the IDE binding files
+> (commands / agents / rules / skills) are platform-specific.
 
 ---
 
@@ -165,17 +204,33 @@ content is what you verified against the checksum.
 
 ---
 
-## Step 8. Install Cursor surface files
+## Step 8. Wire the pre-commit hook (project-language-aware)
 
-All files with paths starting `.cursor/commands/`, `.cursor/agents/`,
-`.cursor/rules/`, `.cursor/skills/` should be written verbatim. They are
-designed to coexist with the user's existing `.cursor/` content. Never
-delete anything you didn't write.
+The portable contract checker is shipped as both a Python script and a Bash
+wrapper:
 
-If the user is not on Cursor, tell them: these `.cursor/` files are
-Cursor-specific, and other coding agents (Claude Code, etc.) will need the
-equivalent translated into their rule / skill format. The content itself
-(plain markdown) remains usable as reference material even without Cursor.
+- `scripts/archon-check.py` — Python 3 stdlib-only reference implementation.
+- `scripts/archon-check.sh` — POSIX shell wrapper that delegates to
+  `archon-check.py`.
+
+There is **no Node implementation**. Pick the hook command based on the
+project's developer environment, not on `$LANGUAGE` of the project itself:
+
+| Developer environment | Hook command |
+|-----------------------|--------------|
+| Python 3 available | `python3 scripts/archon-check.py --root .` |
+| Bash on Unix, Python available | `sh scripts/archon-check.sh .` |
+| Windows + Python via `py` launcher | `py -3 scripts\archon-check.py --root .` |
+| No Python available | Skip the hook; recommend `archon sync` before commits |
+
+Wire the chosen command into the project's existing pre-commit infrastructure
+if any (husky for Node projects, pre-commit framework for Python projects,
+plain git hooks otherwise). Do **not** introduce husky onto a project that
+doesn't already use it just to install this hook — recommend the lightest
+mechanism the project already uses.
+
+If the project has no existing pre-commit infrastructure, ask the user
+whether to set one up. Don't add scaffolding silently.
 
 ---
 
@@ -186,11 +241,13 @@ Append an install drift record to `.archon/drift.md`:
 ```
 ## install — Archon v{{VERSION}} — {{ISO_TIMESTAMP}}
 
-- Agent: {{AGENT_NAME}} (e.g. Cursor / Claude Code / Codex)
+- Agent: {{AGENT_NAME}} (e.g. Cursor / Claude Code / Codex / Continue / Aider / Windsurf / other)
+- IDE platform: {{IDE_PLATFORM}}, binding root: {{BINDING_ROOT}}
 - Modules installed: core-soul, core-contracts, core-templates,
   core-version, domain-lenses, commands, agents, rules, skills, scripts,
   legal, {{optional_modules_selected}}
 - Files written: {{N}}
+- Pre-commit hook command: {{HOOK_COMMAND}}
 - Placeholder values:
   - PROJECT_NAME: {{VALUE}}
   - TECH_STACK: {{VALUE}}
@@ -208,18 +265,24 @@ onwards, the agent owns this log.
 Print a concise summary:
 
 ```
-Archon v{{VERSION}} installed.
+Archon v{{VERSION}} installed into {{IDE_PLATFORM}}.
 
 - {{N}} files written to {{PROJECT_ROOT}}
+- IDE bindings written to {{BINDING_ROOT}}
 - Runtime ledgers initialised (.archon/{manifest,drift,debt,memos,signs,decisions}.md)
+- Pre-commit hook: {{HOOK_COMMAND or "not configured"}}
 - Install logged to .archon/drift.md
 
 Next steps:
-- Open a new Cursor session. The archon.mdc rule + archon-wake.mdc will
-  auto-load. Say "hi archon" to wake the framework.
+- Reload your AI coding session so the new bindings under {{BINDING_ROOT}}
+  load. (For Cursor, this means opening a new chat; for Claude Code, restart
+  the session; for Codex CLI, the next invocation will pick up AGENTS.md.)
+- After reload, "hi archon, plan a feature for X" routes through the wake
+  protocol — the URL is no longer required for subsequent commands.
 - Browse the concepts reference: https://aaep.site/concepts/
 - Read the 5-minute orientation: https://aaep.site/setup/quickstart
-- When you want to upgrade: say "update archon" or run `npx archon update`.
+- When you want to upgrade later: say "update archon" (no URL needed once
+  the wake rule is loaded).
 ```
 
 ---
@@ -233,16 +296,22 @@ Next steps:
 - **Always** write files in an all-or-nothing batch: either every verified
   file gets written, or none do.
 - **Always** verify sha256 before writing.
-- **Always** keep user's existing `.cursor/` files (theirs, not Archon's)
-  intact.
+- **Always** keep user's existing `$BINDING_ROOT/` files (theirs, not
+  Archon's) intact.
+- **Always** rewrite `.cursor/` path prefixes to `$BINDING_ROOT/` when
+  `$IDE_PLATFORM != cursor`. Never write a `.cursor/` tree on a non-Cursor
+  project.
+- **Never** add a Node-based pre-commit hook. The shipped checker is
+  Python; install only Python or Bash variants.
 
 ---
 
-## CLI equivalent
+## CLI equivalent (optional, for users with Node ≥ 18)
 
 ```bash
-npx archon@latest install         # interactive prompts
-npx archon@latest install --yes   # accept all defaults, skip optional modules prompts
+npx @archon/cli@latest install         # interactive prompts
+npx @archon/cli@latest install --yes   # accept all defaults, skip optional modules prompts
 ```
 
-Both paths produce identical trees.
+Both paths produce identical trees. The CLI itself requires Node ≥ 18; the
+agent path described above does not.

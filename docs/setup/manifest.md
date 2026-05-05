@@ -68,25 +68,78 @@ authoritative; if a file is not in the manifest, it is **not part of Archon**.
 
 The current manifest ships 14 modules — 11 required, 3 optional.
 
-| id | Required? | What it is |
-|----|:---------:|------------|
-| `core-soul` | ✓ | `.archon/soul.md` + mode extensions |
-| `core-contracts` | ✓ | `governance-contract.yaml` |
-| `core-templates` | ✓ | `run.template.md` + `run-state.schema.json` |
-| `core-version` | ✓ | `.archon/VERSION` |
-| `domain-lenses` | ✓ | 5 lenses + 16 decision tools |
-| `commands` | ✓ | Cursor commands (`archon`, `archon-plan`, …) |
-| `agents` | ✓ | Sub-agents (`archon-reviewer`, `archon-capture-auditor`) |
-| `rules` | ✓ | Always-on rules (`archon.mdc`, wake, heartbeat) |
-| `skills` | ✓ | Keyword/file-triggered skills |
-| `scripts` | ✓ | Python / Bash / Node portable helpers |
-| `legal` | ✓ | LICENSE + NOTICE |
-| `cli` | optional | Archon CLI source (`tools/archon-cli/`) |
-| `dashboard` | optional | Local observability UI |
-| `extensions-demand-pool` | optional | Backlog queue extension |
+| id | Required? | What it is | Runtime needs |
+|----|:---------:|------------|---------------|
+| `core-soul` | ✓ | `.archon/soul.md` + mode extensions | none |
+| `core-contracts` | ✓ | `governance-contract.yaml` | none |
+| `core-templates` | ✓ | `run.template.md` + `run-state.schema.json` | none |
+| `core-version` | ✓ | `.archon/VERSION` | none |
+| `domain-lenses` | ✓ | 5 lenses + 16 decision tools | none |
+| `commands` | ✓ | IDE commands (`archon`, `archon-plan`, …) | none |
+| `agents` | ✓ | Sub-agents (`archon-reviewer`, `archon-capture-auditor`) | none |
+| `rules` | ✓ | Always-on rules (`archon.mdc`, wake, heartbeat) | none |
+| `skills` | ✓ | Keyword/file-triggered skills | none |
+| `scripts` | ✓ | Python `archon-check.py` (stdlib-only) + Bash wrapper | Python 3 (only when invoked) |
+| `legal` | ✓ | LICENSE + NOTICE | none |
+| `cli` | optional | Archon CLI source (`tools/archon-cli/`) | **Node ≥ 18** |
+| `dashboard` | optional | Local observability UI | **Node ≥ 18** |
+| `extensions-demand-pool` | optional | Backlog queue extension | none |
 
 Required modules are always installed. Optional modules are opt-in via
 `--with=<list>` or interactive prompt.
+
+> **Archon framework itself does not require Node.js.** The `cli` and
+> `dashboard` modules are the only ones that do, and both are optional.
+> Python 3 is needed only when you actually invoke
+> `scripts/archon-check.py` (e.g. as a pre-commit hook); the framework
+> install/update/sync/uninstall protocols themselves don't run it.
+
+## IDE platform binding {#ide-platforms}
+
+Archon is **platform-neutral**. The framework core under `.archon/` is the
+same regardless of which AI coding IDE you use; only the **binding directory**
+differs. The manifest's canonical paths use `.cursor/` for the four binding
+modules (`commands`, `agents`, `rules`, `skills`); the agent and CLI rewrite
+this prefix on write to match the detected platform.
+
+| Detected signal | `$IDE_PLATFORM` | `$BINDING_ROOT` | Manifest path → write path |
+|-----------------|-----------------|-----------------|----------------------------|
+| `.cursor/` exists | `cursor` | `.cursor/` | `.cursor/foo` → `.cursor/foo` |
+| `.codex/` or `AGENTS.md` exists | `codex` | `.codex/` | `.cursor/foo` → `.codex/foo` |
+| `.claude/` or `CLAUDE.md` exists | `claude` | `.claude/` | `.cursor/foo` → `.claude/foo` |
+| `.continue/` exists | `continue` | `.continue/` | `.cursor/foo` → `.continue/foo` |
+| `.aider.conf.yml` or `.aider/` exists | `aider` | `.aider/` | `.cursor/foo` → `.aider/foo` |
+| `.windsurf/` exists | `windsurf` | `.windsurf/` | `.cursor/foo` → `.windsurf/foo` |
+| None of the above | — | — | Ask user |
+
+The detection priority and rewrite rule live in
+[`skill.md` §3](https://aaep.site/skill.md) (agent path) and the CLI's
+`lib/install.mjs` (CLI path); both follow the same logic so the resulting
+tree is identical.
+
+## Pre-commit hook implementations {#hook-implementations}
+
+The `scripts` module ships **two** implementations of the portable contract
+checker. There is **no Node implementation**:
+
+| File | Language | When to use |
+|------|----------|-------------|
+| `scripts/archon-check.py` | Python 3 stdlib-only | Reference implementation. Runs anywhere Python 3 runs (any OS, no `pip install`). |
+| `scripts/archon-check.sh` | POSIX shell | Wrapper that delegates to `archon-check.py`. Useful when the project's pre-commit infrastructure expects shell scripts. |
+
+The agent or CLI picks the appropriate hook command based on your dev
+environment:
+
+| Dev environment | Hook command |
+|-----------------|--------------|
+| Python 3 on PATH (Linux / macOS / WSL) | `python3 scripts/archon-check.py --root .` |
+| Bash + Python 3 on Unix | `sh scripts/archon-check.sh .` |
+| Windows + Python via `py` launcher | `py -3 scripts\archon-check.py --root .` |
+| No Python available | Skip the hook; recommend running `archon sync` manually |
+
+Wiring options (Python `pre-commit` framework, plain git hook, husky on Node
+projects) are documented in
+[Quickstart Step 4](/setup/quickstart#step-4).
 
 ## Why publish a manifest instead of a tarball?
 

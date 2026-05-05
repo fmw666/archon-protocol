@@ -13,13 +13,16 @@ is conversational, the CLI path is scripted.
 
 ## When this protocol applies
 
-The user says something like:
+The user says something like (at the very first invocation, the URL is
+required so the local agent knows what to fetch):
 
-- "install archon in this project"
-- "set up archon governance"
-- "add archon to this repo"
-- "init archon" / "initialise archon"
+- "read aaep.site/skill.md and install archon"
 - "read aaep.site/init.md and install archon"
+- "fetch aaep.site/skill.md, then install archon"
+
+After Archon is installed, the wake rule is loaded and shorter phrases
+("install archon", "set up archon", "init archon") will route correctly —
+but at the very first invocation the URL bootstrap is the canonical form.
 
 …and `.archon/soul.md` does **not** exist yet (or `--force` is set).
 
@@ -31,9 +34,18 @@ instead.
 Before the agent starts:
 
 - The project must be a git repository with a clean working tree.
-- The agent must have web-fetch + file-write tools available.
-- Node.js ≥ 18 is required if optional modules `cli` or `dashboard` are
-  selected.
+- The agent must have web-fetch + file-write tools available. Any modern
+  coding agent (Cursor / Claude Code / Codex CLI / Continue / Aider /
+  Windsurf / others) qualifies.
+- The agent will detect your IDE platform and binding directory (per
+  [`skill.md` §3](https://aaep.site/skill.md)). If detection fails it asks.
+- **Optional runtimes**, only required if the corresponding modules are
+  selected:
+  - Node.js ≥ 18 — for the `cli` and `dashboard` modules.
+  - Python 3 — for running the pre-commit checker (`scripts/archon-check.py`).
+    Strictly speaking, install itself does not need Python; only the
+    pre-commit hook does, and only if you choose to wire one in Step 8 of
+    [Quickstart](/setup/quickstart#step-4).
 
 ## The 10 steps
 
@@ -117,14 +129,29 @@ valid** runtime ledgers:
 These paths are listed under `runtime_ledger_paths` in the manifest and will
 **never be touched by future updates**.
 
-### 8. Install Cursor / IDE surface
+### 8. Install IDE binding surface
 
-Write `.cursor/commands/`, `.cursor/agents/`, `.cursor/rules/`, and
-`.cursor/skills/archon-*/` verbatim. The agent **coexists** with any
-non-Archon files in `.cursor/` — never deletes them.
+Write `<binding-root>/commands/`, `<binding-root>/agents/`,
+`<binding-root>/rules/`, and `<binding-root>/skills/archon-*/` verbatim.
 
-For Codex / Claude Code, the manifest's IDE bindings target `.codex/` /
-`.claude/` instead.
+`<binding-root>` is detected at Step 0 (or asked if undetectable):
+
+| IDE | Binding root |
+|-----|--------------|
+| Cursor | `.cursor/` |
+| Claude Code | `.claude/` |
+| OpenAI Codex CLI | `.codex/` (or root `AGENTS.md`) |
+| Continue | `.continue/` |
+| Aider | `.aider/` |
+| Windsurf | `.windsurf/` |
+| Other | (defaults to `.cursor/`, ask user) |
+
+The manifest ships canonical paths under `.cursor/`. For non-Cursor
+platforms, the path prefix is rewritten on write — only the directory name
+changes, the markdown content is identical.
+
+The agent **coexists** with any non-Archon files in your binding directory —
+never deletes them.
 
 ### 9. Log the install
 
@@ -143,21 +170,31 @@ Print a concise summary:
 - ✓ N files written, M modules selected.
 - → Next steps:
   1. Open `.archon/manifest.md` and fill the three required sections.
-  2. Run `npm run validate` (or your equivalent) to confirm it's green.
-  3. Wire pre-commit: `node scripts/archon-check.mjs` as the husky hook.
-  4. Wake Archon: `hi archon, run a plan for X`.
+  2. Run your project's validate command (e.g. `npm run validate`,
+     `pytest`, `go test ./...`, `cargo test`, `mvn verify`) to confirm it's
+     green.
+  3. Wire pre-commit: pick one option from
+     [Quickstart Step 4](/setup/quickstart#step-4) — Python `pre-commit`
+     framework, plain git hook, or husky (only on Node projects). The
+     shipped checker is `scripts/archon-check.py` (Python stdlib-only) and
+     its Bash wrapper `scripts/archon-check.sh`. There is no Node
+     implementation.
+  4. Wake Archon: `hi archon, run a plan for X` (the URL is no longer
+     needed; the wake rule routes the phrase automatically).
 
 ## Guardrails the agent must enforce
 
 - Never write paths outside the project root.
 - Never write paths not in the manifest (except seeded runtime ledgers + `.gitkeep`).
 - Always verify sha256 before writing.
-- Always preserve user's pre-existing `.cursor/` content.
+- Always preserve user's pre-existing binding-directory content.
+- Always rewrite `.cursor/` path prefixes to `<binding-root>/` for non-Cursor
+  IDEs. Never write a `.cursor/` tree on a non-Cursor project.
 - Install is all-or-nothing — every file verifies, or nothing is written.
 
 ![Comic explainer: mechanical guards](/images/setup/04-mechanical-guards.png)
 
-## CLI equivalent
+## CLI equivalent (optional, requires Node ≥ 18)
 
 ```bash
 # interactive
@@ -172,6 +209,9 @@ npx @archon/cli@latest install --dry-run
 # private mirror
 npx @archon/cli@latest install --base-url=https://archon.mycorp.com
 ```
+
+The CLI itself requires Node ≥ 18. If you don't have Node, use the agent
+path described above — it produces the identical tree.
 
 Every flag: [Archon CLI reference](/source/cli/README).
 

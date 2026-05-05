@@ -6,6 +6,9 @@ this command. The output is a diff report the user can review before
 deciding whether to run `update` or hand-fix.
 
 If you haven't read `https://aaep.site/skill.md` yet, stop and read it first.
+You will need `$IDE_PLATFORM` and `$BINDING_ROOT` from `skill.md` §3 — read
+them off `.archon/drift.md` (the install record logs both) or re-detect from
+the project.
 
 ---
 
@@ -48,14 +51,20 @@ Walk these trees (they are the Archon surface — do not scan the rest of the
 project):
 
 - `$PROJECT_ROOT/.archon/` (excluding `runtime_ledger_paths`)
-- `$PROJECT_ROOT/.cursor/commands/`, `.cursor/agents/`, `.cursor/rules/`,
-  `.cursor/skills/archon-*`, `.cursor/skills/blink-dispatch`,
-  `.cursor/skills/external-agent-patterns`
+- `$PROJECT_ROOT/$BINDING_ROOT/commands/`,
+  `$BINDING_ROOT/agents/`, `$BINDING_ROOT/rules/`,
+  `$BINDING_ROOT/skills/archon-*`,
+  `$BINDING_ROOT/skills/blink-dispatch`,
+  `$BINDING_ROOT/skills/external-agent-patterns`
 - `$PROJECT_ROOT/scripts/archon-*`, `scripts/export-archon-*`,
   `scripts/test-archon-*`
 - `$PROJECT_ROOT/tools/archon-cli/` (if present)
 - `$PROJECT_ROOT/LICENSE`, `NOTICE` (only if they match canonical hashes —
   the user may have their own LICENSE)
+
+When comparing against canonical paths from the manifest, rewrite the
+`.cursor/` prefix to `$BINDING_ROOT/` for non-Cursor platforms before
+matching.
 
 For every file found, classify:
 
@@ -88,7 +97,7 @@ Summary:
   Ledgers    {{N_LED}} (managed by this project; not checked against canonical)
 
 Modified files (sha256 differs from canonical):
-  .cursor/rules/archon.mdc
+  {{BINDING_ROOT}}/rules/archon.mdc
       installed:  abc1234…
       canonical:  def5678…
   …
@@ -98,8 +107,8 @@ Missing files (in canonical but not in project):
   …
 
 Extra files (not in canonical — project-owned or stale):
-  .cursor/rules/my-custom-rule.mdc  (likely project-owned)
-  .archon/old-experiment.md         (possibly stale — investigate)
+  {{BINDING_ROOT}}/rules/my-custom-rule.mdc  (likely project-owned)
+  .archon/old-experiment.md                  (possibly stale — investigate)
 
 Per-module status:
   core-soul            11/11 ok
@@ -157,9 +166,11 @@ findings the project will want to remember.
 
 ---
 
-## CLI equivalent
+## CLI equivalent (optional, for users with Node ≥ 18)
 
 ```bash
-npx archon@latest sync           # same diff report, printed to stdout
-npx archon@latest sync --json    # machine-readable output
+npx @archon/cli@latest sync           # same diff report, printed to stdout
+npx @archon/cli@latest sync --json    # machine-readable output
 ```
+
+The CLI itself requires Node ≥ 18; the agent path described above does not.
