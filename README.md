@@ -27,13 +27,12 @@ from this repo:
 Nothing in `docs/source-files/` is generated from another repo. Edit
 here.
 
-## Six entry points on the site
+## Five entry points on the site
 
 | Nav | Path | Purpose |
 |-----|------|---------|
-| **Agent Protocol** | `/agent/` | How agents install, update, sync, uninstall Archon via `aaep.site/*.md` + manifest. |
 | **Core Concepts** | `/concepts/` | Identity · cognitive loop · 16 user journeys · architecture · ADRs · deep dives. |
-| **Install & Boot** | `/setup/` | Human path: 5-min quickstart · CLI · state templates · dashboard PRD. |
+| **Install & Boot** | `/setup/` | Agent-first install, complete lifecycle (install · update · sync · uninstall), CLI, state templates, dashboard PRD. |
 | **Full Source** | `/source/` | Every shipped file (~87), rendered from `docs/source-files/` via snippet imports. |
 | **Testing** | `/testing/` | Test strategy · contract checkers · how to run the gates in your project. |
 | **Changelog** | `/changelog/` | Framework changelog · CLI changelog · ADR timeline. |

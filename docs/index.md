@@ -11,12 +11,12 @@ hero:
   actions:
     - theme: brand
       text: Install via Agent
-      link: /agent/
+      link: /setup/
     - theme: alt
       text: 10-Minute Overview
       link: /concepts/overview
     - theme: alt
-      text: CLI Quickstart
+      text: 5-Minute Quickstart
       link: /setup/quickstart
     - theme: alt
       text: Full Source
@@ -68,13 +68,12 @@ Archon ships this as **one consistent vocabulary** — soul, manifest, drift,
 debt, memos, decisions, domain lenses, signs, run-state — plus the portable
 contract that keeps all of it mechanically verifiable.
 
-## The 6 entry points
+## The 5 entry points
 
 | Section | What you find |
 |---------|----------------|
-| [**Agent Protocol**](/agent/) | For coding agents: read `aaep.site/skill.md`, then install · update · sync · uninstall via a canonical manifest |
 | [**Core Concepts**](/concepts/) | The why: identity axioms · cognitive loop · user journeys · architecture reference · every ADR · drift mechanism |
-| [**Install & Boot**](/setup/) | For humans: 5-minute quickstart · `archon` CLI · state templates |
+| [**Install & Boot**](/setup/) | The how: agent-first install (`read aaep.site/skill.md and install archon`) · CLI · complete lifecycle (install · update · sync · uninstall) · state templates |
 | [**Full Source**](/source/) | The what: every shipped file — soul · commands · agents · rules · skills · domain lenses · contracts · scripts · CLI |
 | [**Testing**](/testing/) | The verification: governance contract tests · portable checkers · test strategy · how to run the gates in your own project |
 | [**Changelog**](/changelog/) | The history: framework changelog · CLI changelog · ADR timeline |
@@ -90,7 +89,7 @@ contract that keeps all of it mechanically verifiable.
 
 ## Start here
 
-- If your coding agent is on — just tell it: **"read aaep.site/skill.md and install archon"** (or `update` / `sync`). Details: [Agent Protocol](/agent/).
+- If your coding agent is on — just tell it: **"read aaep.site/skill.md and install archon"** (or `update` / `sync` / `uninstall`). Details: [Install & Boot](/setup/).
 - If you want to **understand the design** → [10-Minute Overview](/concepts/overview)
 - If you prefer to **run the CLI yourself** → [5-Minute Quickstart](/setup/quickstart)
 - If you want to **see every file** → [Full Source](/source/)

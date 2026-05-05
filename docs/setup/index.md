@@ -1,55 +1,142 @@
 # Install & Boot
 
-The **how** of getting Archon running in your project. Pick the path that
-matches your patience.
+Everything you need to get Archon running in your project — and to keep it
+healthy through updates, drift checks, and (one day) clean removal.
 
-## Paths
+![Comic explainer: install routes](/images/setup/01-install-route.png)
 
-| Path | Time | When to use |
-|------|------|-------------|
-| [5-Minute Quickstart](/setup/quickstart) | 5 min | You just want something running and you will read the why later. |
-| [Full Setup Guide](/setup/full-guide) | 30 min | You want to understand every file the kit lands and why it is there. |
-| [Archon CLI](/setup/cli) | 2 min | You have the Archon source repo checked out and want `archon init` to do the scaffolding for you. |
+## TL;DR — one sentence to your AI agent
 
-## Two-line version
+Open your AI coding assistant in the project and say:
 
-```bash
-# From an Archon source checkout:
-node tools/archon-cli/bin/archon.mjs init ../my-new-project --platform=cursor
-cd ../my-new-project && # fill .archon/manifest.md, then start a session
-```
+> **read `aaep.site/skill.md` and install archon**
 
-The post-init banner tells you exactly which four things to edit before your
-first `/archon` run:
+Aliases that work the same way:
 
-1. `.archon/manifest.md` — Product, Tech Stack, Validation Command.
-2. `.archon/decisions.md` — replace the placeholder ADR-1.
-3. `npm run validate` (or equivalent) — wire lint + typecheck + test.
-4. Read [5-Minute Quickstart](/setup/quickstart) — first delivery cycle walkthrough.
+> **read `aaep.site/init.md` and install archon** &nbsp;·&nbsp;
+> **hi archon, install yourself in this project**
 
-## State templates
+The agent fetches the manifest, asks a few questions, verifies sha256 on every
+file, writes the framework, and seeds your runtime ledgers. **Nothing happens
+silently** — you confirm the plan first.
 
-Archon ships five durable state files at `.archon/`. These are what your
-agent and humans edit; the templates are exactly what `archon init` lands:
+That's the entire happy path. The rest of this section is for "what just
+happened?", "how do I update?", and "how do I uninstall?".
 
-- [manifest.template.md](/setup/templates/manifest.template) — project hot context.
-- [decisions.template.md](/setup/templates/decisions.template) — project ADR log.
-- [drift.template.md](/setup/templates/drift.template) — drift counter + archive index.
-- [debt.template.md](/setup/templates/debt.template) — active debt registry.
-- [memos.template.md](/setup/templates/memos.template) — stakeholder memo hot index.
+## Three routes, same destination
 
-## Verify the install
+Pick whichever fits your situation. All three consume the exact same canonical
+manifest at [`aaep.site/manifest.json`](https://aaep.site/manifest.json) and
+produce an identical project tree.
 
-After `archon init`, run:
+| Route | Time | When to use |
+|-------|------|-------------|
+| **Agent-first** (recommended) | 3 min | You have a frontier coding agent (Cursor, Claude Code, Codex) with web-fetch + write tools. The agent does everything conversationally. |
+| **CLI** | 2 min | You're in CI, a script, or you don't have an agent open. Same manifest, same checksums, no conversation. |
+| **Manual** | 30 min | You want to understand every file before it lands. Read [Full Setup Guide](/setup/full-guide). |
 
 ```bash
-archon doctor .
+# Agent-first: just talk to your agent.
+# (no command — the agent runs the protocol from aaep.site/skill.md)
+
+# CLI:
+npx @archon/cli@latest install ./my-project
+npx @archon/cli@latest install --with=all --yes
+
+# Manual: read /setup/full-guide and follow it page-by-page.
 ```
 
-Three layers of audit:
+## The complete journey
+
+Installing is just step one. Archon is a long-running discipline; here is the
+full lifecycle every adopter project goes through:
+
+```mermaid
+flowchart LR
+  A[Day 1<br/>install] --> B[Day 1<br/>first delivery]
+  B --> C[Daily<br/>cognitive loop]
+  C --> D[Periodic<br/>update]
+  D --> C
+  C --> E[Periodic<br/>sync]
+  E --> C
+  C --> F[Eventually<br/>uninstall]
+  style A fill:#E0E7FF,stroke:#000,stroke-width:2px
+  style F fill:#FECACA,stroke:#000,stroke-width:2px
+  style C fill:#D1FAE5,stroke:#000,stroke-width:2px
+```
+
+| Stage | Trigger | Page |
+|-------|---------|------|
+| **Install** | First time setting up Archon in a project | [/setup/install](/setup/install) |
+| **Boot** (first delivery) | Right after install — get a real demand cycle running | [/setup/quickstart](/setup/quickstart) |
+| **Daily cognitive loop** | Every demand from now on | [Concepts: 10-Minute Overview](/concepts/overview) |
+| **Update** | Archon ships a new version, or you want fresh framework files | [/setup/update](/setup/update) |
+| **Sync** | "Is anything drifted?" — read-only health check | [/setup/sync](/setup/sync) |
+| **Uninstall** | You're moving off Archon (or testing a clean re-install) | [/setup/uninstall](/setup/uninstall) |
+
+For the full step-by-step end-to-end story, read
+[Complete Lifecycle](/setup/lifecycle).
+
+## What you'll have after install
+
+```
+your-project/
+├── .archon/                      ← framework core + runtime ledgers
+│   ├── soul.md                   ← who the agent is (do not edit)
+│   ├── manifest.md               ← *your* project hot-context (you edit this)
+│   ├── drift.md  debt.md  …      ← runtime ledgers (your governance history)
+│   └── VERSION                   ← canonical version pin
+├── .cursor/                      ← (or .codex/ / .claude/ for your IDE)
+│   ├── commands/archon-*.md      ← /archon, /archon-plan, /archon-review …
+│   ├── agents/archon-*.md        ← reviewer, capture-auditor sub-agents
+│   ├── rules/archon*.mdc         ← always-on rules
+│   └── skills/archon-*/          ← keyword/file-triggered skills
+├── docs/archon/                  ← this documentation set (locally)
+└── scripts/archon-check.{py,sh,mjs}  ← portable governance gates
+```
+
+![Comic explainer: two homes — framework core vs project state](/images/setup/02-two-homes.png)
+
+The split between **framework core** (read-only, owned by Archon) and
+**project state** (your own ledgers, owned by you) is the most important
+mental model. Updates only touch the former; your governance history is sacred
+and never overwritten.
+
+## Mechanical guards out of the box
+
+After install, Archon enforces governance through three mechanical layers:
+
+![Comic explainer: mechanical guards](/images/setup/04-mechanical-guards.png)
+
+1. **Pre-commit hook** — `scripts/archon-check.{py,sh,mjs}` blocks commits that
+   skip Decision Gate or Close-Out.
+2. **Validate gate** — every delivery must pass your project's
+   `validate` command (lint + typecheck + test).
+3. **Sub-agent review** — capture-auditor and reviewer cross-check every
+   delivery before Close-Out.
+
+You wire these in [Quickstart Step 4](/setup/quickstart#step-4-pre-commit-hook).
+
+## Verify after install
+
+```bash
+npx @archon/cli@latest doctor
+# or, conversationally:
+# > hi archon, check yourself
+```
+
+Three audit layers report green / yellow / red:
 
 - **L1 Structural** — required files present.
-- **L2 Contract** — delegates to `scripts/archon-check.py`.
-- **L3 Hints** — unfilled placeholders, missing validation command.
+- **L2 Contract** — `scripts/archon-check.py` passes.
+- **L3 Hints** — placeholders filled, validate command wired.
+- **L4 Canonical diff** — local files match canonical sha256 (added by `sync`).
 
-Green across all three means you can start writing `/archon` demands.
+Green across all four means you are clear to start writing demands.
+
+## Next
+
+- New here? Run the [5-Minute Quickstart](/setup/quickstart).
+- Want the whole picture first? Read [Complete Lifecycle](/setup/lifecycle).
+- Already installed and curious about a specific operation? Pick a lifecycle
+  command from the sidebar (Install / Update / Sync / Uninstall).

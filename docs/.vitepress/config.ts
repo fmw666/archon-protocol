@@ -26,7 +26,6 @@ export default withMermaid(defineConfig({
     logo: "/logo.svg",
 
     nav: [
-      { text: "Agent Protocol", link: "/agent/" },
       { text: "Core Concepts", link: "/concepts/" },
       { text: "Install & Boot", link: "/setup/" },
       { text: "Full Source", link: "/source/" },
@@ -35,37 +34,6 @@ export default withMermaid(defineConfig({
     ],
 
     sidebar: {
-      "/agent/": [
-        {
-          text: "Agent Protocol",
-          items: [
-            { text: "Overview", link: "/agent/" },
-            { text: "Canonical Manifest", link: "/agent/manifest" },
-          ],
-        },
-        {
-          text: "Lifecycle commands",
-          items: [
-            { text: "Install", link: "/agent/install" },
-            { text: "Update", link: "/agent/update" },
-            { text: "Sync", link: "/agent/sync" },
-            { text: "Uninstall", link: "/agent/uninstall" },
-          ],
-        },
-        {
-          text: "Raw agent files (served verbatim)",
-          items: [
-            { text: "skill.md", link: "https://aaep.site/skill.md" },
-            { text: "init.md (alias of install)", link: "https://aaep.site/init.md" },
-            { text: "install.md", link: "https://aaep.site/install.md" },
-            { text: "update.md", link: "https://aaep.site/update.md" },
-            { text: "sync.md", link: "https://aaep.site/sync.md" },
-            { text: "uninstall.md", link: "https://aaep.site/uninstall.md" },
-            { text: "manifest.json", link: "https://aaep.site/manifest.json" },
-          ],
-        },
-      ],
-
       "/concepts/": [
         {
           text: "Core Concepts",
@@ -91,12 +59,40 @@ export default withMermaid(defineConfig({
 
       "/setup/": [
         {
-          text: "Install & Boot",
+          text: "Start Here",
           items: [
             { text: "Overview", link: "/setup/" },
             { text: "5-Minute Quickstart", link: "/setup/quickstart" },
+            { text: "Complete Lifecycle", link: "/setup/lifecycle" },
+          ],
+        },
+        {
+          text: "Lifecycle Commands",
+          items: [
+            { text: "Install (first time)", link: "/setup/install" },
+            { text: "Update (upgrade)", link: "/setup/update" },
+            { text: "Sync (drift check)", link: "/setup/sync" },
+            { text: "Uninstall (remove)", link: "/setup/uninstall" },
+          ],
+        },
+        {
+          text: "Reference",
+          items: [
+            { text: "Canonical Manifest", link: "/setup/manifest" },
             { text: "Full Setup Guide", link: "/setup/full-guide" },
             { text: "Archon CLI", link: "/setup/cli" },
+          ],
+        },
+        {
+          text: "Raw Agent Files (served verbatim)",
+          items: [
+            { text: "skill.md", link: "https://aaep.site/skill.md" },
+            { text: "init.md (alias of install)", link: "https://aaep.site/init.md" },
+            { text: "install.md", link: "https://aaep.site/install.md" },
+            { text: "update.md", link: "https://aaep.site/update.md" },
+            { text: "sync.md", link: "https://aaep.site/sync.md" },
+            { text: "uninstall.md", link: "https://aaep.site/uninstall.md" },
+            { text: "manifest.json", link: "https://aaep.site/manifest.json" },
           ],
         },
         {
