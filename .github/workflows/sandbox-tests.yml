@@ -34,6 +34,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Probe Cursor SDK availability
+        run: |
+          if node -e "import('@cursor/sdk').then(m => { console.log('cursor-sdk loaded:', Object.keys(m).slice(0,5).join(',')); }).catch(e => { console.log('cursor-sdk NOT loaded:', e.code || e.message); })" ; then
+            true
+          fi
+
       - name: Build manifest + source pages
         run: npm run prebuild
 
@@ -47,8 +53,32 @@ jobs:
         # final pass/fail is decided by the gate step below.
         continue-on-error: true
 
-      - name: Run sandbox runner (agent scenarios → manual fallback)
+      - name: Detect Cursor SDK secret
+        id: cursor_key
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
         run: |
+          if [ -n "${CURSOR_API_KEY}" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run sandbox runner (agent scenarios — Cursor SDK live)
+        if: steps.cursor_key.outputs.available == 'true'
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+        run: |
+          node scripts/sandbox-run.mjs \
+            --runnable=agent \
+            --ci=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        continue-on-error: true
+
+      - name: Run sandbox runner (agent scenarios — manual fallback)
+        if: steps.cursor_key.outputs.available != 'true'
+        run: |
+          echo "CURSOR_API_KEY secret is not configured for this run."
+          echo "Cursor-driven agent scenarios will record result=manual."
           node scripts/sandbox-run.mjs \
             --runnable=agent \
             --ci=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
@@ -87,11 +117,11 @@ jobs:
             const lines = ['### Sandbox runner — latest results', '']
             lines.push(`✅ ${counts.passing || 0} passing · ❌ ${counts.failing || 0} failing · ⏳ ${counts.manual || 0} manual`)
             lines.push('')
-            lines.push('| test-id | result | manifest | runner | duration |')
-            lines.push('|---------|--------|----------|--------|----------|')
+            lines.push('| test-id | result | manifest | runner | provider | duration |')
+            lines.push('|---------|--------|----------|--------|----------|----------|')
             for (const [id, v] of rows.sort()) {
               const emoji = v.result === 'passing' ? '✅' : v.result === 'failing' ? '❌' : '⏳'
-              lines.push(`| \`${id}\` | ${emoji} ${v.result} | ${v.manifest_version} | ${v.runner_kind} | ${v.duration_ms} ms |`)
+              lines.push(`| \`${id}\` | ${emoji} ${v.result} | ${v.manifest_version} | ${v.runner_kind} | ${v.runner_provider || '—'} | ${v.duration_ms} ms |`)
             }
             const body = lines.join('\n')
             const { owner, repo } = context.repo

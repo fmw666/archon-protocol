@@ -122,55 +122,69 @@ concrete need for a non-Node, non-agent CLI in CI.
 
 ---
 
-### KNOWN-003 — No headless agent SDK adapter for sandbox runner (2026-05-05)
+### KNOWN-003 — Headless agent SDK provider coverage is incomplete (2026-05-05)
 
 **Severity:** Info · **Category:** Verification surface
 
 **Symptom:**
 The sandbox runner (`scripts/sandbox-run.mjs`) ships with a working
-`CliAdapter` that drives Archon's lifecycle via `tools/archon-cli/`, and a
-stub `AgentAdapter` that documents the contract for future SDK adapters
-(Cursor SDK, Claude Code SDK, Codex CLI). Until a concrete SDK adapter
-ships, every scenario whose `runnable` is `agent` (currently 6 of 12 — the
-two `boot-*` scenarios and the four `install-*` scenarios that prove
-IDE-platform path rewrites) records `result: "manual"`. They are not
-mechanically verified.
+`CliAdapter` and a pluggable `AgentAdapter` that dispatches to per-IDE
+providers under `scripts/sandbox/adapters/providers/`:
+
+| Provider | Status | Notes |
+| --- | --- | --- |
+| `cursor` | **Real** (since 2026-05-05) | Uses `@cursor/sdk` (`Agent.create({ local: { cwd, settingSources: ['project'] } })`), `run.stream()` for tool-call summaries, `run.wait()` for the canonical `RunResult`, and surfaces `CursorAgentError` subclasses as structured manual fallbacks. Auto-degrades to `manual` when `CURSOR_API_KEY` is unset, when the optional `@cursor/sdk` package fails to load (e.g., Windows host without the prebuilt sqlite3 binding), or when the SDK raises an `AuthenticationError` / `NetworkError`. |
+| `claude` | Manual fallback | No SDK adapter implemented. Used by `install-claude-python` and `boot-claude-python`. |
+| `codex` | Manual fallback | No SDK adapter implemented. Used by `install-codex-go`. |
+| `aider` | Manual fallback | No SDK adapter implemented. Used by `install-aider-rust`. |
+
+So as of this commit:
+- Cursor-platform agent scenarios *can* be mechanically verified end-to-end
+  whenever `CURSOR_API_KEY` is provided to the runner (locally or via a CI
+  secret).
+- Claude / Codex / Aider scenarios still record `result: "manual"` and rely
+  on captured demo videos + transcripts for evidence.
 
 **Impact:**
-- Sandbox CI gives full machine-graded coverage of CLI lifecycle (install,
-  update, sync, uninstall) on Node + TypeScript fixtures, but the agent
-  path — the one actually documented as the primary adoption mode — is
-  proved only by the captured demo videos + transcripts, not by an
-  automated check.
+- Sandbox CI gives full machine-graded coverage of the CLI lifecycle on
+  Node + TypeScript fixtures, plus Cursor-driven agent flows when a key is
+  configured. Other IDE-platform agent flows are documented and visually
+  recorded but not regression-checked by the harness.
 - The IDE platform rewrite (`.cursor/` → `.claude/` / `.codex/` / `.aider/`)
-  is currently a documented design intent, not a verified behaviour. The
-  CLI itself does not implement the rewrite; only an agent following
-  `install.md` does.
+  is a documented design intent: only the `.cursor/` half is currently
+  asserted by automation; the other three rewrites are still manual.
 
 **Why it's deferred (not fixed in this commit):**
-1. Each headless agent SDK has its own auth flow, model selection, and
-   billing surface. Choosing one before adopters surface a preference is
-   premature.
-2. The agent-driven flows are inherently slower (model latency,
-   non-deterministic token counts) — running them on every `git push` would
-   require careful CI budgeting.
-3. The CLI path already provides the most important regression signal:
-   any change that breaks manifest schema, sha256 verification, the
-   prune-on-uninstall behaviour, or the optional-module flow will be
-   caught by the 7 currently-running CLI scenarios.
+1. Each remaining headless agent SDK has its own auth flow, model
+   selection, and billing surface — picking one without an adopter
+   preference is premature.
+2. Agent-driven scenarios are slower than CLI scenarios; running all four
+   IDE platforms on every `git push` would require deliberate CI budgeting.
+3. The Cursor provider already exercises the agent contract end-to-end, so
+   the `AgentAdapter` shape is now proven — adding new providers is mostly
+   mechanical.
+
+**How to add a new provider (template, post-Cursor):**
+1. Create `scripts/sandbox/adapters/providers/<name>.mjs`.
+2. Export `{ name, isAvailable(), runStep(step, ctx) }` mirroring
+   `cursor.mjs`. Map the SDK's success/failure into
+   `{ code, stdout, stderr, manual?, toolEdits? }`.
+3. Register the export in `scripts/sandbox/adapters/agent.mjs`'s
+   `REGISTRY`.
+4. Add the secret name to `.github/workflows/sandbox-tests.yml` so the CI
+   job can pass it through.
 
 **Triggers for picking this up:**
-- An adopter wants to verify their agent-driven IDE rewrite continues to
-  work after they switch IDEs.
+- An adopter wants to verify their Claude- / Codex- / Aider-driven IDE
+  rewrite continues to work after they switch IDEs.
 - A regression in the agent-facing protocol files (`install.md`, `skill.md`,
   `boot.md`) ships and only surfaces in user reports, not in CI.
-- We standardise on a primary headless SDK for the demo videos and want
-  the same harness to drive both the recordings and the assertions.
 
 **See also:**
-- `scripts/sandbox/adapters/agent.mjs` — current stub + documented contract.
-- `docs/testing/sandbox/scenarios/install-claude-python.md` and siblings —
-  scenarios that block on this.
+- `scripts/sandbox/adapters/agent.mjs` — dispatcher + registry.
+- `scripts/sandbox/adapters/providers/cursor.mjs` — reference implementation.
+- `scripts/sandbox/adapters/providers/manual.mjs` — fallback shape.
+- `docs/testing/how-runner-works.md` — provider lifecycle doc.
 
 ---
 

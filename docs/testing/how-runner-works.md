@@ -115,18 +115,105 @@ being reachable from CI.
 
 ### AgentAdapter ([`scripts/sandbox/adapters/agent.mjs`](https://github.com/fmw666/archon-protocol/blob/main/scripts/sandbox/adapters/agent.mjs))
 
-Currently a stub. Documents the contract and the env-var protocol
-(`ARCHON_AGENT_PROVIDER`, `ARCHON_AGENT_API_KEY`). When a concrete SDK
-adapter ships:
+A thin dispatcher. It picks a **provider** based on the scenario's
+`ide_platform` (overridable with the `ARCHON_AGENT_PROVIDER` env var) and
+forwards `runStep` to it. Each provider lives under
+[`scripts/sandbox/adapters/providers/`](https://github.com/fmw666/archon-protocol/tree/main/scripts/sandbox/adapters/providers)
+and conforms to:
 
-1. Detect provider from `ARCHON_AGENT_PROVIDER`.
-2. For each `step.agent === "install"` (or `"update"`, `"sync"`, `"boot"`),
-   send the canonical prompt from `https://aaep.site/<step>.md` to the
-   agent SDK with `--cwd=<projectRoot>`, capture stdout, return shape
-   `{ code, stdout, stderr }`.
-3. Stop returning `manual: true`.
+```js
+{
+  name,                                    // 'cursor' | 'claude' | ...
+  isAvailable(): { ok, reason? },          // sync, cheap (env / SDK present?)
+  async runStep(step, ctx)                 // ctx = { projectRoot, baseUrl,
+                                           //         manifestVersion, ide }
+    -> { code, stdout, stderr,
+         manual?, toolEdits? }
+}
+```
 
-Tracked in [KNOWN-003](https://github.com/fmw666/archon-protocol/blob/main/KNOWN-ISSUES.md).
+Currently registered:
+
+| Provider | Implementation | Triggered when `ide_platform` is |
+| --- | --- | --- |
+| `cursor` | **Real**, uses [`@cursor/sdk`](https://www.npmjs.com/package/@cursor/sdk) | `cursor` |
+| `claude` | Manual fallback | `claude` |
+| `codex` | Manual fallback | `codex` |
+| `aider` | Manual fallback | `aider` |
+| anything else | Manual fallback (per-name) | otherwise |
+
+Whenever a provider is unavailable (no API key, optional SDK package not
+installed, native dep not built on this host, SDK raised an
+`AuthenticationError`, …) the step is recorded as `manual: true` with a
+human-readable `reason`, and the scenario's `result` becomes `manual`
+rather than `failing`. CI does not crash if `CURSOR_API_KEY` is absent —
+it simply falls back to the documented manual evidence path.
+
+#### Cursor provider deep-dive
+
+The Cursor provider runs the SDK in **local mode** so the agent operates
+directly on the sandbox's tmp project directory. It does not provision a
+cloud VM and never touches the source repo.
+
+Per [Cursor's SDK docs](https://cursor.com/docs/sdk/typescript):
+
+- `Agent.create({ apiKey, model: { id: 'composer-2' }, local: { cwd, settingSources: ['project'] } })`
+  loads the fixture's `.cursor/rules/`, `.cursor/commands/`,
+  `.cursor/skills/`, `.cursor/agents/`, and `.cursor/mcp.json`. This is
+  how Archon's repo-side `archon-wake.mdc` rule and `archon.md` command
+  reach the agent without us re-uploading them.
+- `await run.wait()` returns a `RunResult` with
+  `status: 'finished' | 'error' | 'cancelled'`. The provider maps these
+  to numeric exit codes (`0`, `1`, `124`) so the runner stays uniform
+  across CLI / agent paths.
+- `run.stream()` is consumed concurrently to capture each `tool_call`
+  event's terminal status, surfaced as `tool_edits: [{ name, status }]`
+  on the step record.
+- `CursorAgentError` and its subclasses (`AuthenticationError`,
+  `RateLimitError`, `ConfigurationError`, `NetworkError`,
+  `IntegrationNotConnectedError`, `UnsupportedRunOperationError`) are
+  caught and degraded to manual with a structured reason; only timeouts
+  surface as a hard `failing`.
+
+#### Step → prompt mapping
+
+When a scenario step looks like `{ "agent": "install" }`, the runner
+sends a canonical natural-language prompt that mirrors the agent-first
+trigger phrasing the docs document. Override per-step with a custom
+`"prompt": "..."` field. Defaults:
+
+| `step.agent` | Prompt template (abridged) |
+| --- | --- |
+| `install` | "Read the install instructions at https://aaep.site/install/SKILL.md and install Archon into this project. …" |
+| `update` | "Read https://aaep.site/install/update.md and update Archon in this project to the latest manifest version. …" |
+| `sync` | "Read https://aaep.site/install/sync.md and verify the local Archon files against the canonical manifest. …" |
+| `uninstall` | "Read https://aaep.site/install/uninstall.md and uninstall Archon …" |
+| `boot` | `hi archon` — confirms the agent followed the wake protocol. |
+
+When the runner is started against the **local mirror** (the default for
+CI), the prompt is auto-augmented with a "Note: For this sandbox run,
+fetch Archon source files from `<local URL>` instead of the public CDN."
+suffix so the agent never reaches out to `aaep.site` from a CI box.
+
+#### Adding a new provider
+
+1. Create `scripts/sandbox/adapters/providers/<name>.mjs` that exports an
+   object with the shape above. Use
+   [`cursor.mjs`](https://github.com/fmw666/archon-protocol/blob/main/scripts/sandbox/adapters/providers/cursor.mjs)
+   as a reference: dynamic `import("<package>")`, env-var check, run
+   execution, error-class taxonomy → `manual` mapping.
+2. Register the export in
+   [`agent.mjs`](https://github.com/fmw666/archon-protocol/blob/main/scripts/sandbox/adapters/agent.mjs)'s
+   `REGISTRY`.
+3. Add the SDK as an `optionalDependency` in `package.json` so users who
+   don't need it never pay the install cost.
+4. Add the secret name to
+   [`.github/workflows/sandbox-tests.yml`](https://github.com/fmw666/archon-protocol/blob/main/.github/workflows/sandbox-tests.yml)
+   so the agent job can pass it through.
+5. Update [KNOWN-003](https://github.com/fmw666/archon-protocol/blob/main/KNOWN-ISSUES.md#known-003)
+   to flip the row from "Manual fallback" to "Real".
+
+Tracked in [KNOWN-003](https://github.com/fmw666/archon-protocol/blob/main/KNOWN-ISSUES.md#known-003).
 
 ---
 
@@ -175,6 +262,42 @@ node scripts/sandbox-run.mjs --base-url=https://aaep.site
 node scripts/sandbox-run.mjs --only=sync-modified --keep-tmp
 ```
 
+### Running the Cursor provider
+
+The Cursor provider needs a Cursor API key. Get one from
+[Cursor Dashboard → Integrations](https://cursor.com/dashboard/integrations)
+under **API Keys** (same flow the Cursor CLI uses), then export it before
+running the agent half of the sandbox:
+
+```bash
+export CURSOR_API_KEY=...   # User or service-account API key
+
+# Cursor-driven scenarios only. Without the key, this still runs but each
+# scenario records `result: "manual"` with a "key not set" reason.
+node scripts/sandbox-run.mjs --runnable=agent --only=boot-cursor-node
+
+# Override the model (default: composer-2):
+ARCHON_AGENT_MODEL=composer-2-fast node scripts/sandbox-run.mjs --runnable=agent
+
+# Force the cursor provider for an `ide_platform: claude` scenario during
+# local dev (e.g., to see how Cursor handles the same prompt). NOT for CI.
+ARCHON_AGENT_PROVIDER=cursor node scripts/sandbox-run.mjs --only=install-claude-python --runnable=agent
+```
+
+Notes:
+- The Cursor provider uses the **local runtime** of the SDK
+  (`Agent.create({ local: { cwd } })`), so the agent operates directly on
+  the sandbox's tmp project directory. Nothing is uploaded; no PR is
+  opened.
+- Native dependency: the Cursor SDK ships a platform-specific package
+  (`@cursor/sdk-<platform>-<arch>`) that depends on `sqlite3` with a
+  prebuilt binary. On hosts without a prebuilt binary (e.g., Windows
+  without MSVC build tools), the provider auto-degrades to `manual` with
+  a `bindings file missing` reason — Linux/macOS CI runners are unaffected.
+- Per-step timeout is 10 min (`ARCHON_AGENT_TIMEOUT_MS` env override). A
+  timeout surfaces as `result: "failing"` (exit 124), not manual — the
+  scenario really did exceed its budget.
+
 Exit codes:
 - `0` — every executed scenario produced `result: "passing"` or
   `result: "manual"`.
@@ -191,8 +314,14 @@ runs on every push to `main`, every pull request, and a nightly cron at
 
 1. Checks out the repo.
 2. Runs the `prebuild` step so `docs/public/manifest.json` exists.
-3. Invokes `node scripts/sandbox-run.mjs --runnable=cli --ci=$GITHUB_RUN_URL`.
-4. Commits regenerated `runs/` JSON back to the source branch (PR) or to
+3. Invokes `node scripts/sandbox-run.mjs --runnable=cli --ci=$GITHUB_RUN_URL`
+   to mechanically grade the CLI lifecycle.
+4. If the `CURSOR_API_KEY` repository secret is set, additionally invokes
+   `node scripts/sandbox-run.mjs --runnable=agent --ci=$GITHUB_RUN_URL` so
+   Cursor-driven scenarios are graded too. When the secret is absent
+   (e.g., on PRs from forks), the agent step is skipped and those
+   scenarios remain `manual` per [KNOWN-003](https://github.com/fmw666/archon-protocol/blob/main/KNOWN-ISSUES.md#known-003).
+5. Commits regenerated `runs/` JSON back to the source branch (PR) or to
    `main` (cron / push) so the documentation auto-syncs.
 
 The `--ci=` flag stamps the GitHub Actions run URL into each JSON record,

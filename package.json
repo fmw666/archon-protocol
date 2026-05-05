@@ -18,5 +18,8 @@
     "mermaid": "^11.13.0",
     "vitepress": "^1.6.4",
     "vitepress-plugin-mermaid": "^2.0.17"
+  },
+  "optionalDependencies": {
+    "@cursor/sdk": "^1.0.12"
   }
 }

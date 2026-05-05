@@ -70,7 +70,9 @@ function recordHref(p: string) {
         <tr v-for="(rec, i) in records" :key="i">
           <td><code>{{ fmtDate(rec.data.started_at) }}</code></td>
           <td><code>{{ rec.data.manifest_version }}</code></td>
-          <td>{{ rec.data.runner?.kind || '—' }}</td>
+          <td>
+            {{ rec.data.runner?.kind || '—' }}<template v-if="rec.data.runner?.provider"> <code class="prov">{{ rec.data.runner.provider }}</code></template>
+          </td>
           <td>{{ emoji(rec.data.result) }} {{ rec.data.result }}</td>
           <td>{{ fmtDuration(rec.data.duration_ms) }}</td>
           <td>
@@ -105,5 +107,10 @@ function recordHref(p: string) {
   font-family: var(--vp-font-family-mono);
   font-size: 0.75rem;
   color: var(--vp-c-text-2);
+}
+.run-records code.prov {
+  font-size: 0.75rem;
+  opacity: 0.75;
+  margin-left: 0.25rem;
 }
 </style>

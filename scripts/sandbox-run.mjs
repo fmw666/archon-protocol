@@ -143,6 +143,7 @@ async function runOneScenario(scenario, { baseUrl, manifestVersion, ciUrl, keepT
   const assertionsRun = []
   let result = 'failing'
   let notes = null
+  let lastProvider = null
 
   let projectRoot = null
   try {
@@ -180,6 +181,7 @@ async function runOneScenario(scenario, { baseUrl, manifestVersion, ciUrl, keepT
     for (const step of scenario.spec.steps || []) {
       const sStart = Date.now()
       const r = await adapter.runStep(step, { projectRoot })
+      if (r.provider) lastProvider = r.provider
       stepsRun.push({
         name: stepName(step),
         exit_code: r.code,
@@ -187,6 +189,8 @@ async function runOneScenario(scenario, { baseUrl, manifestVersion, ciUrl, keepT
         stdout_tail: tail(r.stdout, 30),
         stderr_tail: tail(r.stderr, 30),
         manual: r.manual === true,
+        provider: r.provider || null,
+        tool_edits: Array.isArray(r.toolEdits) ? r.toolEdits : null,
       })
       if (r.manual) {
         manualEncountered = true
@@ -233,6 +237,7 @@ async function runOneScenario(scenario, { baseUrl, manifestVersion, ciUrl, keepT
     manifestVersion: `v${manifestVersion}`,
     runnerKind: result === 'manual' ? 'manual' : runnable === 'agent' ? 'agent' : 'cli',
     runnerVersion: 'sandbox-runner/0.1.0',
+    runnerProvider: runnable === 'agent' || runnable === 'both' ? lastProvider : null,
     host: `${os.platform()} ${os.arch()} node ${process.version}`,
     fixture,
     idePlatform,

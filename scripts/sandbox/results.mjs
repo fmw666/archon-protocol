@@ -12,6 +12,7 @@ export function buildRunRecord({
   manifestVersion,
   runnerKind,
   runnerVersion,
+  runnerProvider,
   host,
   fixture,
   idePlatform,
@@ -28,7 +29,12 @@ export function buildRunRecord({
     finished_at: finishedAt,
     duration_ms: durationMs,
     manifest_version: manifestVersion,
-    runner: { kind: runnerKind, version: runnerVersion, host },
+    runner: {
+      kind: runnerKind,
+      version: runnerVersion,
+      host,
+      provider: runnerProvider || null,
+    },
     fixture,
     ide_platform: idePlatform,
     result, // passing | failing | skipped | manual
@@ -64,6 +70,7 @@ export async function updateRunsIndex({ runsDir }) {
       manifest_version: data.manifest_version,
       result: data.result,
       runner_kind: data.runner?.kind || 'unknown',
+      runner_provider: data.runner?.provider || null,
       duration_ms: data.duration_ms,
       record_path: `runs/${testId}/${newest}`,
     }

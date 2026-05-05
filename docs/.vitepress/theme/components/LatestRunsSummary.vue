@@ -11,6 +11,7 @@ type LatestRow = {
   manifest_version: string
   result: 'passing' | 'failing' | 'manual' | 'skipped'
   runner_kind: string
+  runner_provider?: string | null
   duration_ms: number
   record_path: string
 }
@@ -134,7 +135,9 @@ function fmtDuration(ms?: number) {
             <code v-if="row.manifest_version">{{ row.manifest_version }}</code>
             <span v-else>—</span>
           </td>
-          <td>{{ row.runner_kind || '—' }}</td>
+          <td>
+            {{ row.runner_kind || '—' }}<template v-if="row.runner_provider"> <code class="prov">{{ row.runner_provider }}</code></template>
+          </td>
           <td>{{ fmtDuration(row.duration_ms) }}</td>
           <td><code>{{ fmtDate(row.started_at) }}</code></td>
         </tr>
@@ -156,5 +159,10 @@ function fmtDuration(ms?: number) {
   font-size: 0.85rem;
   color: var(--vp-c-text-2);
   margin-bottom: 0.75rem;
+}
+.latest-runs-summary code.prov {
+  font-size: 0.75rem;
+  opacity: 0.75;
+  margin-left: 0.25rem;
 }
 </style>
