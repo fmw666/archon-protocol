@@ -1,0 +1,34 @@
+{
+  "schema": "archon.sandbox-run/v1",
+  "test_id": "install-aider-rust",
+  "started_at": "2026-05-05T14:05:13.360Z",
+  "finished_at": "2026-05-05T14:05:13.364Z",
+  "duration_ms": 4,
+  "manifest_version": "v0.1.0",
+  "runner": {
+    "kind": "manual",
+    "version": "sandbox-runner/0.1.0",
+    "host": "win32 x64 node v22.14.0"
+  },
+  "fixture": "fixtures/sandbox-rust",
+  "ide_platform": "aider",
+  "result": "manual",
+  "steps": [
+    {
+      "name": "copy fixture",
+      "exit_code": 0,
+      "duration_ms": 3
+    },
+    {
+      "name": "agent install (aider)",
+      "exit_code": 0,
+      "duration_ms": 0,
+      "stdout_tail": "[agent-adapter] provider/key not set; scenario marked 'manual'.",
+      "stderr_tail": "",
+      "manual": true
+    }
+  ],
+  "assertions": [],
+  "notes": "[agent-adapter] provider/key not set; scenario marked 'manual'.",
+  "ci_run": null
+}

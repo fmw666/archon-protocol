@@ -122,6 +122,130 @@ concrete need for a non-Node, non-agent CLI in CI.
 
 ---
 
+### KNOWN-003 — No headless agent SDK adapter for sandbox runner (2026-05-05)
+
+**Severity:** Info · **Category:** Verification surface
+
+**Symptom:**
+The sandbox runner (`scripts/sandbox-run.mjs`) ships with a working
+`CliAdapter` that drives Archon's lifecycle via `tools/archon-cli/`, and a
+stub `AgentAdapter` that documents the contract for future SDK adapters
+(Cursor SDK, Claude Code SDK, Codex CLI). Until a concrete SDK adapter
+ships, every scenario whose `runnable` is `agent` (currently 6 of 12 — the
+two `boot-*` scenarios and the four `install-*` scenarios that prove
+IDE-platform path rewrites) records `result: "manual"`. They are not
+mechanically verified.
+
+**Impact:**
+- Sandbox CI gives full machine-graded coverage of CLI lifecycle (install,
+  update, sync, uninstall) on Node + TypeScript fixtures, but the agent
+  path — the one actually documented as the primary adoption mode — is
+  proved only by the captured demo videos + transcripts, not by an
+  automated check.
+- The IDE platform rewrite (`.cursor/` → `.claude/` / `.codex/` / `.aider/`)
+  is currently a documented design intent, not a verified behaviour. The
+  CLI itself does not implement the rewrite; only an agent following
+  `install.md` does.
+
+**Why it's deferred (not fixed in this commit):**
+1. Each headless agent SDK has its own auth flow, model selection, and
+   billing surface. Choosing one before adopters surface a preference is
+   premature.
+2. The agent-driven flows are inherently slower (model latency,
+   non-deterministic token counts) — running them on every `git push` would
+   require careful CI budgeting.
+3. The CLI path already provides the most important regression signal:
+   any change that breaks manifest schema, sha256 verification, the
+   prune-on-uninstall behaviour, or the optional-module flow will be
+   caught by the 7 currently-running CLI scenarios.
+
+**Triggers for picking this up:**
+- An adopter wants to verify their agent-driven IDE rewrite continues to
+  work after they switch IDEs.
+- A regression in the agent-facing protocol files (`install.md`, `skill.md`,
+  `boot.md`) ships and only surfaces in user reports, not in CI.
+- We standardise on a primary headless SDK for the demo videos and want
+  the same harness to drive both the recordings and the assertions.
+
+**See also:**
+- `scripts/sandbox/adapters/agent.mjs` — current stub + documented contract.
+- `docs/testing/sandbox/scenarios/install-claude-python.md` and siblings —
+  scenarios that block on this.
+
+---
+
+### KNOWN-004 — `archon update --with=<module>` is a no-op when versions match (2026-05-05)
+
+**Severity:** Bug · **Category:** CLI lifecycle
+
+**Symptom:**
+When a project is already on the canonical Archon version, `archon update
+--with=cli` (or any other module-add request) early-exits with
+`already on canonical version`, **without** materialising the newly
+requested optional module. The user has to pass `--force` to actually
+download the new module's files. The `--with` flag is silently ignored.
+
+This was first surfaced by the sandbox scenario
+`update-cli-without-cli`: install with `--without=cli`, then update with
+`--with=cli`, and observe that `tools/archon-cli/` is never created.
+
+**Impact:**
+- Adopters who skipped a module at install time and later try to add it
+  via `archon update --with=<mod>` get no error, no warning, and no
+  module — pure silent failure.
+- The sandbox scenario `update-cli-without-cli` currently reports
+  `result: "failing"` because of this; it's a true positive.
+
+**Why it's deferred (not fixed in this commit):**
+The fix lives in `docs/source-files/tools/archon-cli/lib/update.mjs`.
+The early-return on version match must be replaced by a comparison of the
+**effective module set** (installed vs requested) so that an unchanged
+version + a changed module list still triggers the download phase. This is
+a small but cross-cutting change that deserves its own commit and an
+update-time regression test.
+
+**Triggers for picking this up:**
+- Any adopter who runs `archon update --with=<mod>` and reports a no-op.
+- Next CLI maintenance cycle.
+
+**See also:**
+- `docs/source-files/tools/archon-cli/lib/update.mjs` (early-return path).
+- `docs/testing/sandbox/scenarios/update-cli-without-cli.md` (failing scenario).
+
+---
+
+### KNOWN-005 — `archon uninstall` leaves empty subdirectories under `tools/archon-cli/` (2026-05-05)
+
+**Severity:** Cosmetic · **Category:** CLI lifecycle
+
+**Symptom:**
+After `archon uninstall`, every file the manifest enumerates is removed
+correctly, but the parent directories `tools/archon-cli/bin/` and
+`tools/archon-cli/lib/` are left as empty folders. `pruneEmptyDirs`
+explicitly tries `tools/archon-cli` and `tools` but does not recurse into
+the leaf-level `bin/` / `lib/`.
+
+**Impact:**
+- Cosmetic: leaves empty folders the user has to delete by hand.
+- Sandbox scenarios `uninstall-preserve` and `uninstall-archive` had to
+  rephrase their assertions from `dir_absent: tools/archon-cli` to
+  `file_absent: tools/archon-cli/bin/archon.mjs`, which is a weaker but
+  more accurate truth.
+
+**Why it's deferred (not fixed in this commit):**
+Trivial fix (one extra recursion in `pruneEmptyDirs`) but worth its own
+PR with a regression assertion in a sandbox scenario, so we don't
+inadvertently delete a user-owned directory in a future refactor.
+
+**Triggers for picking this up:**
+- Any user reporting empty `tools/` after uninstall.
+- Next CLI maintenance cycle.
+
+**See also:**
+- `docs/source-files/tools/archon-cli/lib/uninstall.mjs` (`pruneEmptyDirs` call).
+
+---
+
 ## Closed
 
 _(none yet)_

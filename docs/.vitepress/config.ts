@@ -294,9 +294,42 @@ export default withMermaid(defineConfig({
 
       "/testing/": [
         {
-          text: "Testing",
+          text: "Overview",
           items: [
-            { text: "Overview", link: "/testing/" },
+            { text: "Testing Hub", link: "/testing/" },
+          ],
+        },
+        {
+          text: "Sandbox Tests",
+          items: [
+            { text: "Sandbox Overview", link: "/testing/sandbox/" },
+            { text: "How the Runner Works", link: "/testing/how-runner-works" },
+            { text: "Test Fixtures", link: "/testing/sandbox/fixtures" },
+            { text: "Test Matrix (12)", link: "/testing/sandbox/test-matrix" },
+            { text: "Test Record Template", link: "/testing/sandbox/template" },
+          ],
+        },
+        {
+          text: "Sandbox Scenarios",
+          collapsed: false,
+          items: [
+            { text: "01 install-cursor-node", link: "/testing/sandbox/scenarios/install-cursor-node" },
+            { text: "02 install-claude-python", link: "/testing/sandbox/scenarios/install-claude-python" },
+            { text: "03 install-codex-go", link: "/testing/sandbox/scenarios/install-codex-go" },
+            { text: "04 install-aider-rust", link: "/testing/sandbox/scenarios/install-aider-rust" },
+            { text: "05 boot-cursor-node", link: "/testing/sandbox/scenarios/boot-cursor-node" },
+            { text: "06 boot-claude-python", link: "/testing/sandbox/scenarios/boot-claude-python" },
+            { text: "07 update-cursor-node", link: "/testing/sandbox/scenarios/update-cursor-node" },
+            { text: "08 update-cli-without-cli", link: "/testing/sandbox/scenarios/update-cli-without-cli" },
+            { text: "09 sync-clean", link: "/testing/sandbox/scenarios/sync-clean" },
+            { text: "10 sync-modified", link: "/testing/sandbox/scenarios/sync-modified" },
+            { text: "11 uninstall-preserve", link: "/testing/sandbox/scenarios/uninstall-preserve" },
+            { text: "12 uninstall-archive", link: "/testing/sandbox/scenarios/uninstall-archive" },
+          ],
+        },
+        {
+          text: "Contract Tests",
+          items: [
             { text: "Test Strategy", link: "/testing/strategy" },
             { text: "Representative Samples", link: "/testing/samples" },
             { text: "How to Run in Your Project", link: "/testing/how-to-run" },
