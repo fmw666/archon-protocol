@@ -1,0 +1,47 @@
+{
+  "schema": "archon.sandbox-run/v1",
+  "test_id": "boot-claude-python",
+  "started_at": "2026-05-06T00:40:12.316Z",
+  "finished_at": "2026-05-06T00:40:12.561Z",
+  "duration_ms": 245,
+  "manifest_version": "v0.1.0",
+  "runner": {
+    "kind": "manual",
+    "version": "sandbox-runner/0.1.0",
+    "host": "linux x64 node v20.20.2",
+    "provider": "claude"
+  },
+  "fixture": "fixtures/sandbox-python",
+  "ide_platform": "claude",
+  "result": "manual",
+  "steps": [
+    {
+      "name": "copy fixture",
+      "exit_code": 0,
+      "duration_ms": 3
+    },
+    {
+      "name": "prereq: archon install",
+      "exit_code": 0,
+      "duration_ms": 235,
+      "stdout_tail": "[archon install] target: /tmp/archon-sandbox-boot-claude-python-2026-05-06T00-40-12-317Z\n[archon install] fetching manifest from http://127.0.0.1:37975/manifest.json …\n[archon install] manifest v0.1.0 — 87 files across 14 modules\n[archon install] plan: 72 files (487.1 KB) from 12 modules\n[archon install] downloading and verifying …\n\r[archon install] verified 10/72\r[archon install] verified 20/72\r[archon install] verified 30/72\r[archon install] verified 40/72\r[archon install] verified 50/72\r[archon install] verified 60/72\r[archon install] verified 70/72\r[archon install] verified 72/72\n[archon install] writing files …\n\n[archon install] Done. Archon v0.1.0 installed into /tmp/archon-sandbox-boot-claude-python-2026-05-06T00-40-12-317Z\n[archon install] Next steps: open the project, say \"hi archon\" to your agent, or see https://aaep.site/setup/quickstart\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "agent boot (hi archon, claude code)",
+      "exit_code": 0,
+      "duration_ms": 0,
+      "stdout_tail": "[manual-provider:claude] no headless SDK adapter for this IDE platform; step \"boot\" must be performed by hand. Track progress in KNOWN-003.",
+      "stderr_tail": "",
+      "manual": true,
+      "provider": "claude",
+      "tool_edits": null
+    }
+  ],
+  "assertions": [],
+  "notes": "[manual-provider:claude] no headless SDK adapter for this IDE platform; step \"boot\" must be performed by hand. Track progress in KNOWN-003.",
+  "ci_run": {
+    "platform": "github-actions",
+    "url": "https://github.com/fmw666/archon-protocol/actions/runs/25410218632"
+  }
+}
