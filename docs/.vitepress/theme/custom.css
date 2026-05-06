@@ -25,14 +25,37 @@
 
 /* ── Tables: Full-width, polished look ── */
 
+/*
+ * Use `display: block` so the table itself becomes a horizontally
+ * scrollable container when its content exceeds the article's text
+ * width (e.g. on narrow viewports / mobile). `width: max-content` lets
+ * the table size to its natural content while `max-width: 100%`
+ * clamps it to the column width so the page layout is never broken.
+ */
 .vp-doc table {
-  display: table;
-  width: 100%;
+  display: block;
+  width: max-content;
+  max-width: 100%;
   border-collapse: collapse;
   margin: 20px 0;
   font-size: 14px;
   line-height: 1.6;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.vp-doc table::-webkit-scrollbar {
+  height: 6px;
+}
+
+.vp-doc table::-webkit-scrollbar-thumb {
+  background-color: var(--vp-c-divider);
+  border-radius: 3px;
+}
+
+.vp-doc table::-webkit-scrollbar-thumb:hover {
+  background-color: var(--vp-c-text-3);
 }
 
 .vp-doc table th {
