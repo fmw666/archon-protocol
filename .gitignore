@@ -6,6 +6,11 @@ docs/public/manifest.json
 .DS_Store
 *.log
 
+# Local secrets (CURSOR_API_KEY etc.) — see .env.example for the schema.
+.env
+.env.local
+.env.*.local
+
 # EvoMap GEP assets
 memory/
 assets/

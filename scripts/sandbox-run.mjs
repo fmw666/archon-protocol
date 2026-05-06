@@ -30,6 +30,22 @@ import { copyDir, makeTmpDir, rmrf, isoNow, durationMs, tail, pathExists } from 
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
+// Load <repo>/.env (if present) so contributors can set CURSOR_API_KEY etc.
+// without exporting in their shell. CI does NOT use a .env file — secrets
+// arrive via GitHub Actions `env:` blocks (see sandbox-tests.yml).
+// We never overwrite values the caller already exported.
+//
+// Uses Node's built-in `loadEnvFile` (Node ≥ 20.6) — no `dotenv` package
+// required. Silently ignored when .env is absent.
+try {
+  const dotEnvPath = path.join(REPO_ROOT, '.env')
+  if (typeof process.loadEnvFile === 'function') {
+    process.loadEnvFile(dotEnvPath)
+  }
+} catch {
+  // .env missing or unreadable — fine, runner just relies on real env.
+}
+
 function parseArgs(argv) {
   const out = { only: null, runnable: 'cli', baseUrl: null, updateIndex: true, keepTmp: false, ci: null }
   for (const a of argv.slice(2)) {
