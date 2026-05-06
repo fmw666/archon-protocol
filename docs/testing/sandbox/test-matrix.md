@@ -25,6 +25,21 @@ expected outcome, and run records.
 | 10 | [`sync-modified`](./scenarios/sync-modified) | sync (drift detected) | Cursor | Node 20 + TS | sandbox-node-ts (after 01, hand-edit injected) | ⏳ |
 | 11 | [`uninstall-preserve`](./scenarios/uninstall-preserve) | uninstall (preserve ledgers) | Claude Code | Python 3.12 | sandbox-python (after 02) | ⏳ |
 | 12 | [`uninstall-archive`](./scenarios/uninstall-archive) | uninstall (archive ledgers) | Cursor | Node 20 + TS | sandbox-node-ts (after 01) | ⏳ |
+| 13 | [`install-empty-dir`](./scenarios/install-empty-dir) | install (empty dir) | Cursor | (none) | sandbox-empty | ⏳ |
+| 14 | [`install-existing-project`](./scenarios/install-existing-project) | install (host preserved) | Cursor | Node 20 + TS | sandbox-node-ts | ⏳ |
+| 15 | [`install-rejects-reinstall`](./scenarios/install-rejects-reinstall) | install (negative — refuse re-install) | Cursor | Node 20 + TS | sandbox-node-ts (after first install) | ⏳ |
+| 16 | [`install-force-reinstall`](./scenarios/install-force-reinstall) | install (`--force`) | Cursor | Node 20 + TS | sandbox-node-ts (after first install) | ⏳ |
+| 17 | [`install-half-archon-dir`](./scenarios/install-half-archon-dir) | install (edge case — bare `.archon/`) | Cursor | Node 20 + TS | sandbox-node-ts + sentinel | ⏳ |
+| 18 | [`install-without-cli`](./scenarios/install-without-cli) | install (`--without=cli`) | Cursor | Node 20 + TS | sandbox-node-ts | ⏳ |
+| 19 | [`install-agent-cursor`](./scenarios/install-agent-cursor) | install (agent path via `install.md`) | Cursor (`@cursor/sdk`) | Node 20 + TS | sandbox-node-ts | ⏳ |
+
+> Rows 13–18 form the **CLI install matrix**, row 19 is the **agent
+> install matrix**. Both belong to the unified
+> **[Install Matrix](./install-matrix)** page, which characterises every
+> meaningful branch in `archon install` along two dimensions:
+> *initial-state × flags* (CLI) and *agent-facing protocol prose*
+> (agent). See the matrix page for the mental-model graph and run
+> commands.
 
 > **Status legend**: ✅ passing · ❌ failing · ⏳ pending.
 > Status is updated **per release**: each scenario must pass against
@@ -37,17 +52,19 @@ expected outcome, and run records.
 | Stage | # of scenarios | Test IDs |
 |-------|:-------------:|----------|
 | install | 4 | 01–04 |
+| install matrix — CLI (state × flags) | 6 | 13–18 |
+| install matrix — agent (`install.md`) | 1 | 19 |
 | boot | 2 | 05, 06 |
 | update | 2 | 07, 08 |
 | sync | 2 | 09, 10 |
 | uninstall | 2 | 11, 12 |
-| **Total** | **12** | |
+| **Total** | **19** | |
 
 ### By IDE
 
 | IDE | # of scenarios | Test IDs |
 |-----|:-------------:|----------|
-| Cursor | 7 | 01, 05, 07, 08, 09, 10, 12 |
+| Cursor | 14 | 01, 05, 07, 08, 09, 10, 12, 13, 14, 15, 16, 17, 18, 19 |
 | Claude Code | 3 | 02, 06, 11 |
 | OpenAI Codex CLI | 1 | 03 |
 | Aider | 1 | 04 |
@@ -57,10 +74,11 @@ expected outcome, and run records.
 
 | Language | # of scenarios | Test IDs |
 |----------|:-------------:|----------|
-| Node + TypeScript | 7 | 01, 05, 07, 08, 09, 10, 12 |
+| Node + TypeScript | 13 | 01, 05, 07, 08, 09, 10, 12, 14, 15, 16, 17, 18, 19 |
 | Python | 3 | 02, 06, 11 |
 | Go | 1 | 03 |
 | Rust | 1 | 04 |
+| (none — bare directory) | 1 | 13 |
 
 ## Dependency graph
 
@@ -78,12 +96,20 @@ graph TD
   S01 --> S10[10 sync-modified]
   S01 --> S12[12 uninstall-archive]
 
+  F1 --> S14[14 install-existing-project]
+  F1 --> S18[18 install-without-cli]
+  F1 --> S19[19 install-agent-cursor]
+  S14 --> S15[15 install-rejects-reinstall]
+  S14 --> S16[16 install-force-reinstall]
+  F1 --> S17[17 install-half-archon-dir]
+
   F2[fixtures/sandbox-python] --> S02[02 install-claude-python]
   S02 --> S06[06 boot-claude-python]
   S02 --> S11[11 uninstall-preserve]
 
   F3[fixtures/sandbox-go] --> S03[03 install-codex-go]
   F4[fixtures/sandbox-rust] --> S04[04 install-aider-rust]
+  F5[fixtures/sandbox-empty] --> S13[13 install-empty-dir]
 ```
 
 ## What this matrix does **not** cover (yet)

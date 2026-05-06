@@ -18,19 +18,22 @@ Pick the layer that matches the question you're trying to answer.
 
 ## Sandbox Tests — does it work end-to-end?
 
-A reproducible suite that takes one of four clean fixtures
-(Node + TS / Python / Go / Rust), runs an Archon lifecycle command
-through one of four IDE platforms (Cursor / Claude Code / Codex CLI /
-Aider), and verifies the resulting tree against a fixed expected
-outcome — with date, manifest version, and result recorded for every run.
+A reproducible suite that takes one of five clean fixtures
+(Node + TS / Python / Go / Rust / bare empty dir), runs an Archon
+lifecycle command through one of four IDE platforms (Cursor / Claude
+Code / Codex CLI / Aider), and verifies the resulting tree against a
+fixed expected outcome — with date, manifest version, and result
+recorded for every run.
 
-**12 scenarios** cover all 5 lifecycle stages × the most common
-IDE × language pairings:
+**19 scenarios** cover all 5 lifecycle stages × the most common
+IDE × language pairings, **plus a 6-scenario install matrix** that
+fans out the install stage along the *initial-state × flags* axis:
 
 - [Sandbox Overview](/testing/sandbox/) — what it is, why it exists, latest run summary.
 - [How the Runner Works](/testing/how-runner-works) — runner architecture, local/CI invocation, agent SDK adapter contract.
-- [Test Fixtures](/testing/sandbox/fixtures) — the 4 minimal projects each scenario installs into.
-- [Test Matrix](/testing/sandbox/test-matrix) — the full 12-scenario grid with status per row.
+- [Test Fixtures](/testing/sandbox/fixtures) — the 5 minimal projects each scenario installs into.
+- [Test Matrix](/testing/sandbox/test-matrix) — the full 19-scenario grid with status per row.
+- [Install Matrix](/testing/sandbox/install-matrix) — 7 install scenarios across two axes: 6 CLI scenarios bracketing initial-state × flags, plus 1 agent scenario driving install through `aaep.site/install.md` end-to-end.
 - [Test Record Template](/testing/sandbox/template) — the shape every new scenario page must follow.
 
 Every scenario page links to a video placeholder (`docs/public/videos/`)

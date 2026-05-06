@@ -16,6 +16,12 @@ CLI), and verifies the resulting tree against an expected outcome. Every
 run is recorded with date, manifest version, runner, and result so you
 can audit reality, not promises.
 
+The scenario count today is **19**: 12 along the
+`stage × IDE × language` axis (rows 01–12), 6 along the install
+`initial-state × flags` axis (rows 13–18), and 1 agent-driven install
+via the public `install.md` protocol (row 19). Rows 13–19 together form
+the **[Install Matrix](./install-matrix)**.
+
 ## How this differs from [Contract Tests](/testing/strategy)
 
 | Layer | Asks | Lives in |
@@ -48,6 +54,27 @@ scenario.
 | 10 | [`sync-modified`](./scenarios/sync-modified) | sync (drift detected) | Cursor | Node + TS |
 | 11 | [`uninstall-preserve`](./scenarios/uninstall-preserve) | uninstall (preserve ledgers) | Claude Code | Python |
 | 12 | [`uninstall-archive`](./scenarios/uninstall-archive) | uninstall (archive ledgers) | Cursor | Node + TS |
+
+## The 7-scenario install matrix
+
+A second axis was added once it became clear that **one install
+scenario per stack** does not characterise install behaviour fully:
+two installs into the same stack can produce **different results**
+depending on the target's initial state and the flags passed. A third
+axis (row 19) covers the **agent-facing install protocol prose** — what
+happens when an end-user pastes "read aaep.site/install.md and install
+archon" into their IDE chat. The [Install Matrix](./install-matrix)
+page has the full mental-model graph; the rows are:
+
+| # | test-id | Initial state / path | Flags / trigger |
+|---|---------|---------------------|-----------------|
+| 13 | [`install-empty-dir`](./scenarios/install-empty-dir) | bare directory | `--with=cli` |
+| 14 | [`install-existing-project`](./scenarios/install-existing-project) | real Node + TS project | `--with=cli` |
+| 15 | [`install-rejects-reinstall`](./scenarios/install-rejects-reinstall) | already installed | `--with=cli` (no `--force`) |
+| 16 | [`install-force-reinstall`](./scenarios/install-force-reinstall) | already installed | `--with=cli --force` |
+| 17 | [`install-half-archon-dir`](./scenarios/install-half-archon-dir) | `.archon/` exists, no `soul.md` | `--with=cli` |
+| 18 | [`install-without-cli`](./scenarios/install-without-cli) | bare project | `--without=cli` |
+| 19 | [`install-agent-cursor`](./scenarios/install-agent-cursor) | agent path (Cursor SDK) | prompt → `https://aaep.site/install/SKILL.md` |
 
 See the [Test Matrix](./test-matrix) page for the full grid with
 fixture / status columns, or jump to [Test Fixtures](./fixtures) for the

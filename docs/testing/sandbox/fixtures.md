@@ -5,7 +5,7 @@ outline: deep
 
 # Test Fixtures
 
-The four minimal projects that sandbox tests install into. They live
+The five minimal projects that sandbox tests install into. They live
 under [`fixtures/`](https://github.com/fmw666/archon-protocol/tree/main/fixtures)
 in this repo (see [`fixtures/README.md`](https://github.com/fmw666/archon-protocol/blob/main/fixtures/README.md) for the
 conventions every fixture follows).
@@ -116,6 +116,34 @@ fixtures/sandbox-rust/
     └── lib.rs       ← unit tests inline (Rust convention)
 ```
 
+## sandbox-empty
+
+The **null reference point**. A directory that contains only a
+README — no language manifest, no source files, no tests. Exists
+specifically to bracket the install-matrix: `install` must succeed
+on a bare directory, and the post-install tree of `sandbox-empty`
+versus `sandbox-node-ts` is exactly the install delta.
+
+| | |
+|---|---|
+| Path | `fixtures/sandbox-empty/` |
+| Simulated identity | (none — bare directory) |
+| Toolchain | none |
+| Validation cmd | none (intentional — install must not require one) |
+| Pre-commit hook style | n/a (no `.git/` until install seeds one) |
+| Used by scenarios | 13 |
+
+```text
+fixtures/sandbox-empty/
+└── README.md
+```
+
+This fixture **deliberately violates** the
+"every fixture has at least one runnable test" convention from
+[`fixtures/README.md`](https://github.com/fmw666/archon-protocol/blob/main/fixtures/README.md)
+because that is the whole point — install must not require any
+business code or test runner in the target.
+
 ## Why these four (and not eight)
 
 | Stack family | Covered by | Not yet covered |
@@ -124,11 +152,12 @@ fixtures/sandbox-rust/
 | Script / data (Python) | sandbox-python | — |
 | Compiled / backend (Go) | sandbox-go | Java · Kotlin |
 | Systems (Rust) | sandbox-rust | C++ · Swift |
+| Bare (no language) | sandbox-empty | — |
 
-The four fixtures cover ~90 % of the realistic adoption surface. Adding
-Java / Kotlin / C++ / Swift is cheap when an actual adopter shows up,
-but until then they would be **fixtures with no test record** — exactly
-the rot we want to avoid.
+The five fixtures cover ~90 % of the realistic adoption surface plus
+the null reference point. Adding Java / Kotlin / C++ / Swift is cheap
+when an actual adopter shows up, but until then they would be
+**fixtures with no test record** — exactly the rot we want to avoid.
 
 If you need a fixture that doesn't exist yet, follow the "Adding a new
 fixture" section of
