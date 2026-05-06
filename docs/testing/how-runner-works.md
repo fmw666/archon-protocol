@@ -184,7 +184,7 @@ trigger phrasing the docs document. Override per-step with a custom
 
 | `step.agent` | Prompt template (abridged) |
 | --- | --- |
-| `install` | "Read the install instructions at https://aaep.site/install/SKILL.md and install Archon into this project. …" |
+| `install` | "Read the install instructions at https://aaep.site/install.md and install Archon into this project. …" |
 | `update` | "Read https://aaep.site/install/update.md and update Archon in this project to the latest manifest version. …" |
 | `sync` | "Read https://aaep.site/install/sync.md and verify the local Archon files against the canonical manifest. …" |
 | `uninstall` | "Read https://aaep.site/install/uninstall.md and uninstall Archon …" |

@@ -77,6 +77,7 @@ export const cursorProvider = {
     const timeoutMs = step.timeout_ms || DEFAULT_TIMEOUT_MS
 
     const toolEdits = []
+    const assistantMessages = []
     let agent = null
     let timer = null
 
@@ -101,15 +102,19 @@ export const cursorProvider = {
         timer = setTimeout(() => reject(new Error(`cursor agent timed out after ${timeoutMs}ms`)), timeoutMs)
       })
 
-      // Drain stream concurrently to capture tool-call summary. tool_call events
-      // fire twice per call (status='running' then 'completed'/'error') — only
-      // record terminal states.
+      // Drain stream concurrently to capture tool-call summary + assistant
+      // chatter. tool_call events fire twice per call (status='running' then
+      // 'completed'/'error') — only record terminal states. Assistant messages
+      // are captured so we can see *why* a run fails when status != finished.
       let streamErr = null
       const streamPromise = (async () => {
         try {
           for await (const ev of run.stream()) {
             if (ev.type === 'tool_call' && ev.status && ev.status !== 'running') {
-              toolEdits.push({ name: ev.name, status: ev.status })
+              toolEdits.push({ name: ev.name, status: ev.status, args: ev.args, result: ev.result })
+            }
+            if (ev.type === 'assistant_message' && ev.content) {
+              assistantMessages.push(typeof ev.content === 'string' ? ev.content : JSON.stringify(ev.content))
             }
           }
         } catch (e) {
@@ -127,7 +132,24 @@ export const cursorProvider = {
         // Not fatal — still report final status, just annotate stderr.
       }
 
-      const stdout = result.result || ''
+      // Build a richer stdout/stderr so failing runs reveal *why*.
+      const lines = []
+      lines.push(`run.status=${result.status}`)
+      if (result.error) lines.push(`run.error=${typeof result.error === 'string' ? result.error : JSON.stringify(result.error)}`)
+      if (result.result) lines.push(`run.result=${result.result}`)
+      if (assistantMessages.length) {
+        lines.push(`--- assistant messages (${assistantMessages.length}) ---`)
+        for (const m of assistantMessages) lines.push(m)
+      }
+      if (toolEdits.length) {
+        lines.push(`--- tool calls (${toolEdits.length}) ---`)
+        for (const t of toolEdits) {
+          const argsStr = t.args ? ` args=${JSON.stringify(t.args).slice(0, 200)}` : ''
+          const resStr = t.result ? ` result=${String(typeof t.result === 'string' ? t.result : JSON.stringify(t.result)).slice(0, 200)}` : ''
+          lines.push(`  ${t.name} [${t.status}]${argsStr}${resStr}`)
+        }
+      }
+      const stdout = lines.join('\n')
       const stderr = streamErr ? `stream-error: ${String(streamErr.message || streamErr)}` : ''
       const code = result.status === 'finished' ? 0 : result.status === 'cancelled' ? 124 : 1
 
@@ -184,7 +206,7 @@ function buildPrompt(step, ctx) {
   switch (step.agent) {
     case 'install':
       return (
-        'Read the install instructions at https://aaep.site/install/SKILL.md and ' +
+        'Read the install instructions at https://aaep.site/install.md and ' +
         'install Archon into this project. Do not ask follow-up questions; if any ' +
         'choice is needed, pick the safe default. When done, briefly report which ' +
         'files were created under .archon/ and which IDE platform integration was ' +

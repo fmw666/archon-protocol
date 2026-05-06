@@ -176,7 +176,7 @@ tmp 项目目录上操作。它不会创建云端 VM，也永远不会触碰源�
 
 | `step.agent` | Prompt 模板（节选） |
 | --- | --- |
-| `install` | "Read the install instructions at https://aaep.site/install/SKILL.md and install Archon into this project. …" |
+| `install` | "Read the install instructions at https://aaep.site/install.md and install Archon into this project. …" |
 | `update` | "Read https://aaep.site/install/update.md and update Archon in this project to the latest manifest version. …" |
 | `sync` | "Read https://aaep.site/install/sync.md and verify the local Archon files against the canonical manifest. …" |
 | `uninstall` | "Read https://aaep.site/install/uninstall.md and uninstall Archon …" |
