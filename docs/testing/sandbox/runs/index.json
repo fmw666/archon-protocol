@@ -20,6 +20,15 @@
       "duration_ms": 223,
       "record_path": "runs/boot-cursor-node/2026-05-06T13-05-56-249Z.json"
     },
+    "install-agent-cursor": {
+      "started_at": "2026-05-06T12:46:38.957Z",
+      "manifest_version": "v0.1.0",
+      "result": "passing",
+      "runner_kind": "agent",
+      "runner_provider": "cursor",
+      "duration_ms": 368686,
+      "record_path": "runs/install-agent-cursor/2026-05-06T12-46-38-957Z.json"
+    },
     "install-aider-rust": {
       "started_at": "2026-05-06T13:05:56.472Z",
       "manifest_version": "v0.1.0",
@@ -55,6 +64,60 @@
       "runner_provider": null,
       "duration_ms": 258,
       "record_path": "runs/install-cursor-node/2026-05-06T13-05-53-363Z.json"
+    },
+    "install-empty-dir": {
+      "started_at": "2026-05-06T11:45:36.207Z",
+      "manifest_version": "v0.1.0",
+      "result": "passing",
+      "runner_kind": "cli",
+      "runner_provider": null,
+      "duration_ms": 316,
+      "record_path": "runs/install-empty-dir/2026-05-06T11-45-36-207Z.json"
+    },
+    "install-existing-project": {
+      "started_at": "2026-05-06T11:45:36.524Z",
+      "manifest_version": "v0.1.0",
+      "result": "passing",
+      "runner_kind": "cli",
+      "runner_provider": null,
+      "duration_ms": 332,
+      "record_path": "runs/install-existing-project/2026-05-06T11-45-36-524Z.json"
+    },
+    "install-force-reinstall": {
+      "started_at": "2026-05-06T11:45:36.856Z",
+      "manifest_version": "v0.1.0",
+      "result": "passing",
+      "runner_kind": "cli",
+      "runner_provider": null,
+      "duration_ms": 574,
+      "record_path": "runs/install-force-reinstall/2026-05-06T11-45-36-856Z.json"
+    },
+    "install-half-archon-dir": {
+      "started_at": "2026-05-06T11:45:37.430Z",
+      "manifest_version": "v0.1.0",
+      "result": "passing",
+      "runner_kind": "cli",
+      "runner_provider": null,
+      "duration_ms": 288,
+      "record_path": "runs/install-half-archon-dir/2026-05-06T11-45-37-430Z.json"
+    },
+    "install-rejects-reinstall": {
+      "started_at": "2026-05-06T11:45:37.718Z",
+      "manifest_version": "v0.1.0",
+      "result": "passing",
+      "runner_kind": "cli",
+      "runner_provider": null,
+      "duration_ms": 354,
+      "record_path": "runs/install-rejects-reinstall/2026-05-06T11-45-37-718Z.json"
+    },
+    "install-without-cli": {
+      "started_at": "2026-05-06T11:45:38.073Z",
+      "manifest_version": "v0.1.0",
+      "result": "passing",
+      "runner_kind": "cli",
+      "runner_provider": null,
+      "duration_ms": 259,
+      "record_path": "runs/install-without-cli/2026-05-06T11-45-38-073Z.json"
     },
     "sync-clean": {
       "started_at": "2026-05-06T13:05:53.622Z",

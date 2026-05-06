@@ -1,0 +1,445 @@
+{
+  "schema": "archon.sandbox-run/v1",
+  "test_id": "install-agent-cursor",
+  "started_at": "2026-05-06T12:33:28.476Z",
+  "finished_at": "2026-05-06T12:38:30.515Z",
+  "duration_ms": 302037,
+  "manifest_version": "v0.1.0",
+  "runner": {
+    "kind": "agent",
+    "version": "sandbox-runner/0.1.0",
+    "host": "win32 x64 node v22.14.0",
+    "provider": "cursor"
+  },
+  "fixture": "fixtures/sandbox-node-ts",
+  "ide_platform": "cursor",
+  "result": "passing",
+  "steps": [
+    {
+      "name": "copy fixture",
+      "exit_code": 0,
+      "duration_ms": 13
+    },
+    {
+      "name": "prereq: {\"write_file\":{\"path\":\"__sb-check.cjs\",\"content\":\"const fs=require('fs');const op=process.argv[2];const args=process.argv.slice(3);if(op==='pkg-name-equals'){const p=require('./package.json');if(p.name!==args[0]){console.error('package.json name mutated:',p.name);process.exit(1)}process.exit(0)}console.error('unknown op:',op);process.exit(2);\"}}",
+      "exit_code": 0,
+      "duration_ms": 2,
+      "stdout_tail": "wrote __sb-check.cjs",
+      "stderr_tail": ""
+    },
+    {
+      "name": "agent install via aaep.site/install.md",
+      "exit_code": 0,
+      "duration_ms": 301967,
+      "stdout_tail": "## 说明\n\n`https://aaep.site/install/SKILL.md` 返回 **404**。已按同一站点的入口 **`https://aaep.site/skill.md`** 阅读协议，并从 **`http://127.0.0.1:60447/install.md`** + **`http://127.0.0.1:60447/manifest.json`** 执行安装（清单内文件均从 **`http://127.0.0.1:60447`** 拉取并做 **sha256** 校验）。**安全默认**：IDE 按 **Cursor**；绑定根目录 **`.cursor/`**；可选模块 **cli / dashboard / extensions-demand-pool** 全部跳过；占位信息来自 **`package.json`**（`acme-todos`，技术栈 **TypeScript, Vitest, Node.js**）。\n\n为使已下发的 **`governance-contract.yaml`** 与 `scripts/archon-check.py` 一致，在清单外额外补全了契约要求的 **`docs/archon/*`**、**`.husky/*`**、**`.cursor/hooks*`**、**`.gitignore`** / **`.gitattributes`**（本地沙箱无对应 `source-files`）。当前 **`py -3 scripts/archon-check.py --root .` 已通过**。\n\n---\n\n## `.archon/` 下创建或写入的文件（共 40 个文件）\n\n| 区域 | 路径 |\n|------|------|\n| 核心 | `VERSION`, `soul.md`, `soul/delivery.md`, `soul/review.md` |\n| 合约 | `contracts/governance-contract.yaml` |\n| 模板 | `templates/run-state.schema.json`, `templates/run.template.md` |\n| 领域透镜 | `domain-lenses/README.md`, `registry.yaml`, `lenses/*.md`（5）, `templates/lens.md`, `templates/tool.md`, `tools/**`（16） |\n| 运行账本（安装种子） | `manifest.md`, `drift.md`, `debt.md`, `memos.md`, `signs.md`, `decisions.md` |\n| 记录目录占位 | `drift/records/.gitkeep`, `debt/items/.gitkeep`, `memos/records/.gitkeep` |\n\n## IDE 集成\n\n已配置 **Cursor**：**`.cursor/commands/`**（5）、**`.cursor/agents/`**（2）、**`.cursor/rules/`**（3）、**`.cursor/skills/`**（6 个 `SKILL.md`），以及用于契约的 **`.cursor/hooks.json`** 与 **`.cursor/hooks/archon-destructive-guard.mjs`**。",
+      "stderr_tail": "",
+      "manual": false,
+      "provider": "cursor",
+      "tool_edits": [
+        {
+          "name": "glob",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "glob",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "glob",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "delete",
+          "status": "completed"
+        },
+        {
+          "name": "delete",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "glob",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "grep",
+          "status": "completed"
+        },
+        {
+          "name": "read",
+          "status": "completed"
+        },
+        {
+          "name": "edit",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        },
+        {
+          "name": "shell",
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "assertions": [
+    {
+      "name": "file_exists: .archon/soul.md",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "file_exists: .archon/manifest.md",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "file_exists: .archon/drift.md",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "file_exists: .cursor/commands/archon.md",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "dir_exists: .cursor/rules",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "file_exists: package.json",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "cmd_zero: [\"node\",\"__sb-check.cjs\",\"pkg-name-equals\",\"acme-todos\"]",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "notes": null,
+  "ci_run": null
+}
