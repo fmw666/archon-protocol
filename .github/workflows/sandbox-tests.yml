@@ -13,6 +13,20 @@ on:
 permissions:
   contents: write
 
+# Scope:
+#   This workflow exercises only the CLI runnable surface of the sandbox
+#   harness (install / update / sync / uninstall scenarios driven by the
+#   archon-cli Node entry-point). It does NOT drive the per-IDE agent SDKs
+#   (Cursor, Claude, Codex, Aider) — those scenarios are runnable locally
+#   via `npm run sandbox:agent` (see package.json) and tracked under
+#   KNOWN-003 as a deliberate "verify locally, not in CI" decision.
+#
+#   Reasoning: agent SDKs require per-vendor API keys, billable model
+#   calls, and slower wall-clock budgets. Bringing them into CI would
+#   couple every PR to vendor uptime and secret-management, with no
+#   regression payoff that the CLI scenarios + lint:dist + manifest
+#   symmetry checks don't already cover at author time.
+
 jobs:
   cli-runner:
     name: Sandbox runner (CLI scenarios)
@@ -31,14 +45,13 @@ jobs:
           node-version: "20"
           cache: "npm"
 
+      - name: Setup Python (for archon-check.py inside cmd_zero assertions)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Install dependencies
         run: npm ci
-
-      - name: Probe Cursor SDK availability
-        run: |
-          if node -e "import('@cursor/sdk').then(m => { console.log('cursor-sdk loaded:', Object.keys(m).slice(0,5).join(',')); }).catch(e => { console.log('cursor-sdk NOT loaded:', e.code || e.message); })" ; then
-            true
-          fi
 
       - name: Build manifest + source pages
         run: npm run prebuild
@@ -48,40 +61,9 @@ jobs:
           node scripts/sandbox-run.mjs \
             --runnable=cli \
             --ci=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        # Continue even on failing scenarios — the JSON record itself is the
-        # artefact we want committed/uploaded for the dashboard. The job's
-        # final pass/fail is decided by the gate step below.
-        continue-on-error: true
-
-      - name: Detect Cursor SDK secret
-        id: cursor_key
-        env:
-          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
-        run: |
-          if [ -n "${CURSOR_API_KEY}" ]; then
-            echo "available=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "available=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Run sandbox runner (agent scenarios — Cursor SDK live)
-        if: steps.cursor_key.outputs.available == 'true'
-        env:
-          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
-        run: |
-          node scripts/sandbox-run.mjs \
-            --runnable=agent \
-            --ci=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        continue-on-error: true
-
-      - name: Run sandbox runner (agent scenarios — manual fallback)
-        if: steps.cursor_key.outputs.available != 'true'
-        run: |
-          echo "CURSOR_API_KEY secret is not configured for this run."
-          echo "Cursor-driven agent scenarios will record result=manual."
-          node scripts/sandbox-run.mjs \
-            --runnable=agent \
-            --ci=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        # Continue even on failing scenarios — the JSON record itself is
+        # the artefact we want committed/uploaded for the dashboard. The
+        # job's final pass/fail is decided by the gate step below.
         continue-on-error: true
 
       - name: Upload run records as artifact
@@ -114,8 +96,10 @@ jobs:
             const rows = Object.entries(idx.latest || {})
             const counts = { passing: 0, failing: 0, manual: 0 }
             for (const [, v] of rows) counts[v.result] = (counts[v.result] || 0) + 1
-            const lines = ['### Sandbox runner — latest results', '']
+            const lines = ['### Sandbox runner — latest results (CLI only)', '']
             lines.push(`✅ ${counts.passing || 0} passing · ❌ ${counts.failing || 0} failing · ⏳ ${counts.manual || 0} manual`)
+            lines.push('')
+            lines.push('_Agent-SDK scenarios are run locally only — see `npm run sandbox:agent`._')
             lines.push('')
             lines.push('| test-id | result | manifest | runner | provider | duration |')
             lines.push('|---------|--------|----------|--------|----------|----------|')

@@ -15,8 +15,25 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
-      - name: Link audit
-        run: node scripts/lint-links.mjs
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Full author-side lint chain: links + encoding + distribution
+      # boundary. `lint:dist` (KNOWN-010) catches repo-only paths or
+      # contract-symmetry drift before they ship to adopters via
+      # manifest.json. Adopter-side contract enforcement (i.e. running
+      # archon-check.py end-to-end on a freshly installed tree) lives in
+      # sandbox-tests.yml's cmd_zero assertions inside each install-*
+      # scenario, so we deliberately do not re-run the checker here.
+      - name: Lint (links + encoding + distribution boundary)
+        run: npm run lint
+
+      # Manifest must regenerate cleanly on every PR — also re-runs
+      # lint:dist as a post-step (defence-in-depth against a developer who
+      # edits the manifest by hand).
+      - name: Build manifest
+        run: node scripts/build-manifest.mjs
+
       - name: Docs build smoke test
         run: npm run docs:build
