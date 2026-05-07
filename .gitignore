@@ -14,3 +14,8 @@ docs/public/manifest.json
 # EvoMap GEP assets
 memory/
 assets/
+
+# Archon runtime ledgers (each adopter project owns its own copy; the
+# archon-protocol source repository must not commit per-run state).
+.archon/runs/
+.archon/run.md

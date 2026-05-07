@@ -1,6 +1,6 @@
 ---
 description: Archon meta-system guardian — keeps universal Archon files decoupled from project specifics
-globs: .archon/*.md,.archon/soul/*.md,.archon/domain-lenses/**/*.md,.archon/contracts/*.yaml,.cursor/commands/archon-*.md,.cursor/agents/archon-*.md,.cursor/skills/archon-*/SKILL.md,.cursor/skills/blink-dispatch/SKILL.md,.cursor/skills/external-agent-patterns/SKILL.md,docs/archon/*.md,docs/archon/templates/*.md
+globs: .archon/*.md,.archon/soul/*.md,.archon/domain-lenses/**/*.md,.archon/contracts/*.yaml,.cursor/commands/archon-*.md,.cursor/agents/archon-*.md,.cursor/skills/archon-*/SKILL.md,.cursor/skills/blink-dispatch/SKILL.md,.cursor/skills/external-agent-patterns/SKILL.md
 alwaysApply: false
 ---
 
@@ -21,8 +21,8 @@ Archon is a project-agnostic, platform-agnostic meta-capability framework. soul.
 | `archon-*/SKILL.md` | Universal or framework-adjacent Archon skills | ❌ |
 | `blink-dispatch/SKILL.md` | Universal subagent dispatch gate | ❌ |
 | `external-agent-patterns/SKILL.md` | Universal external-framework evaluation guard | ❌ |
-| `docs/archon/*.md` | Portable framework reference docs | ❌ |
-| `docs/archon/templates/*.md` | Project-state templates and schema contracts | ❌ for filled project facts; placeholders/examples only |
+| `docs/archon/*.md` (framework repo only — adopters never have this path) | Portable framework reference docs | ❌ |
+| `docs/archon/templates/*.md` (framework repo only) | Project-state templates and schema contracts | ❌ for filled project facts; placeholders/examples only |
 | `.archon/domain-lenses/**` | Universal lens/tool contracts | ❌ |
 | `.archon/contracts/*.yaml` | Portable governance contracts | ❌ |
 | `drift.md` rules section | Universal drift mechanism | ❌ |

@@ -34,6 +34,7 @@ import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import crypto from 'node:crypto'
 import { fileURLToPath } from 'node:url'
+import { spawnSync } from 'node:child_process'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = path.resolve(__dirname, '..')
@@ -49,6 +50,27 @@ const BASE_URL = 'https://aaep.site'
 // docs/source-files/ (forward slashes) and returns true if the file belongs in
 // this module. Modules are tried in order; the first match wins. Files matched
 // by no module go into `misc`.
+// Author-only paths under docs/source-files/ that exist for the
+// archon-protocol *source repository* itself but must NEVER be bundled into
+// adopter projects via manifest.json. Tracked under KNOWN-001.
+//
+// IMPORTANT: removing an entry here makes the file part of the next
+// manifest publish — only do that if the file is genuinely intended to ship
+// to every adopter project.
+const AUTHOR_ONLY_FILES = new Set([
+  // KNOWN-001: legacy export pipeline that pre-dates the v2.0.0 reversal in
+  // which archon-protocol became canonical. build-manifest.mjs (this file)
+  // already replaces what they did. Kept in source-files so authors can still
+  // run / test them locally if needed.
+  'scripts/export-archon-core.mjs',
+  'scripts/test-archon-export.mjs',
+  // KNOWN-001: skill exists to refactor framework docs (docs/archon/**) into
+  // comic-explainer pages. Adopters never have docs/archon/, so this skill
+  // is never relevant on the adopter side; it lives here only because the
+  // archon-protocol repository itself dogfoods it.
+  '.cursor/skills/archon-comic-doc-refactor/SKILL.md',
+])
+
 const MODULE_DEFS = [
   {
     id: 'core-soul',
@@ -203,6 +225,7 @@ async function main() {
   const entries = []
   for (const abs of absFiles) {
     const rel = path.relative(SOURCE_ROOT, abs).split(path.sep).join('/')
+    if (AUTHOR_ONLY_FILES.has(rel)) continue // KNOWN-001: keep in source-files, exclude from manifest
     const buf = await fs.readFile(abs)
     entries.push({
       rel,
@@ -358,6 +381,25 @@ async function main() {
   // rendering — we still need the raw bytes at /source-files/*.)
   await mirrorSourceFilesToPublic(entries)
   console.log(`Mirrored ${entries.length} source files → ${path.relative(REPO_ROOT, PUBLIC_SOURCE_ROOT)}/`)
+
+  // Distribution-boundary lint (KNOWN-010) — refuses to publish a manifest
+  // whose source-files tree contains repo-only paths or unconditional
+  // contract assertions that the manifest itself does not bundle.
+  runLintDistribution()
+}
+
+function runLintDistribution() {
+  const lintScript = path.join(REPO_ROOT, 'scripts', 'lint-distribution.mjs')
+  const result = spawnSync(process.execPath, [lintScript], {
+    cwd: REPO_ROOT,
+    stdio: 'inherit',
+  })
+  if (result.status !== 0) {
+    console.error(
+      '\n[build-manifest] lint-distribution failed — refusing to publish a manifest with distribution-boundary violations.',
+    )
+    process.exit(result.status ?? 1)
+  }
 }
 
 async function mirrorSourceFilesToPublic(entries) {

@@ -13,7 +13,7 @@ description: >-
 
 # Archon Framework — Agent Primer
 
-> Read this skill once per session when working on an Archon-governed project. Then consult `docs/archon/architecture.md` only if you need deeper detail.
+> Read this skill once per session when working on an Archon-governed project. Then consult `https://aaep.site/concepts/architecture` only if you need deeper detail.
 
 ## What Archon Is
 
@@ -129,12 +129,12 @@ Keep the hot path section-scoped. Commands should load the smallest sections tha
 | Full or emergency review | Full `soul/review.md` plus the specific docs/files implicated by findings |
 | Framework modification | Relevant `architecture.md` section and matching ADR(s), not the entire docs set by default |
 
-Cold references such as full `architecture.md`, full ADR ledgers (`.archon/decisions.md` for project decisions, `docs/archon/decisions.md` for framework decisions), setup guides, exported templates, and long historical drift entries are read on demand. If a section is missing, inconsistent, or directly edited, expand the read scope for that file.
+Cold references such as full architecture (`https://aaep.site/concepts/architecture`), full ADR ledgers (`.archon/decisions.md` for project decisions, `https://aaep.site/concepts/decisions` for framework decisions), setup guides, exported templates, and long historical drift entries are read on demand. If a section is missing, inconsistent, or directly edited, expand the read scope for that file.
 
 ## Before Modifying Archon Files
 
-1. Read the relevant `docs/archon/architecture.md` section for the mechanism you're touching
-2. Check only the ADR(s) in `docs/archon/decisions.md` that bind that mechanism
+1. Read the relevant section at `https://aaep.site/concepts/architecture` for the mechanism you're touching
+2. Check only the ADR(s) in `https://aaep.site/concepts/decisions` that bind that mechanism
 3. Verify the change does not leak project specifics into universal files (see §Decoupling Rule)
 4. Ensure cross-references still resolve (see §Cross-Reference Convention)
 5. Expect the validation command declared in `manifest.md` to enforce budgets, anchors, and export-manifest contract — not just type/lint
@@ -143,11 +143,11 @@ Cold references such as full `architecture.md`, full ADR ledgers (`.archon/decis
 
 | Need | Read |
 |------|------|
-| Full architecture | `docs/archon/architecture.md` |
-| How to install Archon into a new project | `docs/archon/setup.md` |
+| Full architecture | `https://aaep.site/concepts/architecture` |
+| How to install Archon into a new project | `https://aaep.site/setup/full-guide` |
 | Which domain lens/tool shape to use | `.archon/domain-lenses/README.md` |
-| Why each mechanism exists (narrative) | `docs/archon/user-journeys.md` (if present) |
-| Drift mechanism specifics | `docs/archon/mechanisms/drift-mechanism.md` (if present) |
-| Framework mechanism decisions | `docs/archon/decisions.md` |
+| Why each mechanism exists (narrative) | `https://aaep.site/concepts/user-journeys` |
+| Drift mechanism specifics | `https://aaep.site/concepts/drift-mechanism` |
+| Framework mechanism decisions | `https://aaep.site/concepts/decisions` |
 | Project/product decisions | `.archon/decisions.md` |
-| One-page navigation | `docs/archon/README.md` |
+| One-page navigation | `https://aaep.site/concepts/` |

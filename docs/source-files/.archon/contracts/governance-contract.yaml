@@ -33,10 +33,6 @@
     ".archon/decisions.md": {
       "limit": 120,
       "hint": "Keep project ADRs separate from portable Archon framework docs"
-    },
-    "docs/archon/decisions.md": {
-      "limit": 320,
-      "hint": "Keep this as portable Archon framework ADRs only; project ADRs belong in .archon/decisions.md. Cap raised 300→312 for ADR-29 §Source Modularity Probe; 312→320 for ADR-29 §重审条件 closure pass (mechanized (a)/(b) + explicit-rejection (c)/(e)/(f))."
     }
   },
   "forbidden_substrings": {
@@ -51,15 +47,15 @@
       ".cursor/commands/archon-review.md",
       ".cursor/rules/archon.mdc",
       ".cursor/rules/archon-wake.mdc",
-      ".cursor/skills/archon-framework/SKILL.md",
-      "docs/archon/README.md",
-      "docs/archon/architecture.md",
-      "docs/archon/setup.md"
+      ".cursor/skills/archon-framework/SKILL.md"
     ],
     "optional_files": [
       "README.md",
       "CLAUDE.md",
       ".archon/dashboard/public/js/workflow-data.js",
+      "docs/archon/README.md",
+      "docs/archon/architecture.md",
+      "docs/archon/setup.md",
       "docs/archon/templates/manifest.template.md",
       "docs/archon/templates/memos.template.md",
       "docs/archon/user-journeys.md"
@@ -99,10 +95,12 @@
       ".cursor/skills/archon-git-commit/SKILL.md",
       ".cursor/skills/blink-dispatch/SKILL.md",
       ".cursor/skills/external-agent-patterns/SKILL.md",
-      "docs/archon",
       "scripts/archon-check.py",
       "scripts/archon-check.sh",
       "scripts/archon-run-state.mjs"
+    ],
+    "optional_scan_paths": [
+      "docs/archon"
     ]
   },
   "memos_archive": {
@@ -347,11 +345,6 @@
       "rationale": "ADR-27 Claim Verifier mode registry — single line declares the 5 unified assertion-vs-reality modes (numeric / borrowed / self-cite / missed-trig / preservation). Removal silently disables all 5 DEBT family countermeasures (DEBT-058 numeric · DEBT-066 borrowed · DEBT-070 self-cite · DEBT-071 missed-trig · DEBT-074 preservation). Pinned at L1 because the script body itself is the enforcement and the mode list is the contract."
     },
     {
-      "file": ".husky/pre-commit",
-      "substring": "archon-claim-verifier.mjs verify",
-      "rationale": "ADR-27 Claim Verifier pre-commit invocation — hook MUST run claim-verifier before web validate so soul-citation / borrowed-substance / missed-trigger drift fail-closed at commit time, not just at full validate. Removal silently demotes the gate."
-    },
-    {
       "file": ".archon/soul/review.md",
       "substring": "Light cannot satisfy a Full-threshold crossing",
       "rationale": "DEBT-060 Full-tier enforcement clause — removing it decouples soul prose from drift-gates.test.ts §Full-review gate; the Cycle 11 saturation cascade (drift 11→13 light-issued-instead-of-full) is the failure mode this clause + gate pair prevents"
@@ -360,21 +353,6 @@
       "file": ".cursor/commands/archon-review.md",
       "substring": "Light cannot satisfy a Full-threshold crossing",
       "rationale": "DEBT-060 tier-crossing guard mirror — when archon-review runs, the Light-tier branch must self-check against Full threshold before proceeding; substring removed = guard silently absent"
-    },
-    {
-      "file": ".husky/pre-push",
-      "substring": "Archon B4 destructive push blocked",
-      "rationale": "B4 git-guardrails pre-push anchor — husky pre-push must retain the block message so CI/export smoke tests and the governance contract can mechanically verify destructive-push interception is in place"
-    },
-    {
-      "file": ".cursor/hooks.json",
-      "substring": "archon-destructive-guard.mjs",
-      "rationale": "B4 git-guardrails hook registration anchor — Cursor hooks.json must reference the guard script by path; removal silently disables beforeShellExecution interception for agent-issued destructive git commands"
-    },
-    {
-      "file": ".cursor/hooks/archon-destructive-guard.mjs",
-      "substring": "Archon B4 blocked a destructive git command",
-      "rationale": "B4 git-guardrails guard script user_message anchor — the deny payload must retain this user-facing string so auditors can distinguish intentional blocks from hook failures"
     },
     {
       "file": ".archon/domain-lenses/README.md",
@@ -542,36 +520,71 @@
       ".archon/domain-lenses/templates/tool.md",
       ".archon/contracts/governance-contract.yaml",
       ".archon/decisions.md",
-      "docs/archon/decisions.md",
       "scripts/archon-check.py",
       "scripts/archon-check.sh",
       "scripts/archon-run-state.mjs",
-      ".husky/pre-commit",
-      ".husky/pre-push",
-      ".cursor/hooks.json",
-      ".cursor/hooks/archon-destructive-guard.mjs",
-      ".gitattributes",
       "scripts/archon-records.mjs",
       "scripts/archon-records-fold.mjs",
       ".archon/templates/run.template.md",
       ".archon/templates/run-state.schema.json"
-    ],
-    "required_setup_mentions": [
-      "governance-contract.yaml",
-      "archon-check.py",
-      "archon-check.sh",
-      "archon-run-state.mjs",
-      "blink-dispatch/SKILL.md",
-      ".archon/domain-lenses/registry.yaml"
-    ],
-    "required_readme_mentions": [
-      "governance-contract.yaml",
-      "archon-check.py",
-      "archon-check.sh",
-      "archon-run-state.mjs",
-      "blink-dispatch/SKILL.md",
-      ".archon/domain-lenses/registry.yaml"
     ]
+  },
+  "repo_self_check": {
+    "description": "Repository self-check block. These rules apply ONLY when the relevant trigger file exists at the project root. They are skipped automatically in adopter projects that did not receive the corresponding asset via the manifest. Each conditional sub-block declares its own `trigger_path`; the checker activates that sub-block iff its trigger exists.",
+    "docs_self_check": {
+      "trigger_path": "docs/archon",
+      "rationale": "Activates inside the archon-protocol source repository, which dogfoods this checker on its own VitePress documentation site. Adopter projects never receive docs/archon/* via the manifest, so this sub-block is silently skipped there.",
+      "file_budgets": {
+        "docs/archon/decisions.md": {
+          "limit": 320,
+          "hint": "Keep this as portable Archon framework ADRs only; project ADRs belong in .archon/decisions.md. Cap raised 300→312 for ADR-29 §Source Modularity Probe; 312→320 for ADR-29 §重审条件 closure pass (mechanized (a)/(b) + explicit-rejection (c)/(e)/(f))."
+        }
+      },
+      "required_files": [
+        "docs/archon/decisions.md",
+        "docs/archon/README.md",
+        "docs/archon/setup.md"
+      ],
+      "required_setup_mentions": [
+        "governance-contract.yaml",
+        "archon-check.py",
+        "archon-check.sh",
+        "archon-run-state.mjs",
+        "blink-dispatch/SKILL.md",
+        ".archon/domain-lenses/registry.yaml"
+      ],
+      "required_readme_mentions": [
+        "governance-contract.yaml",
+        "archon-check.py",
+        "archon-check.sh",
+        "archon-run-state.mjs",
+        "blink-dispatch/SKILL.md",
+        ".archon/domain-lenses/registry.yaml"
+      ]
+    },
+    "husky_self_check": {
+      "trigger_path": ".husky/pre-commit",
+      "rationale": "Activates only on projects that wired the optional husky pre-commit hook (install.md §8 — project-language-aware). Non-husky adopter projects (Python, Go, Rust without husky, etc.) skip these rules silently. When husky IS configured, the hooks must invoke the canonical Archon gates listed below.",
+      "critical_substrings": [
+        {
+          "file": ".husky/pre-commit",
+          "substring": "archon-claim-verifier.mjs verify",
+          "rationale": "ADR-27 Claim Verifier pre-commit invocation — hook MUST run claim-verifier before web validate so soul-citation / borrowed-substance / missed-trigger drift fail-closed at commit time, not just at full validate. Removal silently demotes the gate."
+        },
+        {
+          "file": ".husky/pre-commit",
+          "substring": "archon-run-state.mjs resolve-for-commit",
+          "rationale": "Run-State v2 commit-gate — pre-commit must resolve the active run state before allowing the commit; removal lets stale or smart-skipped status rows reach the commit unchallenged."
+        }
+      ],
+      "optional_critical_substrings": [
+        {
+          "file": ".husky/pre-push",
+          "substring": "Archon B4 destructive push blocked",
+          "rationale": "B4 git-guardrails pre-push anchor — when pre-push exists, it must retain the block message so CI/export smoke tests and the governance contract can mechanically verify destructive-push interception is in place. Skipped when .husky/pre-push is absent."
+        }
+      ]
+    }
   },
   "domain_lenses": {
     "registry": ".archon/domain-lenses/registry.yaml",
@@ -664,20 +677,20 @@
         "substring": "Run-State v2"
       },
       {
-        "file": ".husky/pre-commit",
-        "substring": "archon-run-state.mjs resolve-for-commit"
-      },
-      {
         "file": ".cursor/commands/archon-demand.md",
         "substring": "Run-State Lazy Activation"
       },
       {
         "file": ".gitignore",
-        "substring": ".archon/runs/"
+        "substring": ".archon/runs/",
+        "optional": true,
+        "rationale": ".gitignore is adopter-managed; if present, it must already ignore the runtime ledger directory. Skipped silently when the project has no .gitignore yet."
       },
       {
         "file": ".gitignore",
-        "substring": ".archon/run.md"
+        "substring": ".archon/run.md",
+        "optional": true,
+        "rationale": ".gitignore is adopter-managed; if present, it must already ignore the runtime run.md ledger. Skipped silently when the project has no .gitignore yet."
       }
     ]
   },

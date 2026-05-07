@@ -196,6 +196,6 @@ the hook.
 - Run-State v2 schema — `.archon/templates/run-state.schema.json`
 - Legacy `.archon/run.md` schema — `.archon/templates/run.template.md`
 - Run-State v2 helper — `scripts/archon-run-state.mjs`
-- Archon commit hook contract — `docs/archon/setup.md §3c Pre-commit Hook`
+- Archon commit hook contract — `https://aaep.site/setup/full-guide` §3c Pre-commit Hook
 - Conventional Commits + project style — the project's `git-commit` skill (if
   present)

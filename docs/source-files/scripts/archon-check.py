@@ -442,14 +442,78 @@ def assert_export_manifest(root: Path, contract: dict[str, Any]) -> None:
         if not (root / rel_path).exists():
             raise AssertionError(f"missing export contract file: {rel_path}")
 
-    setup = read_text(root, "docs/archon/setup.md")
-    readme = read_text(root, "docs/archon/README.md")
-    for mention in export["required_setup_mentions"]:
-        if mention not in setup:
-            raise AssertionError(f"docs/archon/setup.md must mention {mention}")
-    for mention in export["required_readme_mentions"]:
-        if mention not in readme:
-            raise AssertionError(f"docs/archon/README.md must mention {mention}")
+
+def assert_repo_self_check(root: Path, contract: dict[str, Any]) -> None:
+    """Run conditional repository self-check rules.
+
+    These rules apply ONLY when the relevant trigger file exists at the
+    project root. Adopter projects that never received the corresponding
+    asset via the manifest skip the rules silently.
+
+    Sub-blocks are independent: the docs_self_check fires only inside the
+    archon-protocol source repository (which dogfoods this checker on its
+    own VitePress site); the husky_self_check fires only on adopter
+    projects that wired the optional husky pre-commit hook.
+    """
+    repo = contract.get("repo_self_check")
+    if not repo:
+        return
+
+    docs = repo.get("docs_self_check")
+    if docs:
+        trigger = docs.get("trigger_path", "docs/archon")
+        if (root / trigger).exists():
+            _run_docs_self_check(root, docs)
+
+    husky = repo.get("husky_self_check")
+    if husky:
+        trigger = husky.get("trigger_path", ".husky/pre-commit")
+        if (root / trigger).exists():
+            _run_husky_self_check(root, husky)
+
+
+def _run_docs_self_check(root: Path, docs: dict[str, Any]) -> None:
+    for rel_path, budget in docs.get("file_budgets", {}).items():
+        content = read_text(root, rel_path)
+        lines = line_count(content)
+        limit = int(budget["limit"])
+        if lines > limit:
+            raise AssertionError(f"{rel_path}: {lines} lines exceeds budget {limit}. {budget['hint']}")
+
+    for rel_path in docs.get("required_files", []):
+        if not (root / rel_path).exists():
+            raise AssertionError(f"missing repo self-check file: {rel_path}")
+
+    setup_mentions = docs.get("required_setup_mentions", [])
+    readme_mentions = docs.get("required_readme_mentions", [])
+    if setup_mentions:
+        setup = read_text(root, "docs/archon/setup.md")
+        for mention in setup_mentions:
+            if mention not in setup:
+                raise AssertionError(f"docs/archon/setup.md must mention {mention}")
+    if readme_mentions:
+        readme = read_text(root, "docs/archon/README.md")
+        for mention in readme_mentions:
+            if mention not in readme:
+                raise AssertionError(f"docs/archon/README.md must mention {mention}")
+
+
+def _run_husky_self_check(root: Path, husky: dict[str, Any]) -> None:
+    for rule in husky.get("critical_substrings", []):
+        content = read_text(root, rule["file"])
+        if rule["substring"] not in content:
+            raise AssertionError(
+                f"{rule['file']}: missing critical substring {rule['substring']!r}. {rule['rationale']}"
+            )
+    for rule in husky.get("optional_critical_substrings", []):
+        rel_path = rule["file"]
+        if not (root / rel_path).exists():
+            continue
+        content = read_text(root, rel_path)
+        if rule["substring"] not in content:
+            raise AssertionError(
+                f"{rel_path}: missing critical substring {rule['substring']!r}. {rule['rationale']}"
+            )
 
 
 def assert_universal_module_guard(root: Path, contract: dict[str, Any]) -> None:
@@ -463,6 +527,15 @@ def assert_universal_module_guard(root: Path, contract: dict[str, Any]) -> None:
     )
     patterns = [(term, literal_token_pattern(term)) for term in forbidden_terms]
     for rel_path in guard["scan_paths"]:
+        for path in files_for_guard_path(root, rel_path):
+            body = path.read_text(encoding="utf-8")
+            for term, pattern in patterns:
+                if pattern.search(body):
+                    rel = path.relative_to(root)
+                    raise AssertionError(f"{rel} must not mention project-specific or stack-specific term: {term}")
+    for rel_path in guard.get("optional_scan_paths", []):
+        if not (root / rel_path).exists():
+            continue
         for path in files_for_guard_path(root, rel_path):
             body = path.read_text(encoding="utf-8")
             for term, pattern in patterns:
@@ -677,6 +750,8 @@ def assert_domain_lenses(root: Path, contract: dict[str, Any]) -> None:
 def assert_run_state(root: Path, contract: dict[str, Any]) -> None:
     run_state = contract["run_state"]
     for item in run_state["required_static_checks"]:
+        if item.get("optional") and not (root / item["file"]).exists():
+            continue
         content = read_text(root, item["file"])
         if item["substring"] not in content:
             raise AssertionError(f"{item['file']} must contain {item['substring']!r}")
@@ -855,6 +930,7 @@ def run(root: Path) -> None:
     assert_domain_lenses(root, contract)
     assert_run_state(root, contract)
     assert_blink_dispatch(root, contract)
+    assert_repo_self_check(root, contract)
 
 
 def main() -> int:
