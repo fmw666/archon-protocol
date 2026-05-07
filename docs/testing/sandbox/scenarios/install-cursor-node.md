@@ -161,7 +161,8 @@ node scripts/sandbox-run.mjs --only=install-cursor-node
         "path": ".archon/VERSION",
         "substr": "0.1"
       }
-    }
+    },
+    { "cmd_zero": ["python3", "scripts/archon-check.py", "--root", "."] }
   ]
 }
 ```

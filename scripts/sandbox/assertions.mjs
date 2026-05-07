@@ -75,11 +75,21 @@ async function isDir(p) {
 
 async function runCmdAndCheckExit(cmdArr, { projectRoot, expect }) {
   if (!Array.isArray(cmdArr)) throw new Error('cmd_zero / cmd_nonzero expects an array')
-  const result = await captureCmd(cmdArr, { projectRoot })
+  const normalized = normalizeCmdForPlatform(cmdArr)
+  const result = await captureCmd(normalized, { projectRoot })
   if (expect === 0) {
-    return result.code === 0 || `cmd exited ${result.code}: ${cmdArr.join(' ')}\nstderr-tail: ${result.stderr.slice(-400)}`
+    return result.code === 0 || `cmd exited ${result.code}: ${normalized.join(' ')}\nstderr-tail: ${result.stderr.slice(-400)}`
   }
-  return result.code !== 0 || `cmd unexpectedly exited 0: ${cmdArr.join(' ')}`
+  return result.code !== 0 || `cmd unexpectedly exited 0: ${normalized.join(' ')}`
+}
+
+// Cross-platform shim for `python3`. On Windows the canonical entry-point is
+// the `py` launcher (`py -3 …`); some Windows boxes do ship a `python3.exe`
+// shim, but it's not guaranteed. Mirrors what install.md Step 8 documents.
+function normalizeCmdForPlatform(cmdArr) {
+  if (process.platform !== 'win32') return cmdArr
+  if (cmdArr[0] !== 'python3') return cmdArr
+  return ['py', '-3', ...cmdArr.slice(1)]
 }
 
 export function captureCmd(cmdArr, { projectRoot, env = {}, timeoutMs = 120_000 }) {

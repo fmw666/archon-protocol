@@ -141,6 +141,15 @@ node scripts/sandbox-run.mjs --only=uninstall-preserve
     },
     {
       "file_exists": ".archon/manifest.md"
+    },
+    {
+      "dir_absent": "tools/archon-cli/bin"
+    },
+    {
+      "dir_absent": "tools/archon-cli/lib"
+    },
+    {
+      "dir_absent": "tools/archon-cli"
     }
   ]
 }

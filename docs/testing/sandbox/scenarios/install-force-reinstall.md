@@ -122,7 +122,8 @@ node scripts/sandbox-run.mjs --only=install-force-reinstall
     { "file_exists": "src/todo.ts" },
     { "cmd_zero": ["node", "__sb-check.cjs", "has-backup-dir"] },
     { "cmd_zero": ["node", "__sb-check.cjs", "drift-install-count", "2"] },
-    { "cmd_zero": ["node", "__sb-check.cjs", "pkg-name-equals", "acme-todos"] }
+    { "cmd_zero": ["node", "__sb-check.cjs", "pkg-name-equals", "acme-todos"] },
+    { "cmd_zero": ["python3", "scripts/archon-check.py", "--root", "."] }
   ],
   "notes": "Positive test: --force overrides the guard, creates .archon-backup-*, appends a second install row, leaves host files alone."
 }

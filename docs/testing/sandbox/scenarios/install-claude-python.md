@@ -140,7 +140,8 @@ node scripts/sandbox-run.mjs --only=install-claude-python
     },
     {
       "dir_absent": ".cursor"
-    }
+    },
+    { "cmd_zero": ["python3", "scripts/archon-check.py", "--root", "."] }
   ],
   "notes": "CLI runner cannot exercise the .cursor/ → .claude/ rewrite. Recorded as result=manual until an agent SDK adapter ships (KNOWN-003)."
 }

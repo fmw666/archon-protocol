@@ -129,7 +129,8 @@ node scripts/sandbox-run.mjs --only=install-half-archon-dir
     { "file_exists": ".archon/sentinel.txt" },
     { "file_contains": { "path": ".archon/sentinel.txt", "substr": "half-archon sentinel" } },
     { "cmd_zero": ["node", "__sb-check.cjs", "drift-install-count", "1"] },
-    { "cmd_zero": ["node", "__sb-check.cjs", "no-backup-dir"] }
+    { "cmd_zero": ["node", "__sb-check.cjs", "no-backup-dir"] },
+    { "cmd_zero": ["python3", "scripts/archon-check.py", "--root", "."] }
   ],
   "notes": "Documents the install guard's narrow check (soul.md only). A bare .archon/ does not block install."
 }

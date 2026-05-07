@@ -161,12 +161,40 @@ function ask(rl, question) {
 
 async function seedRuntimeLedgers({ projectRoot, manifest }) {
   const headers = {
-    'manifest.md': '# Project Manifest\n\n_Identity, tech stack, decision index. Edit this as your project evolves._\n',
-    'drift.md': '# Drift Log\n\n_One entry per governance event. Append-only._\n',
-    'debt.md': '# Debt Log\n\n_Known technical debt. One line per item; details under debt/items/._\n',
-    'memos.md': '# Memos Index\n\n_Evaluations, decisions-in-flight, context captures. Details under memos/records/._\n',
-    'signs.md': '# Signs Table\n\n_Trigger-indexed reasoning capsules. One row per sign._\n',
-    'decisions.md': '# Decision Index\n\n_ADR-style headers. Details inline or linked._\n',
+    'manifest.md':
+      '# Project Manifest\n\n' +
+      '_Identity, tech stack, decision index. Edit this as your project evolves._\n\n' +
+      '<!-- archon-universal-forbidden-terms:start -->\n\n' +
+      '```json\n[]\n```\n\n' +
+      '<!-- archon-universal-forbidden-terms:end -->\n\n' +
+      '<!-- archon-blink-project-high-risk-paths:start -->\n\n' +
+      '```json\n[]\n```\n\n' +
+      '<!-- archon-blink-project-high-risk-paths:end -->\n',
+    'drift.md':
+      '# Drift Log\n\n' +
+      '_One entry per governance event. Append-only._\n\n' +
+      '**drift: 0**\n\n' +
+      '## Log\n\n' +
+      '## Archive Index\n',
+    'debt.md':
+      '# Debt Log\n\n' +
+      '_Known technical debt. One line per item; details under debt/items/._\n\n' +
+      '## Active Debt Index\n\n' +
+      '| ID | Source | Severity | Compact Description | Deadline | Status | Details |\n' +
+      '|----|--------|----------|---------------------|----------|--------|---------|\n\n' +
+      '<!-- no-active-debt -->\n\n' +
+      '## Archive Index\n',
+    'memos.md':
+      '# Memos Index\n\n' +
+      '_Evaluations, decisions-in-flight, context captures. Details under memos/records/._\n\n' +
+      '## Hot Memos\n\n' +
+      '## Archive Index\n',
+    'signs.md':
+      '# Signs Table\n\n' +
+      '_Trigger-indexed reasoning capsules. One row per sign._\n',
+    'decisions.md':
+      '# Decision Index\n\n' +
+      '_ADR-style headers. Details inline or linked._\n',
   }
   for (const [name, body] of Object.entries(headers)) {
     const abs = path.join(projectRoot, '.archon', name)

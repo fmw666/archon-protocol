@@ -150,15 +150,43 @@ export async function runUninstall({ args }) {
   console.log(`[archon uninstall] Done. Removed ${removed} files. Log: ${path.relative(projectRoot, logPath)}`)
 }
 
+// Recursively remove a directory if (and only if) every entry inside it is
+// itself an empty directory. Best-effort: a non-empty leaf simply stops the
+// upward sweep at that branch. KNOWN-005: previous version did not recurse,
+// so `tools/archon-cli/bin/` and `tools/archon-cli/lib/` survived uninstall.
 async function pruneEmptyDirs(projectRoot, dirs) {
   for (const d of dirs) {
     const abs = path.join(projectRoot, d)
-    if (!(await pathExists(abs))) continue
-    try {
-      const entries = await fs.readdir(abs)
-      if (entries.length === 0) await fs.rmdir(abs)
-    } catch {
-      // best-effort
-    }
+    await pruneIfEmptyRec(abs)
   }
+}
+
+async function pruneIfEmptyRec(abs) {
+  let stat
+  try {
+    stat = await fs.stat(abs)
+  } catch {
+    return false
+  }
+  if (!stat.isDirectory()) return false
+  let entries
+  try {
+    entries = await fs.readdir(abs)
+  } catch {
+    return false
+  }
+  for (const name of entries) {
+    await pruneIfEmptyRec(path.join(abs, name))
+  }
+  // Re-check after recursion — children may have just emptied this dir.
+  try {
+    const remaining = await fs.readdir(abs)
+    if (remaining.length === 0) {
+      await fs.rmdir(abs)
+      return true
+    }
+  } catch {
+    // best-effort
+  }
+  return false
 }

@@ -134,7 +134,8 @@ node scripts/sandbox-run.mjs --only=install-codex-go
     },
     {
       "dir_absent": ".cursor"
-    }
+    },
+    { "cmd_zero": ["python3", "scripts/archon-check.py", "--root", "."] }
   ],
   "notes": "CLI runner cannot exercise the .cursor/ → .codex/ rewrite. Recorded as result=manual until an agent SDK adapter ships (KNOWN-003)."
 }

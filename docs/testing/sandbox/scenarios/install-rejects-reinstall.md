@@ -134,7 +134,8 @@ node scripts/sandbox-run.mjs --only=install-rejects-reinstall
     { "file_exists": ".archon/soul.md" },
     { "file_exists": ".archon/drift.md" },
     { "cmd_zero": ["node", "__sb-check.cjs", "drift-install-count", "1"] },
-    { "cmd_zero": ["node", "__sb-check.cjs", "no-backup-dir"] }
+    { "cmd_zero": ["node", "__sb-check.cjs", "no-backup-dir"] },
+    { "cmd_zero": ["python3", "scripts/archon-check.py", "--root", "."] }
   ],
   "notes": "Negative test: the second install must be rejected with non-zero exit, no backup, no drift mutation."
 }

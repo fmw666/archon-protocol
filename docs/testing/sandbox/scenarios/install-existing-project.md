@@ -137,7 +137,8 @@ node scripts/sandbox-run.mjs --only=install-existing-project
     { "file_exists": "src/todo.test.ts" },
     { "cmd_zero": ["node", "__sb-check.cjs", "pkg-name-equals", "acme-todos"] },
     { "cmd_zero": ["node", "__sb-check.cjs", "file-includes", "src/todo.ts", "Todo"] },
-    { "cmd_zero": ["node", "__sb-check.cjs", "drift-install-count", "1"] }
+    { "cmd_zero": ["node", "__sb-check.cjs", "drift-install-count", "1"] },
+    { "cmd_zero": ["python3", "scripts/archon-check.py", "--root", "."] }
   ],
   "notes": "Asserts install is non-invasive on a real Node+TS project: package.json identity field unchanged, source file content preserved, exactly one install row in drift."
 }

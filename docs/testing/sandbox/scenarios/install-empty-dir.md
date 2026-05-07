@@ -140,7 +140,8 @@ node scripts/sandbox-run.mjs --only=install-empty-dir
     { "dir_exists": "tools/archon-cli" },
     { "file_exists": "scripts/archon-check.py" },
     { "cmd_zero": ["node", "__sb-check.cjs", "drift-install-count", "1"] },
-    { "cmd_zero": ["node", "__sb-check.cjs", "no-backup-dir"] }
+    { "cmd_zero": ["node", "__sb-check.cjs", "no-backup-dir"] },
+    { "cmd_zero": ["python3", "scripts/archon-check.py", "--root", "."] }
   ],
   "notes": "Null reference point for the install matrix: empty dir + minimal flags. The __sb-check.cjs helper is written by a prerequisite step and provides cross-platform-safe assertions (Windows shell-quoting strips embedded quotes from `node -e ...`)."
 }

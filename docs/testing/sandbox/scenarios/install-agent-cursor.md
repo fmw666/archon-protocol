@@ -251,7 +251,8 @@ node scripts/sandbox-run.mjs --only=install-agent-cursor --runnable=agent
     { "file_exists": ".cursor/commands/archon.md" },
     { "dir_exists": ".cursor/rules" },
     { "file_exists": "package.json" },
-    { "cmd_zero": ["node", "__sb-check.cjs", "pkg-name-equals", "acme-todos"] }
+    { "cmd_zero": ["node", "__sb-check.cjs", "pkg-name-equals", "acme-todos"] },
+    { "cmd_zero": ["python3", "scripts/archon-check.py", "--root", "."] }
   ],
   "notes": "Headless Cursor agent path. Without CURSOR_API_KEY the runner records result=manual via the cursor.mjs provider's isAvailable() guard. Assertions cover only landmark files because LLM runs are non-deterministic in path-not-outcome."
 }

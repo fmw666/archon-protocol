@@ -115,7 +115,8 @@ node scripts/sandbox-run.mjs --only=install-without-cli
     { "file_exists": ".cursor/commands/archon.md" },
     { "dir_absent": "tools/archon-cli" },
     { "file_absent": "tools/archon-cli/bin/archon.mjs" },
-    { "cmd_zero": ["node", "__sb-check.cjs", "drift-modules-excludes", "cli"] }
+    { "cmd_zero": ["node", "__sb-check.cjs", "drift-modules-excludes", "cli"] },
+    { "cmd_zero": ["python3", "scripts/archon-check.py", "--root", "."] }
   ],
   "notes": "Asserts module exclusion at install time. Sister-test of 08 (which exposes a known update bug)."
 }

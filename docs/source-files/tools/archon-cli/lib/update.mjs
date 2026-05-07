@@ -39,10 +39,7 @@ export async function runUpdate({ args }) {
   const manifest = await fetchManifest({ baseUrl })
   console.log(`[archon update] canonical: v${manifest.version}`)
 
-  if (installedVersion === manifest.version && !force) {
-    console.log('[archon update] already on canonical version. Use --force to re-verify and rewrite any drifted files.')
-    return
-  }
+  const versionMatches = installedVersion === manifest.version
 
   const detectedMods = await detectInstalledModules({ projectRoot, manifest })
   const installedMods = applyModuleOverrides({
@@ -51,7 +48,23 @@ export async function runUpdate({ args }) {
     withFlag: flags['with'],
     withoutFlag: flags['without'],
   })
-  if (!setsEqual(detectedMods, installedMods)) {
+  const moduleSetChanged = !setsEqual(detectedMods, installedMods)
+
+  // Early-exit shape: same version AND same module set AND not --force.
+  // KNOWN-004: previously the early exit only checked version, so
+  // `--with=<mod>` was a silent no-op when the project was already on the
+  // canonical version. Now `--with` / `--without` always reach the planner,
+  // so adding or removing an optional module after install works without
+  // requiring `--force`.
+  if (versionMatches && !moduleSetChanged && !force) {
+    console.log('[archon update] already on canonical version. Use --force to re-verify and rewrite any drifted files.')
+    return
+  }
+  if (versionMatches && moduleSetChanged) {
+    console.log('[archon update] version unchanged; reconciling module set.')
+  }
+
+  if (moduleSetChanged) {
     const added = [...installedMods].filter((m) => !detectedMods.has(m))
     const removed = [...detectedMods].filter((m) => !installedMods.has(m))
     if (added.length) console.log(`[archon update] --with adds:     ${added.join(', ')}`)
