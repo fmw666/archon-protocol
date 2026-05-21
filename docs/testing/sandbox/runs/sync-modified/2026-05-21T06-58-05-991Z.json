@@ -1,0 +1,65 @@
+{
+  "schema": "archon.sandbox-run/v1",
+  "test_id": "sync-modified",
+  "started_at": "2026-05-21T06:58:05.991Z",
+  "finished_at": "2026-05-21T06:58:06.346Z",
+  "duration_ms": 355,
+  "manifest_version": "v0.1.0",
+  "runner": {
+    "kind": "cli",
+    "version": "sandbox-runner/0.1.0",
+    "host": "linux x64 node v20.20.2",
+    "provider": null
+  },
+  "fixture": "fixtures/sandbox-node-ts",
+  "ide_platform": "cursor",
+  "result": "passing",
+  "steps": [
+    {
+      "name": "copy fixture",
+      "exit_code": 0,
+      "duration_ms": 2
+    },
+    {
+      "name": "prereq: archon install",
+      "exit_code": 0,
+      "duration_ms": 195,
+      "stdout_tail": "[archon install] target: /tmp/archon-sandbox-sync-modified-2026-05-21T06-58-05-991Z\n[archon install] fetching manifest from http://127.0.0.1:39111/manifest.json …\n[archon install] manifest v0.1.0 — 84 files across 14 modules\n[archon install] plan: 69 files (457.7 KB) from 12 modules\n[archon install] downloading and verifying …\n\r[archon install] verified 10/69\r[archon install] verified 20/69\r[archon install] verified 30/69\r[archon install] verified 40/69\r[archon install] verified 50/69\r[archon install] verified 60/69\r[archon install] verified 69/69\n[archon install] writing files …\n\n[archon install] Done. Archon v0.1.0 installed into /tmp/archon-sandbox-sync-modified-2026-05-21T06-58-05-991Z\n[archon install] Next steps: open the project, say \"hi archon\" to your agent, or see https://aaep.site/setup/quickstart\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "prereq: tamper soul.md",
+      "exit_code": 0,
+      "duration_ms": 0,
+      "stdout_tail": "appended to .archon/soul.md",
+      "stderr_tail": ""
+    },
+    {
+      "name": "archon sync (expected to flag drift)",
+      "exit_code": 0,
+      "duration_ms": 153,
+      "stdout_tail": "      \"required\": false,\n      \"installed\": true\n    },\n    \"dashboard\": {\n      \"total\": 13,\n      \"ok\": 0,\n      \"modified\": 0,\n      \"missing\": 0,\n      \"required\": false,\n      \"installed\": false\n    },\n    \"extensions-demand-pool\": {\n      \"total\": 2,\n      \"ok\": 0,\n      \"modified\": 0,\n      \"missing\": 0,\n      \"required\": false,\n      \"installed\": false\n    },\n    \"legal\": {\n      \"total\": 2,\n      \"ok\": 2,\n      \"modified\": 0,\n      \"missing\": 0,\n      \"required\": true,\n      \"installed\": true\n    }\n  }\n}\n",
+      "stderr_tail": "",
+      "manual": false,
+      "provider": null,
+      "tool_edits": null
+    }
+  ],
+  "assertions": [
+    {
+      "name": "file_exists: .archon/soul.md",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "file_contains: {\"path\":\".archon/soul.md\",\"substr\":\"tampered by sandbox runner\"}",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "notes": null,
+  "ci_run": {
+    "platform": "github-actions",
+    "url": "https://github.com/fmw666/archon-protocol/actions/runs/26210627964"
+  }
+}
