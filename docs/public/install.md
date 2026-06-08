@@ -118,13 +118,12 @@ Typical set:
 
 Store the resolved map as `$PLACEHOLDERS`.
 
-> Note: in the current Archon release (v0.1.0) most source files are not yet
+> Note: in the current Archon release (v0.2.0) most source files are not yet
 > parametrised — the manifest reports **0 placeholders in use**. Still ask
-> `PROJECT_NAME` and `TECH_STACK` anyway, because once you reach Step 7
-> (identity seeding) you will edit `.archon/soul.md` and
-> `.archon/manifest.md` by hand to reflect the user's project. Future
-> releases will parametrise more files; this step will then become
-> mechanical.
+> `PROJECT_NAME` and `TECH_STACK` anyway, because in Step 7 (identity seeding)
+> and Step 7b (codebase self-scan) you will fill `.archon/manifest.md` and
+> personalise `.archon/soul.md` to reflect the user's project. Future releases
+> will parametrise more files; this step will then become mechanical.
 
 ---
 
@@ -176,17 +175,33 @@ Handle collisions:
 ## Step 7. Seed the runtime ledgers & identity
 
 After all canonical files are written, create these **empty but valid**
-runtime ledgers — the adopter now owns them:
+runtime ledgers — the adopter now owns them. The five that ship a
+`.archon/templates/*.template.md` (manifest, debt, drift, memos, decisions)
+MUST be seeded by copying that template verbatim — never hand-constructed from
+prose — so the result passes `archon-check` deterministically:
 
 - `.archon/manifest.md` — project identity, tech stack, decision log index.
-  Use the canonical `.archon/templates/` if present; otherwise produce a
-  short header from `$PLACEHOLDERS`.
-- `.archon/debt.md` — empty debt log with one header row.
-- `.archon/drift.md` — empty drift log; immediately append the install
+  **Seed it from the shipped template** `.archon/templates/manifest.template.md`
+  (copy its content, then fill it in Step 7b). This guarantees every adopter
+  starts from the canonical section set instead of an ad-hoc stub.
+- `.archon/debt.md` — empty debt log. **Seed it from the shipped template**
+  `.archon/templates/debt.template.md`. The template already satisfies the
+  portable checker: a `## Archive Index` section, a `## Active Debt Index`
+  section (with the columns `ID · Source · Severity · Compact Description ·
+  Deadline · Status · Details`), and — since there is no debt yet — a literal
+  `<!-- no-active-debt -->` marker line. Do **not** hand-construct it; an
+  under-seeded debt.md fails `archon-check`.
+- `.archon/drift.md` — drift log. **Seed it from the shipped template**
+  `.archon/templates/drift.template.md`. The template carries the current-value
+  sentinel `**drift: 0**`, a `## Archive Index` section, and a `## Log` section
+  (these are what `archon-check` / `drift_gate` assert). Then append the install
   record from Step 9.
-- `.archon/memos.md` — empty memos index.
+- `.archon/memos.md` — empty memos index. **Seed it from the shipped template**
+  `.archon/templates/memos.template.md` — it carries the `## Archive Index` and
+  `## Hot Memos` sections the checker requires.
 - `.archon/signs.md` — empty signs table.
-- `.archon/decisions.md` — empty decision index.
+- `.archon/decisions.md` — empty project decision log. **Seed it from the
+  shipped template** `.archon/templates/decisions.template.md`.
 - `.archon/VERSION` — write the manifest's `version` string.
 
 Also create empty directories so future records have a home:
@@ -194,6 +209,8 @@ Also create empty directories so future records have a home:
 - `.archon/drift/records/`
 - `.archon/debt/items/`
 - `.archon/memos/records/`
+- `.archon/manifest/slices/` — only if Step 7b proposes path-scoped slices
+  (large / monorepo projects); otherwise omit it (single-scope is the default).
 
 You can leave a `.gitkeep` placeholder inside each empty directory.
 
@@ -201,6 +218,44 @@ Personalise `soul.md` and `manifest.md` by editing identity headers to
 reflect `$PLACEHOLDERS.PROJECT_NAME`, `$PLACEHOLDERS.TECH_STACK`, etc. Do
 this after the canonical content is written, not before — the canonical
 content is what you verified against the checksum.
+
+---
+
+## Step 7b. Bootstrap the manifest from a codebase self-scan
+
+A fresh manifest full of `<!-- hint -->` placeholders is dead weight. As the
+engineering owner (soul §Ownership), you build the project's initial mental
+model yourself instead of interrogating the user. Before reporting success,
+**scan the existing codebase** and pre-fill the manifest template you just
+seeded. This is read-only inspection — derive, don't ask:
+
+1. **Tech Stack** — read the package manifests you already detected for
+   `$LANGUAGE` (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`,
+   `pom.xml`, etc.) and fill the Tech Stack table (layer · choice · version).
+2. **Directory Structure** — `ls` / glob the top two levels of source and fill
+   the Directory Structure table with one responsibility line per top-level
+   dir. Do not enumerate files.
+3. **Concept Glossary candidates** — skim README / top-level docs and the most
+   central module names for product-specific terms whose common meaning would
+   mislead. Add them as glossary rows (mark uncertain ones with a trailing
+   `<!-- confirm -->`). Capture only product-domain terms, not framework or
+   generic tech words (soul §Glossary scope).
+4. **Source Modularity Map seeds** — for the one or two directories with the
+   clearest file-naming convention, add a starter row (path glob · split axes ·
+   fan-out trigger). Pick the smallest axis vocabulary that already explains how
+   files differ today; leave the rest empty (an empty map is advisory, never
+   blocking — ADR-29).
+5. **Manifest slices (large / monorepo only)** — if the scan shows a
+   multi-package layout (`packages/*`, `apps/*`, `services/*`, a workspaces /
+   multi-module build), propose one slice per major subtree: create
+   `.archon/manifest/slices/<slug>.md` with a `scope: <glob>` line plus the
+   subtree-local glossary / modularity rows, and index each under the manifest
+   `## Manifest Slices` section. For a single-package project, **skip this** —
+   do not create the `slices/` directory (ADR-32; soul §Path-scoped slices).
+
+Keep every inference lean and clearly provisional — the manifest is a living
+file the owner refines each delivery, not a one-shot survey. Anything you are
+unsure of stays a `<!-- hint -->` rather than a confident wrong value.
 
 ---
 

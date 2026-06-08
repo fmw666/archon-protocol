@@ -3,8 +3,8 @@
   "description": "Portable Archon governance contract. JSON-compatible YAML so reference checkers need no external parser.",
   "file_budgets": {
     ".archon/soul.md": {
-      "limit": 310,
-      "hint": "Core soul — move mode-specific material to .archon/soul/<mode>.md. Cap raised 300→310 for ADR-28 §Preservation Axis (evolution dual-motion)."
+      "limit": 315,
+      "hint": "Core soul — move mode-specific material to .archon/soul/<mode>.md. Cap raised 300→310 for ADR-28 §Preservation Axis (evolution dual-motion); 310→315 for ADR-32 §Manifest Slices pointer (path-scoped project-specifics)."
     },
     ".archon/soul/delivery.md": {
       "limit": 150,
@@ -147,6 +147,15 @@
       "## Archived Latest Reviews",
       "Archived On"
     ]
+  },
+  "manifest_slices": {
+    "description": "ADR-32 path-scoped manifest slices. OPTIONAL and conditional: checks run only when .archon/manifest/slices/ exists. Each <slug>.md slice is a path-scoped manifest fragment that MUST declare a `scope:` path glob in its body, MUST stay within line_budget, and MUST be indexed (its slug must appear) under the root manifest's `## Manifest Slices` section. Absence of the directory = single-scope behaviour and every check below is skipped. Slices live under .archon/manifest/ (already a runtime_ledger_path), are adopter project state, may contain project-specific terms, and are NOT scanned by universal_module_guard.",
+    "slices_dir": ".archon/manifest/slices",
+    "manifest_file": ".archon/manifest.md",
+    "required_manifest_section": "## Manifest Slices",
+    "scope_marker": "scope:",
+    "line_budget": 120,
+    "index_requires_each_slice": true
   },
   "critical_rule_substrings": [
     {
@@ -527,7 +536,12 @@
       "scripts/archon-records.mjs",
       "scripts/archon-records-fold.mjs",
       ".archon/templates/run.template.md",
-      ".archon/templates/run-state.schema.json"
+      ".archon/templates/run-state.schema.json",
+      ".archon/templates/manifest.template.md",
+      ".archon/templates/decisions.template.md",
+      ".archon/templates/drift.template.md",
+      ".archon/templates/debt.template.md",
+      ".archon/templates/memos.template.md"
     ]
   },
   "repo_self_check": {

@@ -202,6 +202,12 @@ executing blindly. Example recommendations:
 > Fetch-and-write plan: ~60 files totalling ~X KB. I'll verify every file
 > against the manifest's sha256 before writing.
 
+> **After writing**, I won't hand you an empty manifest: I'll run a read-only
+> codebase self-scan and pre-fill `.archon/manifest.md` (tech stack, directory
+> map, product-term glossary candidates, source-modularity seeds) from the
+> shipped templates — and, if this is a monorepo, propose path-scoped manifest
+> slices. See `install.md` §7b.
+
 ### For an update
 
 > You're on Archon v{INSTALLED}, canonical is v{CANONICAL}. I'll:

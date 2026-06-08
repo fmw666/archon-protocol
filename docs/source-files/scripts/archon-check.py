@@ -443,6 +443,70 @@ def assert_export_manifest(root: Path, contract: dict[str, Any]) -> None:
             raise AssertionError(f"missing export contract file: {rel_path}")
 
 
+def assert_manifest_slices(root: Path, contract: dict[str, Any]) -> None:
+    """Validate ADR-32 path-scoped manifest slices.
+
+    Conditional: runs only when the slices directory exists. Absence = the
+    project uses single-scope manifest behaviour and every check is skipped,
+    so fresh installs (no slices) stay green. Each slice must declare a
+    `scope:` glob, stay within the line budget, and be indexed in the root
+    manifest's `## Manifest Slices` section.
+    """
+    cfg = contract.get("manifest_slices")
+    if not cfg:
+        return
+
+    slices_dir = root / cfg["slices_dir"]
+    if not slices_dir.is_dir():
+        return
+
+    slice_files = sorted(
+        p for p in slices_dir.glob("*.md") if not p.name.startswith(".")
+    )
+    if not slice_files:
+        return
+
+    section_header = cfg["required_manifest_section"]
+    manifest = read_text(root, cfg["manifest_file"])
+    if section_header not in manifest:
+        raise AssertionError(
+            f"{cfg['manifest_file']} must contain a `{section_header}` section indexing "
+            f"the {len(slice_files)} slice(s) under {cfg['slices_dir']}/"
+        )
+
+    index_text = _section_body(manifest, section_header)
+    scope_marker = cfg["scope_marker"]
+    line_budget = int(cfg["line_budget"])
+    for path in slice_files:
+        rel = path.relative_to(root).as_posix()
+        body = path.read_text(encoding="utf-8-sig")
+        lines = line_count(body)
+        if lines > line_budget:
+            raise AssertionError(f"{rel}: {lines} lines exceeds manifest-slice budget {line_budget}")
+        if scope_marker not in body:
+            raise AssertionError(f"{rel}: manifest slice must declare a `{scope_marker} <path-glob>` line")
+        if cfg.get("index_requires_each_slice") and path.stem not in index_text:
+            raise AssertionError(
+                f"{rel}: slice slug {path.stem!r} is not indexed under `{section_header}` "
+                f"in {cfg['manifest_file']}"
+            )
+
+
+def _section_body(markdown: str, header: str) -> str:
+    lines = markdown.splitlines()
+    out: list[str] = []
+    collecting = False
+    for line in lines:
+        if line.strip() == header.strip():
+            collecting = True
+            continue
+        if collecting and re.match(r"^#{1,6}\s", line):
+            break
+        if collecting:
+            out.append(line)
+    return "\n".join(out)
+
+
 def assert_repo_self_check(root: Path, contract: dict[str, Any]) -> None:
     """Run conditional repository self-check rules.
 
@@ -930,6 +994,7 @@ def run(root: Path) -> None:
     assert_domain_lenses(root, contract)
     assert_run_state(root, contract)
     assert_blink_dispatch(root, contract)
+    assert_manifest_slices(root, contract)
     assert_repo_self_check(root, contract)
 
 
