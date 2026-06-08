@@ -37,6 +37,36 @@ Archon 使用单一的 `MAJOR.MINOR.PATCH` 版本号，记录在 `.archon/VERSIO
 
 ### Fixed
 
+## [0.2.0] — 2026-06-08
+
+记忆层升级，来自对 Claude Code 项目级 memory + ADR 实践的对照研究
+（见 ADR-31 / ADR-32 与 Negative ADR-N6 / ADR-N7）。
+
+### Added
+- **随包发行状态模板**（ADR-31）：五个可播种 ledger 现均有真实、经 sha256 校验的
+  模板，归入 `core-templates` 模块并登记进 `export_manifest.required_files`——
+  `manifest.template.md`、`decisions.template.md`，以及（在 `install-agent-cursor`
+  沙箱跑暴露 LLM agent 会 under-seed 手工构造的 ledger 后补全本论点的）
+  `drift.template.md`、`debt.template.md`、`memos.template.md`。`install.md` Step 7
+  改为逐字复制 canonical 模板播种 `manifest / debt / drift / memos / decisions`，
+  不再从散文构造，使新装确定性通过 `archon-check.py`——drift 的 `**drift: 0**` 哨兵、
+  memos 的 `## Archive Index` 段、debt 的 `<!-- no-active-debt -->` 标记不再依赖
+  散文遵从度。
+- **接管期码库自扫描**（ADR-31）：`install.md` Step 7b——接管期 agent 只读扫描
+  （package 清单、目录布局、README 术语）并预填 manifest 的 Tech Stack、目录结构、
+  Concept Glossary 候选与 Source Modularity Map 种子。
+- **路径作用域 manifest 切片**（ADR-32）：可选的 `.archon/manifest/slices/<slug>.md`
+  片段，通过 `scope:` glob 限定子树，索引于根 manifest `## Manifest Slices` 段，
+  pre-scan 按需加载。新增条件契约块 `manifest_slices` + `archon-check.py` 的
+  `assert_manifest_slices`（缺目录即跳过，单作用域项目不受影响）。
+
+### Changed
+- `soul.md` §Knowledge Hygiene 新增 **Path-scoped slices** 预防性规则；核心 soul
+  cap 310→315（ADR-32 理由记于 `file_budgets`）。
+- `archon-demand.md` pre-scan 新增 **Manifest slice scan** 步骤，`modularity_probe`
+  变为 slice-aware（不触动任何 pinned substring）。
+- `.archon/VERSION` 0.1.0 → 0.2.0。
+
 ## [0.1.0] — 2026-05-04
 
 Archon framework 的首个打标发布版本。机制集合体现了大约三个月在宿主项目中

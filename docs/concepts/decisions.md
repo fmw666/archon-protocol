@@ -4,7 +4,7 @@
 
 ![Comic explainer: the ADR log as four reasoning lanes — identity & ownership · delivery lifecycle · knowledge evolution · preservation](/images/decisions/01-four-lanes.png)
 
-Read this log as **four reasoning lanes**, not a flat list: identity & ownership (ADR-7/13/17), delivery lifecycle (ADR-11/12/14/15), knowledge evolution (ADR-22/27), preservation (ADR-28/29). The first ADR of each lane carries a lane-level illustration.
+Read this log as **four reasoning lanes**, not a flat list: identity & ownership (ADR-7/13/17), delivery lifecycle (ADR-11/12/14/15), knowledge evolution (ADR-22/27/31/32), preservation (ADR-28/29). The first ADR of each lane carries a lane-level illustration.
 
 ---
 
@@ -287,6 +287,25 @@ Read this log as **four reasoning lanes**, not a flat list: identity & ownership
 - **不立即升级 Active 的理由**：等 ADR-23 在真实 demand 中跑过 ≥3 次后，看 probe 是否真的需要 `public surface` 字段；如果三列已够用，不要为不必要的精细度付维护成本（违反 soul §Knowledge Hygiene）。
 - **重审条件**：(a) ADR-23 落地后 3 个 demand 内出现 ≥1 次"probe 仅靠 path 数文件无法识别 module 跨边界" → 升级 ADR-26 为 Active；(b) 否则保留 Draft 并在下次 cycle review 重评；(c) 6 个月内未升级 → 转 Negative ADR 关闭。
 
+## ADR-31 · 落地接管期码库自扫描 + 随包发行状态模板
+
+- **日期**：2026-06-08 · **状态**：生效
+- **触发**：本周期对 Claude Code 项目级 memory（CLAUDE.md 层级 · auto-memory `MEMORY.md` 200 行/25KB 热索引 + 按需 topic · `/init` 扫码库自举）与 ADR 实践做了对照研究（与 ADR-32 同源）。对照发现 Archon 安装仅靠向用户问 3-4 个问题播种 manifest，新装项目得到一个全是 `<!-- hint -->` 占位的空壳——与 soul §Ownership「owner 主动建立项目认知、不询问用户」存在落差；而 Claude `/init` 通过扫码库自动生成初版。
+- **决策**：(1) 把 `manifest.template.md` 与 `decisions.template.md` 提升为**随包发行的真实文件**（`.archon/templates/`，core-templates 模块，`export_manifest.required_files` 登记），install Step 7 从模板而非临时 stub 播种；(2) install 新增 **Step 7b 码库自扫描**——接管期 agent 只读扫描 package 清单 / 目录布局 / README 术语，预填 manifest 的 Tech Stack · Directory Structure · Concept Glossary 候选 · Source Modularity Map 种子，monorepo 则提议初始 manifest 切片（见 ADR-32）。
+- **理由**：(1) 与 Claude `/init` 同形——所有权要求 agent 自己建立项目模型而非问用户；(2) 纯只读推断、provisional 标注，不确定项保留 `<!-- hint -->`，不制造自信的错值；(3) 模板随包发行让每个 adopter 从 canonical 段落集起步，消除 ad-hoc stub 漂移。
+- **影响**：新增 `.archon/templates/{manifest,decisions}.template.md`（manifest 模板含 `## Manifest Slices` 段）；`governance-contract.yaml export_manifest.required_files` +2；`install.md` 重写 Step 7 + 新增 Step 7b + 版本注记 0.1.0→0.2.0；`skill.md` 加自扫描说明；VERSION 0.1.0→0.2.0。**不影响**：sha256 校验流程（模板照常校验）· 占位符目录（仍 0 占位）· runtime ledger 播种顺序。
+- **重审条件**：(a) 自扫描预填在 adopter 反馈中频繁产生错值需用户大改 → 收紧为"仅填高置信字段（tech stack / 目录），术语/模块图留空"；(b) 模板随框架演化与 install Step 7b 指令漂移 → 把模板段落集与 self-scan 步骤用 critical_rule_substrings 互锚。
+- **扩展（2026-06-09）**：v0.2.0 只把 `manifest` / `decisions` 两个模板随包发行，`drift` / `debt` / `memos` 三个 ledger 仍由 install Step 7 散文手工播种。真实 agent 沙箱跑（`install-agent-cursor`）显示 LLM 会 under-seed 这三者——drift 漏 `**drift: 0**` 哨兵、memos 漏 `## Archive Index`、debt 漏 `<!-- no-active-debt -->` 标记——导致 fresh install FAIL `archon-check.py`。补全本 ADR「从 canonical 模板播种」论点：把 `drift.template.md` / `debt.template.md` / `memos.template.md` 也提升为 `.archon/templates/` 真实文件（core-templates 模块自动归桶 + `export_manifest.required_files` +3；内容源自 `docs/setup/templates/`，并把 `&lt;…&gt;` 转为 run.template.md 式裸 `<…>`），install Step 7 改为五个状态 ledger（manifest · debt · drift · memos · decisions）全部从 `.archon/templates/*.template.md` 逐字播种。散文弱于确定性模板——此扩展把 under-seed 失败面彻底消除（signs.md 无 schema 约束，仍散文播种）。
+
+## ADR-32 · 路径作用域 manifest 切片（大型 / monorepo 项目状态分域）
+
+- **日期**：2026-06-08 · **状态**：生效
+- **触发**：对照 Claude Code 项目级 memory 发现：其按子树懒加载的嵌套 CLAUDE.md 是 Archon 唯一缺失的真实记忆维度——Archon 的 manifest 是单一项目作用域，monorepo 里一个 manifest 被跨包术语撑爆热路径。（同批对照的其余借鉴项：org 托管层、`@import` transclusion 经 5 公理评估记为 Negative ADR-N7 / ADR-N6。）
+- **决策**：引入**可选**的路径作用域 manifest 切片：`.archon/manifest/slices/<slug>.md`，每片在 body 声明 `scope: <glob>`，只承载该子树局部的 Concept Glossary / User Language Index / Source Modularity Map 增量；根 manifest 加一个小热索引 `## Manifest Slices`（slug → glob → 一行用途），切片 body 冷加载。demand pre-scan 把目标/变更路径与切片 glob 匹配，只加载命中的切片 body（复用 memos-archive「热索引 + 按需 body」模式）；`modularity_probe` 折入命中切片的 §Source Modularity Map 行。缺 `slices/` 目录 = 单作用域（向后兼容）。
+- **理由**：(1) 唯一真实记忆 gap，且符合公理——切片**减少**热路径（大仓库不再被无关子包术语撑爆 context），契合 Lean>Bloat；作用域由"改了哪些路径"推断，契合 Inference>Configuration；(2) 复用既有模式——热索引 + 冷 body（ADR-21）、独立文件并发可合并（ADR-22 spirit：不同子树的并行交付编辑不同切片文件，零冲突）、条件契约块（records_folder / repo_self_check 先例）；(3) 切片是 domain lens 的对偶——lens 给推理工具分域，slice 给项目状态分域。
+- **影响**：`governance-contract.yaml` 新增条件块 `manifest_slices`（≤120 行 · 必声明 `scope:` · 必被 `## Manifest Slices` 索引），soul.md cap 310→315；`archon-check.py` 新增条件 `assert_manifest_slices`（缺目录即跳过，fresh install 恒绿）；切片目录已被 `.archon/manifest/` runtime_ledger_path 覆盖（build-manifest 无需改）；`soul.md §Knowledge Hygiene` 加 Path-scoped slices 一条；`archon-demand.md` pre-scan 加 Manifest slice scan 段 + `modularity_probe` 加 slice-aware 句（不触动任何 pinned substring）；manifest 模板加 `## Manifest Slices` 段。**不影响**：drift/debt/memos schema · Run-State status keys（不新增）· Verdict 输出 token（不新增）· universal_module_guard（切片是项目状态，不扫描）。
+- **重审条件**：(a) 发行 6 个月内零 adopter 创建切片 → 评估降级为纯文档说明（保留契约块为 no-op 条件块）；(b) 切片数量膨胀或与根 manifest 内容重复漂移 → 加 governance-docs / claim-verifier 互锚或引入切片去重检查；(c) 出现切片需声明跨切片依赖的真实压力 → 单开 ADR 评估切片间引用（当前刻意不做，避免 ADR-26 式过早精细度）。
+
 ---
 
 ## Negative ADRs
@@ -328,3 +347,21 @@ Read this log as **four reasoning lanes**, not a flat list: identity & ownership
 - **否决理由**：wow-harness depends on Claude Code-specific hooks, slash-command modes, plugin installation, and precompact mechanics. Those assumptions are not portable to Archon's session-based, platform-agnostic governance model.
 - **替代路径**：Evaluate each compatible idea separately. Plan-mode Verdict binding became ADR-11; export clean-bootstrap work stayed in Archon's export lane; precompact-style checkpointing remains a separate risk observation.
 - **重审条件**：Cursor or a cross-platform protocol ships equivalent PreToolUse / permission-deny / session lifecycle APIs, or harness demonstrates portable measurable advantage in an actual adopter context.
+
+## ADR-N6 · [否决] CLAUDE.md 式 `@import` transclusion 用于治理文件
+
+- **日期**：2026-06-08
+- **状态**：否决
+- **提案**：借鉴 Claude Code 的 `@path` import 语法（4 跳递归、code-span 安全），让 soul / manifest / 命令文件用显式 transclusion 组合，替代当前的按需分节加载。
+- **否决理由**：Archon 已用 `soul/*.md` 模式扩展（命令各自 `load` 其扩展）+ manifest 分节作用域达成模块化；再加一套 import 解析语法收益边际、增加解析面与失败模式（循环、深度、跨平台路径重写），违反 Lean>Bloat。Claude 需要 `@import` 是因为 CLAUDE.md 启动全量加载；Archon 本就不全量加载，前提不成立。
+- **替代路径**：继续用 soul 模式扩展 + manifest 分节 +（本批次）路径作用域切片（ADR-32）做组合；切片已覆盖"按子树组合项目状态"这一 import 最有价值的用例。
+- **重审条件**：某平台移除 Archon 的分节/扩展加载能力，迫使治理文件回退到全量加载；或出现 soul/扩展机制无法表达的真实跨文件组合需求。
+
+## ADR-N7 · [否决/推迟] 组织级托管继承约束层
+
+- **日期**：2026-06-08
+- **状态**：否决（推迟）
+- **提案**：借鉴 Claude Code 的不可覆盖企业托管策略层，给 Archon 加一层 adopter 不能弱化的组织级继承约束（org 尺度的保全轴）。
+- **否决理由**：Archon 当前是单项目、会话内框架；零多仓库 / 团队治理证据前实现继承约束层属过度设计（违反 Lean>Bloat + observe-before-build 先例 ADR-26/29）。该思想与 ADR-28 Preservation Axis 同构（org 尺度的"绊线非墙"），但内核已被既有保全机制覆盖，差的只是"跨仓库继承"这一分发维度。
+- **替代路径**：单项目内继续用 critical_rule_substrings + 保全三件套；跨项目复用走 export kit / manifest 分发。
+- **重审条件**：≥2 个团队/组织把 Archon 部署到多仓库并要求统一、不可在子项目弱化的治理基线（与 ADR-N3「拆独立仓库」的 versioned-compat 触发器相邻）。

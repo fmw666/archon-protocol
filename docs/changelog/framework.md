@@ -40,6 +40,42 @@ echoed into every standalone export package:
 
 ### Fixed
 
+## [0.2.0] — 2026-06-08
+
+Memory-layer upgrade derived from a comparative study of Claude Code's
+project-level memory + ADR practices (see ADR-31 / ADR-32 and the Negative
+ADR-N6 / ADR-N7).
+
+### Added
+- **Shipped state templates** (ADR-31): all five seedable ledgers now have
+  real, sha256-verified templates in the `core-templates` module and
+  `export_manifest.required_files` — `manifest.template.md`,
+  `decisions.template.md`, and (completing the thesis after the
+  `install-agent-cursor` sandbox showed LLM agents under-seed hand-built
+  ledgers) `drift.template.md`, `debt.template.md`, `memos.template.md`.
+  `install.md` Step 7 seeds `manifest / debt / drift / memos / decisions` by
+  copying the canonical templates verbatim instead of constructing them from
+  prose, so a fresh install passes `archon-check.py` deterministically — the
+  drift `**drift: 0**` sentinel, the memos `## Archive Index` section, and the
+  debt `<!-- no-active-debt -->` marker no longer depend on prose adherence.
+- **Onboarding codebase self-scan** (ADR-31): `install.md` Step 7b — the
+  install agent runs a read-only scan (package manifests, directory layout,
+  README terms) and pre-fills the manifest's Tech Stack, Directory Structure,
+  Concept Glossary candidates, and Source Modularity Map seeds.
+- **Path-scoped manifest slices** (ADR-32): optional `.archon/manifest/slices/<slug>.md`
+  fragments scoped to a subtree via a `scope:` glob, indexed in the root
+  manifest `## Manifest Slices` section and loaded on demand during pre-scan.
+  New conditional `manifest_slices` contract block + `assert_manifest_slices`
+  in `archon-check.py` (skipped when the directory is absent, so single-scope
+  projects are unaffected).
+
+### Changed
+- `soul.md` §Knowledge Hygiene gains a **Path-scoped slices** pre-emptive rule;
+  core soul cap raised 310→315 (ADR-32 rationale recorded in `file_budgets`).
+- `archon-demand.md` pre-scan gains a **Manifest slice scan** step and the
+  `modularity_probe` becomes slice-aware (no pinned substring disturbed).
+- `.archon/VERSION` 0.1.0 → 0.2.0.
+
 ## [0.1.0] — 2026-05-04
 
 First tagged release of the Archon framework. The mechanism set reflects roughly
