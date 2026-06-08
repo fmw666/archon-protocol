@@ -107,7 +107,7 @@ const MODULE_DEFS = [
     id: 'domain-lenses',
     title: 'Domain lenses (pre-verdict lens index)',
     description:
-      '5 lenses (dev / design / platform / ecosystem / capability) + 16 domain-specific decision tools. Used at the Decision Gate before committing to an implementation plan.',
+      '5 lenses (dev / design / platform / ecosystem / capability) + 17 domain-specific decision tools. Used at the Decision Gate before committing to an implementation plan.',
     required: true,
     match: (p) => p.startsWith('.archon/domain-lenses/'),
   },
@@ -134,6 +134,20 @@ const MODULE_DEFS = [
       'Rules that auto-load into every Cursor session on this project: archon.mdc, archon-wake.mdc, archon-heartbeat.mdc.',
     required: true,
     match: (p) => p.startsWith('.cursor/rules/'),
+  },
+  {
+    id: 'skills-formwork',
+    title: 'Formwork structural-guard skills (optional)',
+    description:
+      'Formwork (结构守卫) authoring skills — structural-guard, guard-from-incident, guard-ci-wiring, constraint-pruner. Portable SKILL.md assets (MIT, upstream github.com/EvoMap/formwork) for writing whole-repository invariant guards over an adopter\'s product code. Opt-in; the .archon/ governance core does not depend on them. See ADR-30.',
+    required: false,
+    // Placed BEFORE the generic `skills` module so first-match-wins routes these
+    // four into the optional module instead of the required core skills bundle.
+    match: (p) =>
+      p === '.cursor/skills/structural-guard/SKILL.md' ||
+      p === '.cursor/skills/guard-from-incident/SKILL.md' ||
+      p === '.cursor/skills/guard-ci-wiring/SKILL.md' ||
+      p === '.cursor/skills/constraint-pruner/SKILL.md',
   },
   {
     id: 'skills',

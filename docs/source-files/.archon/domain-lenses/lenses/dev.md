@@ -12,6 +12,7 @@ Select this lens when the demand primarily asks for implementation, code changes
 - Implementation path and affected modules
 - Reversibility, blast radius, and validation cost
 - Whether the change introduces a new pattern, module, or dependency
+- Whether a fixed cross-file bug or an enforced boundary should become a structural guard (a whole-repository invariant test)
 
 ## Does Not Look At
 
@@ -26,7 +27,7 @@ Select this lens when the demand primarily asks for implementation, code changes
 domain_lens: dev · tools=[dev/implementation-path, dev/blast-radius, dev/validation-plan]
 ```
 
-The output should name the implementation path, the main risk boundary, and the validation command or focused checks.
+The output should name the implementation path, the main risk boundary, and the validation command or focused checks. Add `dev/structural-guard` only when the demand is to enforce a codebase-wide invariant or freeze a recurring incident as a guard.
 
 ## Boundary Rule
 

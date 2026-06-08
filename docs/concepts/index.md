@@ -34,6 +34,7 @@ For specific mechanisms or comparisons:
 | [Product-Architecture Workflow](/concepts/product-architecture-workflow) | Product-facing workflow: new-project onboarding · existing-project intake · demand execution boundaries. |
 | [Superpowers Comparison](/concepts/superpowers-comparison) | Comparative analysis against the Superpowers framework — anti-rationalization, systematic debugging, sub-agent cost awareness. |
 | [Refactoring Adoption](/concepts/refactoring-adoption) | Distilled refactoring discipline (two hats · rule of three · gradual replacement · tempo · characterization tests). |
+| [Formwork Adoption](/concepts/formwork-adoption) | Evaluation of Formwork (structural guards) — what Archon already covers (preservation axis · claim verifier · constraint pyramid), and the one new surface: guards over adopter product code. |
 
 ## Next step
 

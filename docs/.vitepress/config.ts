@@ -70,6 +70,7 @@ export default withMermaid(defineConfig({
             { text: "Product-Architecture Workflow", link: "/concepts/product-architecture-workflow" },
             { text: "Superpowers Comparison", link: "/concepts/superpowers-comparison" },
             { text: "Refactoring Adoption", link: "/concepts/refactoring-adoption" },
+            { text: "Formwork Adoption", link: "/concepts/formwork-adoption" },
           ],
         },
       ],

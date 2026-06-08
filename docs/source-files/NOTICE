@@ -9,3 +9,8 @@ Licensed under the Apache License, Version 2.0. See LICENSE for the
 full license text.
 
 Third-party components retain their own licenses.
+
+The optional skills-formwork module bundles four Agent Skills from the
+Formwork project (结构守卫, https://github.com/EvoMap/formwork), used under
+the MIT License. Each skill retains its `license: MIT` declaration. These
+files are opt-in and are not part of the required Archon core.

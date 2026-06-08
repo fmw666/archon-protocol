@@ -112,6 +112,14 @@ const OVERRIDES = {
   // preserves the visual layout while side-stepping the compiler.
   '.archon/domain-lenses/templates/lens.md': { out: 'domain-lenses/templates/lens.md', renderAs: 'code', lang: 'markdown' },
   '.archon/domain-lenses/templates/tool.md': { out: 'domain-lenses/templates/tool.md', renderAs: 'code', lang: 'markdown' },
+  // Formwork skills carry prose placeholders like `<concern>`, `<N>`, and
+  // `<source>` that Vue's template parser mistakes for unclosed HTML tags.
+  // Render them as literal markdown code blocks (same treatment as the lens /
+  // tool templates above) so the rendered mirror does not break the build.
+  '.cursor/skills/structural-guard/SKILL.md': { out: 'skills/structural-guard.md', renderAs: 'code', lang: 'markdown' },
+  '.cursor/skills/guard-from-incident/SKILL.md': { out: 'skills/guard-from-incident.md', renderAs: 'code', lang: 'markdown' },
+  '.cursor/skills/guard-ci-wiring/SKILL.md': { out: 'skills/guard-ci-wiring.md', renderAs: 'code', lang: 'markdown' },
+  '.cursor/skills/constraint-pruner/SKILL.md': { out: 'skills/constraint-pruner.md', renderAs: 'code', lang: 'markdown' },
 }
 
 async function walkDir(dir) {

@@ -34,6 +34,13 @@
       "load_lines": 31
     },
     {
+      "id": "dev/structural-guard",
+      "description": "Decide whether a cross-file invariant should become a structural guard, and shape its recipe and skeleton.",
+      "when_to_use": "Use when a banned pattern must never reappear, a fixed cross-file bug could return elsewhere, or a boundary a single-file linter cannot express must be enforced.",
+      "load_hint": "Read when the dev lens needs to enforce a codebase-wide invariant a single-file linter cannot phrase.",
+      "load_lines": 32
+    },
+    {
       "id": "platform/platform-boundary",
       "description": "Map data, deployment, secret, and permission concerns into one platform planning boundary.",
       "when_to_use": "Use when the demand touches hosted data, deployment runtime, environment config, secrets, or launch risk.",
@@ -139,7 +146,8 @@
       "tools": [
         "dev/implementation-path",
         "dev/blast-radius",
-        "dev/validation-plan"
+        "dev/validation-plan",
+        "dev/structural-guard"
       ]
     },
     "platform": {

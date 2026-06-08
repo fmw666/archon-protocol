@@ -503,6 +503,7 @@
       ".archon/domain-lenses/tools/dev/implementation-path.md",
       ".archon/domain-lenses/tools/dev/blast-radius.md",
       ".archon/domain-lenses/tools/dev/validation-plan.md",
+      ".archon/domain-lenses/tools/dev/structural-guard.md",
       ".archon/domain-lenses/tools/platform/platform-boundary.md",
       ".archon/domain-lenses/tools/ecosystem/starter-catalog.md",
       ".archon/domain-lenses/tools/ecosystem/evidence-gate.md",
@@ -607,6 +608,31 @@
       "design",
       "platform"
     ]
+  },
+  "structural_guard": {
+    "description": "Portable convention for adopter-authored structural guards — whole-repository static-scan tests that enforce a codebase-wide invariant a single-file linter cannot express. Archon's own checkers (archon-check.py, governance.test.ts) guard the .archon/ governance surface; this convention governs guards the adopter writes over their own product code, enforced by the adopter's own test surface (language-agnostic, like the ADR-29 Source Modularity Map). In-loop reasoning card: .archon/domain-lenses/tools/dev/structural-guard.md. Methodology + adopt/reject rationale: ADR-30. Optional authoring skills ship as manifest module skills-formwork (upstream: github.com/EvoMap/formwork, MIT).",
+    "recipes": [
+      "forbidden-pattern",
+      "required-companion",
+      "consumer-validation",
+      "directory-purity",
+      "specific-file-check",
+      "structural-invariant"
+    ],
+    "required_anatomy": [
+      "scope",
+      "sentinel-assertion",
+      "violation-collector",
+      "single-assertion-with-fix-guidance",
+      "path-and-comment-normalization"
+    ],
+    "sentinel_rule": "Every guard MUST assert scanned-file-count above a floor before checking violations; a zero-file scan passes vacuously (a false green) and is worse than no guard.",
+    "one_concern_per_guard": true,
+    "exemption_ratchet": {
+      "cap_equals_current_size": true,
+      "bind_to_ground_truth": true,
+      "rationale": "Freeze existing violations in a grandfather set whose cap equals the current count (no headroom, so any new violation trips immediately), and bind every exemption to a re-derivable ground-truth fact — the referenced file still exists — rather than a bare integer, boolean, or free-text allowlist. Never widen the cap or grow the set to make CI green; fix the violation. The strongest property against a self-modifying maintainer is not unmodifiable but not-silently-modifiable: every weakening must leave a visible scar (a diff, a failing existence check, a red meta-guard). This is the product-code analogue of the ADR-28 Preservation Axis pin (tripwire, not wall)."
+    }
   },
   "run_state": {
     "template": ".archon/templates/run.template.md",
