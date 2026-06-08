@@ -134,8 +134,8 @@ under `docs/testing/sandbox/runs/install-agent-cursor/` with
    See `cursor.mjs::isAvailable()`.
 4. Local mirror serving `docs/public/`. The runner manages this; the
    prompt instructs the agent to fetch from the mirror's URL via the
-   `Note: For this sandbox run, fetch Archon source files from
-   <mirror-url>` line in `cursor.mjs::buildPrompt()`.
+   `Note: For this sandbox run, fetch Archon source files
+   from <mirror-url>` line in `cursor.mjs::buildPrompt()`.
 
 ## Steps
 
