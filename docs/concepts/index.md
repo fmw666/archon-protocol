@@ -24,6 +24,9 @@ If you have **an hour**: read in this order:
 5. [Architecture Decisions](/concepts/decisions) — every ADR, in order, with
    the trade-offs and re-evaluation triggers.
 
+For the **operational** view — every route a session takes, in order, with the
+mechanical gate at each step — read [Lifecycle & Sequence Chains](/concepts/lifecycle-sequencing).
+
 If you want the **full Archon introduction** as originally written for adopter
 projects: [Introduction (full README)](/concepts/introduction).
 

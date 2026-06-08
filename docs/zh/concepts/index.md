@@ -14,6 +14,8 @@ Archon 的「为什么」。读这些是为了理解框架相信什么、它如�
 4. [架构参考](/zh/concepts/architecture) —— 完整的结构性描述：认知循环 · 交付生命周期 · 约束金字塔 · 保留轴 · Claim Verifier · 子代理委派 · 状态记忆。
 5. [架构决策](/zh/concepts/decisions) —— 按顺序的每一条 ADR，配上权衡与重新评估的触发条件。
 
+想看**运行时**视角——一次会话走的每一条路径、按序排列、每步的机械闸门——读 [全旅途与时序链路](/zh/concepts/lifecycle-sequencing)。
+
 如果你想看**为采用方项目所写的完整 Archon 引言**：[引言（完整 README）](/zh/concepts/introduction)。
 
 ## 深入主题
