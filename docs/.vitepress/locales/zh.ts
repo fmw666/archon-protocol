@@ -18,6 +18,7 @@ export const zhLocaleConfig: DefaultTheme.Config = {
         items: [
           { text: "导读", link: "/zh/concepts/" },
           { text: "10 分钟速览", link: "/zh/concepts/overview" },
+          { text: "五大支柱", link: "/zh/concepts/five-pillars" },
           { text: "架构参考", link: "/zh/concepts/architecture" },
           { text: "用户旅程（AI 编码 16 个坑）", link: "/zh/concepts/user-journeys" },
           { text: "架构决策（ADR）", link: "/zh/concepts/decisions" },

@@ -11,13 +11,17 @@ If you have **10 minutes**: read just the [10-Minute Overview](/concepts/overvie
 If you have **an hour**: read in this order:
 
 1. [10-Minute Overview](/concepts/overview) — the shape of the system.
-2. [User Journeys](/concepts/user-journeys) — 16 real pitfalls of AI-assisted
+2. [The Five Pillars](/concepts/five-pillars) — each home-page promise (cognitive
+   loop · mechanical gates · persistent state · preservation axis · ownership
+   contract) expanded into its core idea **and** the shipped file or contract
+   clause that actually enforces it.
+3. [User Journeys](/concepts/user-journeys) — 16 real pitfalls of AI-assisted
    coding, mapped to the mechanisms that catch each one. **This is the best
    "why" document** if you want to feel Archon's problem-fit before committing.
-3. [Architecture Reference](/concepts/architecture) — the complete structural
+4. [Architecture Reference](/concepts/architecture) — the complete structural
    description: cognitive loop · delivery lifecycle · constraint pyramid ·
    preservation axis · claim verifier · sub-agent delegation · state memory.
-4. [Architecture Decisions](/concepts/decisions) — every ADR, in order, with
+5. [Architecture Decisions](/concepts/decisions) — every ADR, in order, with
    the trade-offs and re-evaluation triggers.
 
 If you want the **full Archon introduction** as originally written for adopter

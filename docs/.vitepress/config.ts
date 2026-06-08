@@ -57,6 +57,7 @@ export default withMermaid(defineConfig({
           items: [
             { text: "Introduction", link: "/concepts/" },
             { text: "10-Minute Overview", link: "/concepts/overview" },
+            { text: "The Five Pillars", link: "/concepts/five-pillars" },
             { text: "Architecture Reference", link: "/concepts/architecture" },
             { text: "User Journeys (16 AI-Coding Pitfalls)", link: "/concepts/user-journeys" },
             { text: "Architecture Decisions (ADRs)", link: "/concepts/decisions" },

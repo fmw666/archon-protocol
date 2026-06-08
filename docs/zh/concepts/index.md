@@ -9,9 +9,10 @@ Archon 的「为什么」。读这些是为了理解框架相信什么、它如�
 如果你有 **一小时**：按这个顺序读：
 
 1. [10 分钟速览](/zh/concepts/overview) —— 系统的整体形状。
-2. [用户旅程](/zh/concepts/user-journeys) —— AI 辅助编码的 16 个真实陷阱，逐一映射到捕捉它们的机制。**这是体感"为什么"最强的一篇** —— 如果你想在投入之前先感受一下 Archon 与真实问题是否对齐，从这里开始。
-3. [架构参考](/zh/concepts/architecture) —— 完整的结构性描述：认知循环 · 交付生命周期 · 约束金字塔 · 保留轴 · Claim Verifier · 子代理委派 · 状态记忆。
-4. [架构决策](/zh/concepts/decisions) —— 按顺序的每一条 ADR，配上权衡与重新评估的触发条件。
+2. [五大支柱](/zh/concepts/five-pillars) —— 把首页的每条承诺（认知循环 · 机械闸门 · 持久状态 · 保全轴 · 所有权契约）逐条展开成它的核心思想**以及**实际强制它的那个已发布文件或契约条款。
+3. [用户旅程](/zh/concepts/user-journeys) —— AI 辅助编码的 16 个真实陷阱，逐一映射到捕捉它们的机制。**这是体感"为什么"最强的一篇** —— 如果你想在投入之前先感受一下 Archon 与真实问题是否对齐，从这里开始。
+4. [架构参考](/zh/concepts/architecture) —— 完整的结构性描述：认知循环 · 交付生命周期 · 约束金字塔 · 保留轴 · Claim Verifier · 子代理委派 · 状态记忆。
+5. [架构决策](/zh/concepts/decisions) —— 按顺序的每一条 ADR，配上权衡与重新评估的触发条件。
 
 如果你想看**为采用方项目所写的完整 Archon 引言**：[引言（完整 README）](/zh/concepts/introduction)。
 
