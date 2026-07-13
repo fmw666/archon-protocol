@@ -1,0 +1,83 @@
+{
+  "schema": "archon.sandbox-run/v1",
+  "test_id": "uninstall-preserve",
+  "started_at": "2026-07-13T06:25:15.023Z",
+  "finished_at": "2026-07-13T06:25:15.416Z",
+  "duration_ms": 393,
+  "manifest_version": "v0.2.0",
+  "runner": {
+    "kind": "cli",
+    "version": "sandbox-runner/0.1.0",
+    "host": "linux x64 node v20.20.2",
+    "provider": null
+  },
+  "fixture": "fixtures/sandbox-node-ts",
+  "ide_platform": "cursor",
+  "result": "passing",
+  "steps": [
+    {
+      "name": "copy fixture",
+      "exit_code": 0,
+      "duration_ms": 2
+    },
+    {
+      "name": "prereq: archon install",
+      "exit_code": 0,
+      "duration_ms": 222,
+      "stdout_tail": "[archon install] target: /tmp/archon-sandbox-uninstall-preserve-2026-07-13T06-25-15-024Z\n[archon install] fetching manifest from http://127.0.0.1:38039/manifest.json …\n[archon install] manifest v0.2.0 — 94 files across 15 modules\n[archon install] plan: 75 files (483.0 KB) from 12 modules\n[archon install] downloading and verifying …\n\r[archon install] verified 10/75\r[archon install] verified 20/75\r[archon install] verified 30/75\r[archon install] verified 40/75\r[archon install] verified 50/75\r[archon install] verified 60/75\r[archon install] verified 70/75\r[archon install] verified 75/75\n[archon install] writing files …\n\n[archon install] Done. Archon v0.2.0 installed into /tmp/archon-sandbox-uninstall-preserve-2026-07-13T06-25-15-024Z\n[archon install] Next steps: open the project, say \"hi archon\" to your agent, or see https://aaep.site/setup/quickstart\n",
+      "stderr_tail": ""
+    },
+    {
+      "name": "archon uninstall (preserve ledgers)",
+      "exit_code": 0,
+      "duration_ms": 165,
+      "stdout_tail": "[archon uninstall] project: /tmp/archon-sandbox-uninstall-preserve-2026-07-13T06-25-15-024Z\n[archon uninstall] canonical files present: 75\n[archon uninstall] ledger mode: preserve\n\n[archon uninstall] Done. Removed 75 files. Log: .archon-uninstall-2026-07-13T06-25-15-349Z.log\n",
+      "stderr_tail": "",
+      "manual": false,
+      "provider": null,
+      "tool_edits": null
+    }
+  ],
+  "assertions": [
+    {
+      "name": "file_absent: tools/archon-cli/bin/archon.mjs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "file_absent: .cursor/commands/archon.md",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "file_absent: .archon/soul.md",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "file_exists: .archon/manifest.md",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "dir_absent: tools/archon-cli/bin",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "dir_absent: tools/archon-cli/lib",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "dir_absent: tools/archon-cli",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "notes": null,
+  "ci_run": {
+    "platform": "github-actions",
+    "url": "https://github.com/fmw666/archon-protocol/actions/runs/29228927350"
+  }
+}
