@@ -1,0 +1,78 @@
+{
+  "schema": "archon.sandbox-run/v1",
+  "test_id": "install-without-cli",
+  "started_at": "2026-08-16T03:52:52.872Z",
+  "finished_at": "2026-08-16T03:52:53.182Z",
+  "duration_ms": 310,
+  "manifest_version": "v0.2.0",
+  "runner": {
+    "kind": "cli",
+    "version": "sandbox-runner/0.1.0",
+    "host": "linux x64 node v20.20.2",
+    "provider": null
+  },
+  "fixture": "fixtures/sandbox-node-ts",
+  "ide_platform": "cursor",
+  "result": "passing",
+  "steps": [
+    {
+      "name": "copy fixture",
+      "exit_code": 0,
+      "duration_ms": 2
+    },
+    {
+      "name": "prereq: drop sandbox check helper",
+      "exit_code": 0,
+      "duration_ms": 0,
+      "stdout_tail": "wrote __sb-check.cjs",
+      "stderr_tail": ""
+    },
+    {
+      "name": "archon install --without=cli",
+      "exit_code": 0,
+      "duration_ms": 209,
+      "stdout_tail": "[archon install] target: /tmp/archon-sandbox-install-without-cli-2026-08-16T03-52-52-873Z\n[archon install] fetching manifest from http://127.0.0.1:33545/manifest.json …\n[archon install] manifest v0.2.0 — 94 files across 15 modules\n[archon install] plan: 62 files (423.3 KB) from 11 modules\n[archon install] downloading and verifying …\n\r[archon install] verified 10/62\r[archon install] verified 20/62\r[archon install] verified 30/62\r[archon install] verified 40/62\r[archon install] verified 50/62\r[archon install] verified 60/62\r[archon install] verified 62/62\n[archon install] writing files …\n\n[archon install] Done. Archon v0.2.0 installed into /tmp/archon-sandbox-install-without-cli-2026-08-16T03-52-52-873Z\n[archon install] Next steps: open the project, say \"hi archon\" to your agent, or see https://aaep.site/setup/quickstart\n",
+      "stderr_tail": "",
+      "manual": false,
+      "provider": null,
+      "tool_edits": null
+    }
+  ],
+  "assertions": [
+    {
+      "name": "file_exists: .archon/soul.md",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "file_exists: .cursor/commands/archon.md",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "dir_absent: tools/archon-cli",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "file_absent: tools/archon-cli/bin/archon.mjs",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "cmd_zero: [\"node\",\"__sb-check.cjs\",\"drift-modules-excludes\",\"cli\"]",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "cmd_zero: [\"python3\",\"scripts/archon-check.py\",\"--root\",\".\"]",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "notes": null,
+  "ci_run": {
+    "platform": "github-actions",
+    "url": "https://github.com/fmw666/archon-protocol/actions/runs/31925273594"
+  }
+}
