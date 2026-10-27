@@ -1,6 +1,6 @@
 {
   "schema": "archon.sandbox-runs-index/v1",
-  "generated_at": "2026-10-26T08:43:30.531Z",
+  "generated_at": "2026-10-27T08:49:48.232Z",
   "latest": {
     "boot-claude-python": {
       "started_at": "2026-05-07T06:15:48.016Z",
@@ -57,121 +57,121 @@
       "record_path": "runs/install-codex-go/2026-05-07T06-15-48-470Z.json"
     },
     "install-cursor-node": {
-      "started_at": "2026-10-26T08:43:24.994Z",
+      "started_at": "2026-10-27T08:49:42.890Z",
       "manifest_version": "v0.2.0",
       "result": "failing",
       "runner_kind": "cli",
       "runner_provider": null,
-      "duration_ms": 481,
-      "record_path": "runs/install-cursor-node/2026-10-26T08-43-24-994Z.json"
+      "duration_ms": 409,
+      "record_path": "runs/install-cursor-node/2026-10-27T08-49-42-890Z.json"
     },
     "install-empty-dir": {
-      "started_at": "2026-10-26T08:43:25.477Z",
+      "started_at": "2026-10-27T08:49:43.300Z",
       "manifest_version": "v0.2.0",
       "result": "passing",
       "runner_kind": "cli",
       "runner_provider": null,
-      "duration_ms": 406,
-      "record_path": "runs/install-empty-dir/2026-10-26T08-43-25-477Z.json"
+      "duration_ms": 366,
+      "record_path": "runs/install-empty-dir/2026-10-27T08-49-43-300Z.json"
     },
     "install-existing-project": {
-      "started_at": "2026-10-26T08:43:25.883Z",
+      "started_at": "2026-10-27T08:49:43.667Z",
       "manifest_version": "v0.2.0",
       "result": "passing",
       "runner_kind": "cli",
       "runner_provider": null,
-      "duration_ms": 428,
-      "record_path": "runs/install-existing-project/2026-10-26T08-43-25-883Z.json"
+      "duration_ms": 397,
+      "record_path": "runs/install-existing-project/2026-10-27T08-49-43-667Z.json"
     },
     "install-force-reinstall": {
-      "started_at": "2026-10-26T08:43:26.312Z",
+      "started_at": "2026-10-27T08:49:44.064Z",
       "manifest_version": "v0.2.0",
       "result": "passing",
       "runner_kind": "cli",
       "runner_provider": null,
-      "duration_ms": 660,
-      "record_path": "runs/install-force-reinstall/2026-10-26T08-43-26-312Z.json"
+      "duration_ms": 653,
+      "record_path": "runs/install-force-reinstall/2026-10-27T08-49-44-064Z.json"
     },
     "install-half-archon-dir": {
-      "started_at": "2026-10-26T08:43:26.973Z",
+      "started_at": "2026-10-27T08:49:44.718Z",
       "manifest_version": "v0.2.0",
       "result": "passing",
       "runner_kind": "cli",
       "runner_provider": null,
-      "duration_ms": 358,
-      "record_path": "runs/install-half-archon-dir/2026-10-26T08-43-26-973Z.json"
+      "duration_ms": 356,
+      "record_path": "runs/install-half-archon-dir/2026-10-27T08-49-44-718Z.json"
     },
     "install-rejects-reinstall": {
-      "started_at": "2026-10-26T08:43:27.331Z",
+      "started_at": "2026-10-27T08:49:45.075Z",
       "manifest_version": "v0.2.0",
       "result": "passing",
       "runner_kind": "cli",
       "runner_provider": null,
       "duration_ms": 408,
-      "record_path": "runs/install-rejects-reinstall/2026-10-26T08-43-27-331Z.json"
+      "record_path": "runs/install-rejects-reinstall/2026-10-27T08-49-45-075Z.json"
     },
     "install-without-cli": {
-      "started_at": "2026-10-26T08:43:27.739Z",
+      "started_at": "2026-10-27T08:49:45.484Z",
       "manifest_version": "v0.2.0",
       "result": "passing",
       "runner_kind": "cli",
       "runner_provider": null,
-      "duration_ms": 308,
-      "record_path": "runs/install-without-cli/2026-10-26T08-43-27-739Z.json"
+      "duration_ms": 310,
+      "record_path": "runs/install-without-cli/2026-10-27T08-49-45-484Z.json"
     },
     "sync-clean": {
-      "started_at": "2026-10-26T08:43:28.047Z",
+      "started_at": "2026-10-27T08:49:45.795Z",
       "manifest_version": "v0.2.0",
       "result": "passing",
       "runner_kind": "cli",
       "runner_provider": null,
-      "duration_ms": 410,
-      "record_path": "runs/sync-clean/2026-10-26T08-43-28-047Z.json"
+      "duration_ms": 409,
+      "record_path": "runs/sync-clean/2026-10-27T08-49-45-795Z.json"
     },
     "sync-modified": {
-      "started_at": "2026-10-26T08:43:28.457Z",
+      "started_at": "2026-10-27T08:49:46.204Z",
       "manifest_version": "v0.2.0",
       "result": "passing",
       "runner_kind": "cli",
       "runner_provider": null,
-      "duration_ms": 412,
-      "record_path": "runs/sync-modified/2026-10-26T08-43-28-457Z.json"
+      "duration_ms": 411,
+      "record_path": "runs/sync-modified/2026-10-27T08-49-46-204Z.json"
     },
     "uninstall-archive": {
-      "started_at": "2026-10-26T08:43:28.869Z",
+      "started_at": "2026-10-27T08:49:46.616Z",
       "manifest_version": "v0.2.0",
       "result": "passing",
       "runner_kind": "cli",
       "runner_provider": null,
-      "duration_ms": 421,
-      "record_path": "runs/uninstall-archive/2026-10-26T08-43-28-869Z.json"
+      "duration_ms": 419,
+      "record_path": "runs/uninstall-archive/2026-10-27T08-49-46-616Z.json"
     },
     "uninstall-preserve": {
-      "started_at": "2026-10-26T08:43:29.291Z",
+      "started_at": "2026-10-27T08:49:47.036Z",
       "manifest_version": "v0.2.0",
       "result": "passing",
       "runner_kind": "cli",
       "runner_provider": null,
-      "duration_ms": 412,
-      "record_path": "runs/uninstall-preserve/2026-10-26T08-43-29-291Z.json"
+      "duration_ms": 405,
+      "record_path": "runs/uninstall-preserve/2026-10-27T08-49-47-036Z.json"
     },
     "update-cli-without-cli": {
-      "started_at": "2026-10-26T08:43:29.703Z",
+      "started_at": "2026-10-27T08:49:47.441Z",
       "manifest_version": "v0.2.0",
       "result": "passing",
       "runner_kind": "cli",
       "runner_provider": null,
-      "duration_ms": 418,
-      "record_path": "runs/update-cli-without-cli/2026-10-26T08-43-29-703Z.json"
+      "duration_ms": 400,
+      "record_path": "runs/update-cli-without-cli/2026-10-27T08-49-47-441Z.json"
     },
     "update-cursor-node": {
-      "started_at": "2026-10-26T08:43:30.121Z",
+      "started_at": "2026-10-27T08:49:47.841Z",
       "manifest_version": "v0.2.0",
       "result": "passing",
       "runner_kind": "cli",
       "runner_provider": null,
-      "duration_ms": 410,
-      "record_path": "runs/update-cursor-node/2026-10-26T08-43-30-121Z.json"
+      "duration_ms": 390,
+      "record_path": "runs/update-cursor-node/2026-10-27T08-49-47-841Z.json"
     }
   }
 }
